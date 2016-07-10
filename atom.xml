@@ -54,7 +54,7 @@
     <link href="http://yoursite.com/2016/07/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     <id>http://yoursite.com/2016/07/10/深入理解动态规划/</id>
     <published>2016-07-10T07:41:13.000Z</published>
-    <updated>2016-07-10T15:40:04.816Z</updated>
+    <updated>2016-07-10T16:03:25.693Z</updated>
     
     <content type="html">&lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题&lt;/p&gt;
 &lt;h3 id=&quot;实例探讨&quot;&gt;&lt;a href=&quot;#实例探讨&quot; class=&quot;headerlink&quot; title=&quot;实例探讨&quot;&gt;&lt;/a&gt;实例探讨&lt;/h3&gt;&lt;p&gt;例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）&lt;br&gt;    其状态转移方程为：&lt;/p&gt;
