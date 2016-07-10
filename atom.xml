@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-07-10T09:59:21.407Z</updated>
+  <updated>2016-07-10T14:35:49.023Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,47 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>hexo博客搭建</title>
+    <link href="http://yoursite.com/2016/07/10/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/"/>
+    <id>http://yoursite.com/2016/07/10/hexo博客搭建/</id>
+    <published>2016-07-10T07:41:13.000Z</published>
+    <updated>2016-07-10T14:35:49.023Z</updated>
+    
+    <content type="html">&lt;hr&gt;
+&lt;p&gt;##前言&lt;br&gt;近来想着搭建一个基于github的博客站点,之前在csdn的博客他人如果如果没有adblock组件浏览时将会有恶心的广告，大概了解了下，有octopress,wordpress,hexo几种方式，octopress还不错，开始搭建之后，由于版本更新匹配的原因，总是会有小错误，加之对ruby不熟，于是切换到hexo来搭建&lt;/p&gt;
+&lt;p&gt;##搭建教程&lt;/p&gt;
+&lt;p&gt;主要参考&lt;a href=&quot;http://www.mashiro.io/2015/09/hexo-guide-2/，写的很详细，就不重复&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.mashiro.io/2015/09/hexo-guide-2/，写的很详细，就不重复&lt;/a&gt; 造轮子了，仔细看完ok了&lt;/p&gt;
+&lt;p&gt;###安装Git&lt;/p&gt;
+&lt;p&gt;去 Git 官网下载并安装即可.&lt;/p&gt;
+&lt;p&gt;###安装Node.Js&lt;/p&gt;
+&lt;p&gt;去NodeJs 官网下载并安装即可.&lt;br&gt;注意: 尽量使用默认路径, 以保证环境变量的自动配置.&lt;/p&gt;
+&lt;p&gt;###安装Hexo&lt;/p&gt;
+&lt;p&gt;使用npm命令即可直接安装 (可以直接在屏幕任意地方直接右键: Git Bash Here)&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;npm install -g hexo&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;静静等待安装完毕即可.&lt;/p&gt;
+&lt;p&gt;###创建Hexo目录&lt;/p&gt;
+&lt;p&gt;目录可以再随意地方创建 (注:尽量全英文路径 避免不必要的问题)&lt;br&gt;EG: C:\Users\Xuning\Documents\Hexo (这是我的本地路径)&lt;br&gt;现在进入Hexo目录内在里面右键选择: Git Bash Here&lt;/p&gt;
+&lt;p&gt;Hexo 会自动生成建站所需要的文件&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;hexo init&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;npm 会自动安装依赖环境&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;npm install&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;###运行&lt;/p&gt;
+&lt;p&gt;Hexo 运行方法很简单只需要一条命令&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;hexo server&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;打开浏览器访问 &lt;a href=&quot;http://localhost:4000&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://localhost:4000&lt;/a&gt; 看看效果吧 如下所示&lt;/p&gt;
+&lt;p&gt;##配置主题以及额外功能&lt;/p&gt;
+&lt;p&gt;可从此看到一些常用主题的介绍&lt;br&gt;&lt;a href=&quot;https://www.zhihu.com/question/24422335&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://www.zhihu.com/question/24422335&lt;/a&gt;&lt;br&gt;next主题配置：&lt;br&gt;&lt;a href=&quot;http://theme-next.iissnan.com/theme-settings.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://theme-next.iissnan.com/theme-settings.html&lt;/a&gt;&lt;br&gt;分类和标签&lt;br&gt;&lt;a href=&quot;https://hexo.io/zh-cn/docs/front-matter.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://hexo.io/zh-cn/docs/front-matter.html&lt;/a&gt;&lt;br&gt;hexo and github详细教程&lt;br&gt;&lt;a href=&quot;http://www.mashiro.io/2015/09/hexo-guide-5/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.mashiro.io/2015/09/hexo-guide-5/&lt;/a&gt;&lt;br&gt;评论搭建&lt;br&gt;&lt;a href=&quot;http://www.arao.me/2015/hexo-next-theme-optimize-base/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.arao.me/2015/hexo-next-theme-optimize-base/&lt;/a&gt;&lt;br&gt;常见问题&lt;br&gt;&lt;a href=&quot;http://theme-next.iissnan.com/faqs.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://theme-next.iissnan.com/faqs.html&lt;/a&gt;&lt;br&gt;添加微信打赏分享&lt;br&gt;&lt;a href=&quot;http://www.tuicool.com/articles/NVzEVz7&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.tuicool.com/articles/NVzEVz7&lt;/a&gt;&lt;br&gt;添加社交登录评论功能&lt;br&gt;&lt;a href=&quot;https://github.com/iissnan/hexo-theme-next/pull/660&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/iissnan/hexo-theme-next/pull/660&lt;/a&gt;&lt;br&gt;添加社交分享按钮&lt;br&gt;&lt;a href=&quot;http://www.jiathis.com/index2(代码加到具体主题的post.swg里面&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.jiathis.com/index2(代码加到具体主题的post.swg里面&lt;/a&gt;)&lt;br&gt;或百度分享里找代码&lt;br&gt;字体大小设置&lt;br&gt;&lt;a href=&quot;https://github.com/iissnan/hexo-theme-next/issues/400&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/iissnan/hexo-theme-next/issues/400&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;hr&gt;
+&lt;p&gt;##前言&lt;br&gt;近来想着搭建一个基于github的博客站点,之前在csdn的博客他人如果如果没有adblock组件浏览时将会有恶心的广告，大概了解了下，有octopress,wordpress,hexo几种方式，octopress还不错，开始搭建之后，由于版本更新
+    
+    </summary>
+    
+      <category term="Web" scheme="http://yoursite.com/categories/Web/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>深入理解动态规划</title>
