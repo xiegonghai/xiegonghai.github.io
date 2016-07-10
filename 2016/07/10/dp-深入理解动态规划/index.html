@@ -73,8 +73,6 @@
 
 
 
-  
-
 
   <link rel="alternate" href="/atom.xml" title="Xiegonghai's Blog" type="application/atom+xml" />
 
@@ -88,31 +86,22 @@
 
 
 
-<meta name="description" content="About Me2014~2107 硕士就读于中山大学计算机学院-国家数字家庭工程中心
-实习经历2016.06~2016.09 百度在线网络科技有限公司-web后台开发2015.10~2016.03 广州火烈鸟网络科技有限公司-数据挖掘
-曾参加过的比赛2016华为软件精英挑战赛粤港澳赛区二等奖2013美国大学生数学建模竞赛三等奖2012全国大学生数学建模竞赛省一等奖
-联系方式
-
-QQ -3121">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://yoursite.com/about/index.html">
+<meta name="description" content="前言   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题
+实例探讨例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）    其状态转移方程为：
+$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解动态规划">
+<meta property="og:url" content="http://yoursite.com/2016/07/10/dp-深入理解动态规划/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
-<meta property="og:description" content="About Me2014~2107 硕士就读于中山大学计算机学院-国家数字家庭工程中心
-实习经历2016.06~2016.09 百度在线网络科技有限公司-web后台开发2015.10~2016.03 广州火烈鸟网络科技有限公司-数据挖掘
-曾参加过的比赛2016华为软件精英挑战赛粤港澳赛区二等奖2013美国大学生数学建模竞赛三等奖2012全国大学生数学建模竞赛省一等奖
-联系方式
-
-QQ -3121">
-<meta property="og:updated_time" content="2016-07-10T15:22:00.919Z">
+<meta property="og:description" content="前言   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题
+实例探讨例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）    其状态转移方程为：
+$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
+<meta property="og:updated_time" content="2016-07-10T16:07:00.124Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="About Me2014~2107 硕士就读于中山大学计算机学院-国家数字家庭工程中心
-实习经历2016.06~2016.09 百度在线网络科技有限公司-web后台开发2015.10~2016.03 广州火烈鸟网络科技有限公司-数据挖掘
-曾参加过的比赛2016华为软件精英挑战赛粤港澳赛区二等奖2013美国大学生数学建模竞赛三等奖2012全国大学生数学建模竞赛省一等奖
-联系方式
-
-QQ -3121">
+<meta name="twitter:title" content="深入理解动态规划">
+<meta name="twitter:description" content="前言   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题
+实例探讨例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）    其状态转移方程为：
+$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
 
 
 
@@ -133,15 +122,9 @@ QQ -3121">
 
 
 
-  <link rel="canonical" href="http://yoursite.com/about/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/07/10/dp-深入理解动态规划/"/>
 
-  <title>
-  
-
-  
-    about | Xiegonghai's Blog
-  
-</title>
+  <title> 深入理解动态规划 | Xiegonghai's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -162,7 +145,7 @@ QQ -3121">
     
   
 
-  <div class="container one-collumn sidebar-position-right  ">
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -262,30 +245,151 @@ QQ -3121">
 
   <div id="posts" class="posts-expand">
     
-    
-      <hr>
-<h1 id="About-Me"><a href="#About-Me" class="headerlink" title="About Me"></a><strong>About Me</strong></h1><p>2014~2107 硕士就读于中山大学计算机学院-国家数字家庭工程中心</p>
-<h2 id="实习经历"><a href="#实习经历" class="headerlink" title="实习经历"></a><strong>实习经历</strong></h2><p>2016.06~2016.09 百度在线网络科技有限公司-web后台开发<br>2015.10~2016.03 广州火烈鸟网络科技有限公司-数据挖掘</p>
-<h2 id="曾参加过的比赛"><a href="#曾参加过的比赛" class="headerlink" title="曾参加过的比赛"></a><strong>曾参加过的比赛</strong></h2><p>2016华为软件精英挑战赛粤港澳赛区二等奖<br>2013美国大学生数学建模竞赛三等奖<br>2012全国大学生数学建模竞赛省一等奖</p>
-<h2 id="联系方式"><a href="#联系方式" class="headerlink" title="联系方式"></a><strong>联系方式</strong></h2><blockquote>
-<ul>
-<li>QQ -312182515</li>
-<li>Email- xiegh3@mail2.sysu.edu.cn</li>
-<li>GitHub- <a href="https://github.com/xiegonghai" target="_blank" rel="external">https://github.com/xiegonghai</a></li>
-</ul>
-</blockquote>
-<h2 id="爱好"><a href="#爱好" class="headerlink" title="爱好"></a><strong>爱好</strong></h2><blockquote>
-<ul>
-<li>C/C++/Python/PHP</li>
-<li>大数据与机器学习</li>
-<li>并行编程</li>
-<li>kv数据库</li>
-</ul>
-</blockquote>
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
 
     
+      <header class="post-header">
 
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                深入理解动态规划
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-10T15:41:13+08:00" content="2016-07-10">
+              2016-07-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/10/dp-深入理解动态规划/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/10/dp-深入理解动态规划/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题</p>
+<h3 id="实例探讨"><a href="#实例探讨" class="headerlink" title="实例探讨"></a>实例探讨</h3><p>例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）<br>    其状态转移方程为：</p>
+<p>$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(n-1)+f(n-2)$$$$f(1)=1,f(2)=2$$</p>
+<p>例二：01背包问题<br>有n个重量和价值分别为vector<int> weight, vector<int> value的物品；背包最大负重为W，求能用背包装下的物品的最大价值？<br>输入：n =4<br>weight=2, 1, 3, 2<br>value =3, 2, 4, 2<br>W=5<br>输出=7<br>$$dp[i][j]表示前i号物品中能选出重量在j之内的最大价值$$$$dp[i][j] = max(dp[i-1][j] , dp[i-1][j-w[i]] + v[i]);$$<br>例三：最大连续子序列和<br>如给定数组[-2,1,-3,4,-1,2,1,-5,4]<br>连续的子数组为[4,-1,2,1]有最大和6<br>$$f(j+1)为以下标j结尾的连续子序列和的最大值$$$$f(j+1)=max(f(j)+A[j],A[j])$$$$target = max{f[j]}$$<br>思考：最大连续子序列乘积<br>如给定数组[-2,1,-3,4,-1,2,1,-5,4]<br>连续的子数组为[4,-1,2,1]有最大和6<br>$$f(j+1)为以下标j结尾的连续子序列最大乘积值（1）$$<br>状态转移方程如何表示呢：<br>这里我们知道A[j]可能为正数(或0)或负数，那么当A[j]为正数，期望前j个乘积为正数，若为负数，则期望前面的为负数。故我们需定义两个函数来确定我们的状态转移方程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fmax(j+1)=max( max(fmax(j)*A[j],A[j]),fmin(j)*A[j])</div></pre></td></tr></table></figure></int></int></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fmin(j+1)=min(min(fmin(j)*A[j],A[j]),fmax(j)*A[j])</div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>1.通过以上动态问题问题的分析，可以看出<strong>最重要的是定义好相应的问题，然后写出状态转移方程</strong>，往往这也是整个问题求解最能考察你分析能力的过程。能够用动态规划求解的问题有两类性质：<br>a.重叠子问题</p>
+<p> 采用递推方式，比如上例要求出10阶楼梯走法，那么最后一步是踏一步上来或者踏2步上来，最后转化为相应的子问题，子问题深入求解就包含了重叠的子问题，所以自顶向下的实现并不高效，常采用备忘录方式保存子问题的最优解，自底向上更高效。</p>
+<p>b.最优子结构：<br> 往往子问题的最优解可以推出原问题的最优解</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/10/深入理解动态规划/" rel="next" title="深入理解动态规划">
+                <i class="fa fa-chevron-left"></i> 深入理解动态规划
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<script type = "text/javascript" src = "//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-57823a06ed3d871f" async = "async" ></script>
+      
+    </div>
   </div>
+  
 <div class="bdsharebuttonbox">
 <a href="#" class="bds_more" data-cmd="more"></a>
 <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
@@ -308,8 +412,8 @@ window._bd_share_config=
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="about/index.html"
-           data-title="about" data-url="http://yoursite.com/about/index.html">
+      <div class="ds-thread" data-thread-key="2016/07/10/dp-深入理解动态规划/"
+           data-title="深入理解动态规划" data-url="http://yoursite.com/2016/07/10/dp-深入理解动态规划/">
       </div>
     
   </div>
@@ -333,8 +437,17 @@ window._bd_share_config=
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/home.jpg"
@@ -418,6 +531,17 @@ window._bd_share_config=
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例探讨"><span class="nav-number">2.</span> <span class="nav-text">实例探讨</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -521,6 +645,10 @@ window._bd_share_config=
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 

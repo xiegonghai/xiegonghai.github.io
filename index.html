@@ -260,8 +260,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/07/10/hexo博客搭建/" itemprop="url">
-                  Hexo博客搭建
+                <a class="post-title-link" href="/2016/07/10/dp-深入理解动态规划/" itemprop="url">
+                  深入理解动态规划
                 </a>
               
             
@@ -288,8 +288,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
+                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithm</span>
                   </a>
                 </span>
 
@@ -304,8 +304,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/10/hexo博客搭建/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/10/hexo博客搭建/" itemprop="commentsCount"></span>
+                <a href="/2016/07/10/dp-深入理解动态规划/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/10/dp-深入理解动态规划/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -330,21 +330,14 @@
       
         
           
-          
-前言近来想着搭建一个基于github的博客站点,之前在csdn的博客频繁性恶心弹窗广告，后面虽说装adblock自己是看不到了，但别人浏览还是会有的，大概了解了下，比较好的博客模板有octopress,wordpress,hexo几种，octopress还不错，开始搭建之后，由于版本更新匹配的原因，总是会有小错误，加之对ruby不熟，于是切换到hexo来搭建
-搭建教程主要参考http://www.mashiro.io/2015/09/hexo-guide-2/，写的很详细，就不重复 造轮子了，仔细看完ok了
-安装Git去 Git 官网下载并安装即可.
-安装Node.Js去NodeJs 官网下载并安装即可.注意: 尽量使用默认路径, 以保证环境变量的自动配置.
-安装Hexo使用npm命令即可直接安装 (可以直接在屏幕任意地方直接右键: Git Bash Here)1npm install -g hexo
-静静等待安装完毕即可.
-创建Hexo目录目录可以再随意地方创建 (注:尽量全英文路径 避免不必要的问题)EG: C:\Users\Xuning\Documents\Hexo (这是我的本地路径)现在进入Hexo目录内在里面右键选择: Git Bash Here
-Hexo 会自动生成建站所需要的文件1hexo init
-npm 会自动安装依赖环境1npm install
-运行Hexo
+          前言   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题
+实例探讨例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）    其状态转移方程为：
+$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(n-1)+f(n-2)$$$$f(1)=1,f(2)=2$$
+例二：01背包问题有n个重量和价值分别为vector weight, vector value的物品；背包最大负重为W，求能用背包装下的物品的最大价值？输入：n =4weight=2, 1, 3, 2value =3, 2, 4, 2W=5输出=7$$dp[i][j]表示前i号物品中能选出重量在j之内的最大价值$$$$dp[i][j] = max(dp[i-1][j] , dp[i-1][j-w[i]] + v[i]);$$例三：最大连续子序列和如给定数组[-2,1,-3,4,-1,2,1,-5,4]连续的子数组为[4,-1,2,1]有最大和6$$f(j+1)为以下标j结尾的连续子序列和的最大值$$$$f(j+1)=max(f(j)+A[j],A[j])$$$$target = max{f[j]}$$思考：最大连续子序列乘积如给
           ...
 
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016/07/10/hexo博客搭建/#more" rel="contents">
+            <a class="btn" href="/2016/07/10/dp-深入理解动态规划/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -473,6 +466,140 @@ $$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(n-1)+f(n-2)$$$$f(1)=1,f(2)
 
           <div class="post-more-link text-center">
             <a class="btn" href="/2016/07/10/深入理解动态规划/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/07/10/hexo博客搭建/" itemprop="url">
+                  Hexo博客搭建
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-10T15:41:13+08:00" content="2016-07-10">
+              2016-07-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/10/hexo博客搭建/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/10/hexo博客搭建/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          前言近来想着搭建一个基于github的博客站点,之前在csdn的博客频繁性恶心弹窗广告，后面虽说装adblock自己是看不到了，但别人浏览还是会有的，大概了解了下，比较好的博客模板有octopress,wordpress,hexo几种，octopress还不错，开始搭建之后，由于版本更新匹配的原因，总是会有小错误，加之对ruby不熟，于是切换到hexo来搭建
+搭建教程主要参考http://www.mashiro.io/2015/09/hexo-guide-2/，写的很详细，就不重复 造轮子了，仔细看完ok了
+安装Git去 Git 官网下载并安装即可.
+安装Node.Js去NodeJs 官网下载并安装即可.注意: 尽量使用默认路径, 以保证环境变量的自动配置.
+安装Hexo使用npm命令即可直接安装 (可以直接在屏幕任意地方直接右键: Git Bash Here)1npm install -g hexo
+静静等待安装完毕即可.
+创建Hexo目录目录可以再随意地方创建 (注:尽量全英文路径 避免不必要的问题)EG: C:\Users\Xuning\Documents\Hexo (这是我的本地路径)现在进入Hexo目录内在里面右键选择: Git Bash Here
+Hexo 会自动生成建站所需要的文件1hexo init
+npm 会自动安装依赖环境1npm install
+运行Hexo 
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/07/10/hexo博客搭建/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -677,7 +804,7 @@ More info: Deployment
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
