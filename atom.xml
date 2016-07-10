@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-07-10T09:40:16.797Z</updated>
+  <updated>2016-07-10T09:41:34.365Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,12 +20,12 @@
     <link href="http://yoursite.com/2016/07/10/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
     <id>http://yoursite.com/2016/07/10/深入理解动态规划/</id>
     <published>2016-07-10T07:41:13.000Z</published>
-    <updated>2016-07-10T09:40:16.797Z</updated>
+    <updated>2016-07-10T09:41:34.365Z</updated>
     
     <content type="html">&lt;p&gt;   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题&lt;/p&gt;
 &lt;p&gt;例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）&lt;br&gt;    其状态转移方程为：&lt;/p&gt;
 &lt;p&gt;$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(n-1)+f(n-2)$$$$f(1)=1,f(2)=2$$&lt;/p&gt;
-&lt;p&gt;例二：01背包问题&lt;br&gt;有n个重量和价值分别为vector&lt;int&gt; weight, vector&lt;int&gt; value的物品；背包最大负重为W，求能用背包装下的物品的最大价值？&lt;br&gt;输入：n =4&lt;br&gt;weight=2, 1, 3, 2&lt;br&gt;value =3, 2, 4, 2&lt;br&gt;W=5&lt;br&gt;输出=7&lt;br&gt;$$dp[i][j]表示前i号物品中能选出重量在j之内的最大价值$$$$dp[i][j] = max(dp[i-1][j] , dp[i-1][j-w[i]] + v[i]);$$&lt;br&gt;例三：最大连续子序列和&lt;br&gt;如给定数组[-2,1,-3,4,-1,2,1,-5,4]&lt;br&gt;连续的子数组为[4,-1,2,1]有最大和6&lt;br&gt;$$f(j+1)为以下标j结尾的连续子序列和的最大值$$$$f(j+1)=max(f(j)+A[j],A[j])$$$$target = max{f[j]}$$&lt;br&gt;思考：最大连续子序列乘积&lt;br&gt;如给定数组[-2,1,-3,4,-1,2,1,-5,4]&lt;br&gt;连续的子数组为[4,-1,2,1]有最大和6&lt;br&gt;$$f(j+1)为以下标j结尾的连续子序列最大乘积值（1）$$&lt;br&gt;状态转移方程如何表示呢：&lt;br&gt;这里我们知道A[j]可能为正数(或0)或负数，那么当A[j]为正数，期望前j个乘积为正数，若为负数，则期望前面的为负数。故我们需定义两个函数来确定我们的状态转移方程：$$fmax(j+1)=max( max(fmax(j)&lt;em&gt;A[j],A[j]),fmin(j)&lt;/em&gt;A[j]) $$$$&lt;br&gt;以及$$ fmin(j+1)=min(min(fmin(j)&lt;em&gt;A[j],A[j]),fmax(j)&lt;/em&gt;A[j]) $$$$&lt;/int&gt;&lt;/int&gt;&lt;/p&gt;
+&lt;p&gt;例二：01背包问题&lt;br&gt;有n个重量和价值分别为vector&lt;int&gt; weight, vector&lt;int&gt; value的物品；背包最大负重为W，求能用背包装下的物品的最大价值？&lt;br&gt;输入：n =4&lt;br&gt;weight=2, 1, 3, 2&lt;br&gt;value =3, 2, 4, 2&lt;br&gt;W=5&lt;br&gt;输出=7&lt;br&gt;$$dp[i][j]表示前i号物品中能选出重量在j之内的最大价值$$$$dp[i][j] = max(dp[i-1][j] , dp[i-1][j-w[i]] + v[i]);$$&lt;br&gt;例三：最大连续子序列和&lt;br&gt;如给定数组[-2,1,-3,4,-1,2,1,-5,4]&lt;br&gt;连续的子数组为[4,-1,2,1]有最大和6&lt;br&gt;$$f(j+1)为以下标j结尾的连续子序列和的最大值$$$$f(j+1)=max(f(j)+A[j],A[j])$$$$target = max{f[j]}$$&lt;br&gt;思考：最大连续子序列乘积&lt;br&gt;如给定数组[-2,1,-3,4,-1,2,1,-5,4]&lt;br&gt;连续的子数组为[4,-1,2,1]有最大和6&lt;br&gt;$$f(j+1)为以下标j结尾的连续子序列最大乘积值（1）$$&lt;br&gt;状态转移方程如何表示呢：&lt;br&gt;这里我们知道A[j]可能为正数(或0)或负数，那么当A[j]为正数，期望前j个乘积为正数，若为负数，则期望前面的为负数。故我们需定义两个函数来确定我们的状态转移方程：&lt;br&gt;$$fmax(j+1)=max( max(fmax(j)&lt;em&gt;A[j],A[j]),fmin(j)&lt;/em&gt;A[j]) $$&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;fmin(j+1)=min(min(fmin(j)*A[j],A[j]),fmax(j)*A[j])&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/int&gt;&lt;/int&gt;&lt;/p&gt;
 &lt;p&gt;1.通过以上动态问题问题的分析，可以看出&lt;strong&gt;最重要的是定义好相应的问题，然后写出状态转移方程&lt;/strong&gt;，往往这也是整个问题求解最能考察你分析能力的过程。能够用动态规划求解的问题有两类性质：&lt;br&gt;a.重叠子问题&lt;/p&gt;
 &lt;p&gt; 采用递推方式，比如上例要求出10阶楼梯走法，那么最后一步是踏一步上来或者踏2步上来，最后转化为相应的子问题，子问题深入求解就包含了重叠的子问题，所以自顶向下的实现并不高效，常采用备忘录方式保存子问题的最优解，自底向上更高效。&lt;/p&gt;
 &lt;p&gt;b.最优子结构：&lt;br&gt; 往往子问题的最优解可以推出原问题的最优解&lt;/p&gt;
