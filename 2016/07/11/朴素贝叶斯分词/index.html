@@ -86,22 +86,16 @@
 
 
 
-<meta name="description" content="前言   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题
-实例探讨例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）    其状态转移方程为：
-$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
+<meta name="description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849#���ر�Ҷ˹�ִ�(�����Ƿִʺ󣬵÷ֵļ����ǻ�������֮���Ƕ����ģ����ʵĳ�����ǰ���޹�)# p[i][n]��ʾ��i��n�ľ��ӵ����ѻ��ֵĵ÷�,������dp���">
 <meta property="og:type" content="article">
-<meta property="og:title" content="dp-深入理解动态规划">
-<meta property="og:url" content="http://yoursite.com/2016/07/10/Dp--深入理解动态规划/index.html">
+<meta property="og:title" content="���ر�Ҷ˹�ִ�">
+<meta property="og:url" content="http://yoursite.com/2016/07/11/朴素贝叶斯分词/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
-<meta property="og:description" content="前言   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题
-实例探讨例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）    其状态转移方程为：
-$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
-<meta property="og:updated_time" content="2016-07-10T16:42:26.257Z">
+<meta property="og:description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849#���ر�Ҷ˹�ִ�(�����Ƿִʺ󣬵÷ֵļ����ǻ�������֮���Ƕ����ģ����ʵĳ�����ǰ���޹�)# p[i][n]��ʾ��i��n�ľ��ӵ����ѻ��ֵĵ÷�,������dp���">
+<meta property="og:updated_time" content="2016-07-14T16:24:20.497Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="dp-深入理解动态规划">
-<meta name="twitter:description" content="前言   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题
-实例探讨例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）    其状态转移方程为：
-$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
+<meta name="twitter:title" content="���ر�Ҷ˹�ִ�">
+<meta name="twitter:description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849#���ر�Ҷ˹�ִ�(�����Ƿִʺ󣬵÷ֵļ����ǻ�������֮���Ƕ����ģ����ʵĳ�����ǰ���޹�)# p[i][n]��ʾ��i��n�ľ��ӵ����ѻ��ֵĵ÷�,������dp���">
 
 
 
@@ -122,9 +116,9 @@ $$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/07/10/Dp--深入理解动态规划/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/07/11/朴素贝叶斯分词/"/>
 
-  <title> dp-深入理解动态规划 | Xiegonghai's Blog </title>
+  <title> ���ر�Ҷ˹�ִ� | Xiegonghai's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -264,7 +258,7 @@ $$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
             
             
               
-                dp-深入理解动态规划
+                ���ر�Ҷ˹�ִ�
               
             
           </h1>
@@ -276,8 +270,8 @@ $$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-10T16:41:59+08:00" content="2016-07-10">
-              2016-07-10
+            <time itemprop="dateCreated" datetime="2016-07-11T15:41:56+08:00" content="2016-07-11">
+              2016-07-11
             </time>
           </span>
 
@@ -306,8 +300,8 @@ $$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/10/Dp--深入理解动态规划/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/10/Dp--深入理解动态规划/" itemprop="commentsCount"></span>
+                <a href="/2016/07/11/朴素贝叶斯分词/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/11/朴素贝叶斯分词/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -330,14 +324,9 @@ $$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
       
 
       
-        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题</p>
-<h3 id="实例探讨"><a href="#实例探讨" class="headerlink" title="实例探讨"></a>实例探讨</h3><p>例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）<br>    其状态转移方程为：</p>
-<p>$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(n-1)+f(n-2)$$$$f(1)=1,f(2)=2$$</p>
-<p>例二：01背包问题<br>有n个重量和价值分别为vector<int> weight, vector<int> value的物品；背包最大负重为W，求能用背包装下的物品的最大价值？<br>输入：n =4<br>weight=2, 1, 3, 2<br>value =3, 2, 4, 2<br>W=5<br>输出=7<br>$$dp[i][j]表示前i号物品中能选出重量在j之内的最大价值$$$$dp[i][j] = max(dp[i-1][j] , dp[i-1][j-w[i]] + v[i]);$$<br>例三：最大连续子序列和<br>如给定数组[-2,1,-3,4,-1,2,1,-5,4]<br>连续的子数组为[4,-1,2,1]有最大和6<br>$$f(j+1)为以下标j结尾的连续子序列和的最大值$$$$f(j+1)=max(f(j)+A[j],A[j])$$$$target = max{f[j]}$$<br>思考：最大连续子序列乘积<br>如给定数组[-2,1,-3,4,-1,2,1,-5,4]<br>连续的子数组为[4,-1,2,1]有最大和6<br>$$f(j+1)为以下标j结尾的连续子序列最大乘积值（1）$$<br>状态转移方程如何表示呢：<br>这里我们知道A[j]可能为正数(或0)或负数，那么当A[j]为正数，期望前j个乘积为正数，若为负数，则期望前面的为负数。故我们需定义两个函数来确定我们的状态转移方程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fmax(j+1)=max( max(fmax(j)*A[j],A[j]),fmin(j)*A[j])</div></pre></td></tr></table></figure></int></int></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fmin(j+1)=min(min(fmin(j)*A[j],A[j]),fmax(j)*A[j])</div></pre></td></tr></table></figure>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>1.通过以上动态问题问题的分析，可以看出<strong>最重要的是定义好相应的问题，然后写出状态转移方程</strong>，往往这也是整个问题求解最能考察你分析能力的过程。能够用动态规划求解的问题有两类性质：<br>a.重叠子问题</p>
-<p> 采用递推方式，比如上例要求出10阶楼梯走法，那么最后一步是踏一步上来或者踏2步上来，最后转化为相应的子问题，子问题深入求解就包含了重叠的子问题，所以自顶向下的实现并不高效，常采用备忘录方式保存子问题的最优解，自底向上更高效。</p>
-<p>b.最优子结构：<br> 往往子问题的最优解可以推出原问题的最优解</p>
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">#���ر�Ҷ˹�ִ�(�����Ƿִʺ󣬵÷ֵļ����ǻ�������֮���Ƕ����ģ����ʵĳ�����ǰ���޹�)</div><div class="line"># p[i][n]��ʾ��i��n�ľ��ӵ����ѻ��ֵĵ÷�,������dp����ʽp[i][n]=max(freq(s[i:k])+p[k][n])</div><div class="line"># ������������Ϊ1,2,3,n�ľ��ӻ��֣���ôp[0][n]�������ѻ��ֽ���,��t[i]��ʾ���������ѻ���ÿ����ǰ�߼����ַ�</div><div class="line">import math</div><div class="line">d = &#123;&#125;</div><div class="line">log = lambda x: float(&apos;-inf&apos;) if not x else math.log(x) #��������</div><div class="line">prob = lambda x: d[x] if x in d else 0 if len(x)&gt;1 else 1</div><div class="line"></div><div class="line">def init(filename=&apos;SogouLabDic.dic&apos;):</div><div class="line">    d[&apos;_N_&apos;] = 0.0</div><div class="line">    with open(filename, &apos;r&apos;,encoding=&apos;gb18030&apos;) as handle:</div><div class="line">        for line in handle:</div><div class="line">            #print(line)</div><div class="line">            word, freq = line.split(&apos;\t&apos;)[0:2]  #ȡlist��ǰ2��Ԫ��,�ʺ���Ӧ�Ĵ���</div><div class="line">            d[&apos;_N_&apos;] += int(freq)+1             # �˱��Ĵ�Ƶ�ܺ�,ÿ����������1    </div><div class="line">            try:</div><div class="line">                #print(&apos;utf&apos;)</div><div class="line">                d[word.decode(&apos;utf-8&apos;)] = int(freq)+1 #������1</div><div class="line">            except:</div><div class="line">                #print(&apos;gbk&apos;)</div><div class="line">                try:</div><div class="line">                    d[word] = int(freq)+1            #������1</div><div class="line">                except:</div><div class="line">                    print(word)</div><div class="line">                    break</div><div class="line">def solve(s):</div><div class="line">    l = len(s)</div><div class="line">    p = [0 for i in range(l+1)] #1,2,...,lλ��Ϊ0</div><div class="line">    t = [0 for i in range(l)]</div><div class="line">    # ��&apos;�󴲷�����Ǯ&apos;����ǰλ�õ�ĩβ�ֱ�Ϊ1,2,...l���ȵĴʣ�t[i]�����ӵ�ǰλ����ǰ���ֵ����ѳ��ȣ�������&apos;��&apos;��ʼ��</div><div class="line">    #�������ѣ����󴲷����ѣ�ȡ���ʿ�</div><div class="line">    for i in range(l-1, -1, -1): #start,stop��step</div><div class="line">        # prob(s[i:i+k])/d[&apos;_t_&apos;]Ϊ�ʱ���Ƶ��</div><div class="line">        p[i], t[i] = max((prob(s[i:i+k])/d[&apos;_N_&apos;]+p[i+k], k)#��һ����Ԫ���б��ﷵ�ص�һ��Ԫ�������Ķ�Ԫ��,</div><div class="line">                         for k in range(1, l-i+1))</div><div class="line">    dis = 0</div><div class="line">    while dis&lt;l:  #dis=0,������ǰ�����ָ��ʻ�</div><div class="line">        yield s[dis:dis+t[dis]]</div><div class="line">        dis += t[dis]</div><div class="line">    </div><div class="line">if __name__ == &apos;__main__&apos;:</div><div class="line">    init()</div><div class="line">    st=&apos;�й��˶����л����񹲺͹�&apos;</div><div class="line">    #st2=&apos;�󴲷�����Ǯ&apos;</div><div class="line">    print(len(st))</div><div class="line">    lpp=list(solve(st))</div><div class="line">    for o in range(len(lpp)):</div><div class="line">        print(lpp[o])</div><div class="line">    print (&apos; &apos;.join(list(solve(st))))</div></pre></td></tr></table></figure>
+<p>����Ҫ���и�Python���룬��Ҫ�ѹ�ʵ���Ҵʵ�SogouLabDic.dic���ɵ��ҵ�github�������أ�����ѧϰ�û��ǲ����ҵģ����ò����ɸ�star</p>
+<p>�ҵ�github:<a href="https://github.com/xiegonghai" target="_blank" rel="external">https://github.com/xiegonghai</a></p>
 
       
     </div>
@@ -363,17 +352,13 @@ $$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(">
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/07/10/hexo博客搭建/" rel="next" title="Hexo博客搭建">
-                <i class="fa fa-chevron-left"></i> Hexo博客搭建
+              <a href="/2016/07/10/Dp--深入理解动态规划/" rel="next" title="dp-深入理解动态规划">
+                <i class="fa fa-chevron-left"></i> dp-深入理解动态规划
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/07/11/朴素贝叶斯分词/" rel="prev" title="���ر�Ҷ˹�ִ�">
-                ���ر�Ҷ˹�ִ� <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -409,8 +394,8 @@ window._bd_share_config=
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/10/Dp--深入理解动态规划/"
-           data-title="dp-深入理解动态规划" data-url="http://yoursite.com/2016/07/10/Dp--深入理解动态规划/">
+      <div class="ds-thread" data-thread-key="2016/07/11/朴素贝叶斯分词/"
+           data-title="���ر�Ҷ˹�ִ�" data-url="http://yoursite.com/2016/07/11/朴素贝叶斯分词/">
       </div>
     
   </div>
@@ -535,7 +520,7 @@ window._bd_share_config=
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例探讨"><span class="nav-number">2.</span> <span class="nav-text">实例探讨</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <p class="post-toc-empty">此文章未包含目录</p>
             
           </div>
         </section>
