@@ -203,7 +203,7 @@ body {
 }
 @media (min-width: 1600px) {
   body {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 h1,
@@ -414,7 +414,7 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
   border: 1px solid #ddd;
-  font-size: 14px;
+  font-size: 16px;
   table-layout: fixed;
   word-wrap: break-all;
 }
@@ -496,14 +496,14 @@ pre,
   overflow: auto;
   margin: 20px 0;
   padding: 15px;
-  font-size: 15px;
+  font-size: 16px;
   color: #c5c8c6;
   background: #1d1f21;
   line-height: 1.6;
 }
 pre,
 code {
-  font-family: consolas, Menlo, "PingFang SC", "Microsoft YaHei", monospace;
+  font-family: consolas, Menlo, "黑体", "PingFang SC", "Microsoft YaHei", monospace;
 }
 code {
   padding: 2px 4px;
@@ -511,7 +511,7 @@ code {
   color: #555;
   background: #eee;
   border-radius: 4px;
-  font-size: 15px;
+  font-size: 16px;
 }
 pre code {
   padding: 0;
@@ -844,7 +844,7 @@ pre .javascript .function {
   padding: 0 6px;
   width: 25px;
   background: #222;
-  font-size: 12px;
+  font-size: 14px;
   opacity: 0.6;
   color: #fff;
   cursor: pointer;
@@ -908,13 +908,13 @@ pre .javascript .function {
   display: inline-block;
   vertical-align: top;
   line-height: 36px;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: normal;
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'Lato', "黑体", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 .site-subtitle {
   margin-top: 10px;
-  font-size: 13px;
+  font-size: 15px;
   color: #ddd;
 }
 .use-motion .brand {
@@ -999,7 +999,7 @@ pre .javascript .function {
   opacity: 0;
 }
 .post-body {
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'Lato', "黑体", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 @media (max-width: 767px) {
   .post-body {
@@ -1264,7 +1264,7 @@ pre .javascript .function {
 .posts-expand .post-meta {
   margin: 3px 0 60px 0;
   color: #999;
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'Lato', "黑体", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 12px;
   text-align: center;
 }
@@ -1310,7 +1310,7 @@ pre .javascript .function {
 }
 .post-more-link .btn {
   color: #555;
-  font-size: 14px;
+  font-size: 16px;
   background: #fff;
   border-radius: 2px;
   line-height: 2;
@@ -1549,7 +1549,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #e8e454;
+  background: #fe53ff;
 }
 .links-of-blogroll {
   font-size: 13px;
