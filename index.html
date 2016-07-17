@@ -260,8 +260,176 @@
             
               
                 
+                <a class="post-title-link" href="/2016/07/18/程序性能优化/" itemprop="url">
+                  程序性能优化方法
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-18T20:20:59+08:00" content="2016-07-18">
+              2016-07-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/性能优化/" itemprop="url" rel="index">
+                    <span itemprop="name">性能优化</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/18/程序性能优化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/18/程序性能优化/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="程序性能优化"><a href="#程序性能优化" class="headerlink" title="程序性能优化"></a>程序性能优化</h1><p> 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。</p>
+<h2 id="是否可优化"><a href="#是否可优化" class="headerlink" title="是否可优化"></a>是否可优化</h2><p>思考<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">void swap(int *xp, int *yp)｛</div><div class="line">    *xp = *xp + *yp;</div><div class="line">    *yp = *xp - *yp;</div><div class="line">    *xp = *xp - *yp;</div><div class="line">｝</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">void swap(int *xp, int *yp)｛</div><div class="line">    *xp = *xp + *yp;</div><div class="line">    *yp = *xp - *yp;</div><div class="line">    *xp = *xp - *yp;</div><div class="line">｝</div></pre></td></tr></table></figure></p>
+<p>又如<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">*xp += *yp;</div><div class="line">        *xp += *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle1</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">*xp = <span class="number">2</span>* (*yp);</div><div class="line">&#125;</div><div class="line">实际上上面连个看起来是传进来了不同的参数，但是当参数相同的话，结果是不一样的，优化是错的</div><div class="line">``` <span class="function">C</span></div><div class="line"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> f() + f() + f();&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> <span class="number">3</span>*f();&#125;</div></pre></td></tr></table></figure></p>
+<p>这种情况下，当f调用了全局变量就会产生副作用，返回值也可能会不一样</p>
+<h2 id="常用的优化方法"><a href="#常用的优化方法" class="headerlink" title="常用的优化方法"></a>常用的优化方法</h2><h3 id="1-在循环中减少函数调用"><a href="#1-在循环中减少函数调用" class="headerlink" title="1.在循环中减少函数调用"></a><strong>1.在循环中减少函数调用</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Implementation of library function strlen */</span></div><div class="line"> <span class="comment">/* Compute length of string */</span></div><div class="line"><span class="keyword">size_t</span> <span class="built_in">strlen</span>(<span class="keyword">const</span> <span class="keyword">char</span> *s)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> length = <span class="number">0</span>;</div><div class="line">	<span class="keyword">while</span> (*s != ’\<span class="number">0</span>’) &#123;</div><div class="line">		s++;</div><div class="line">		length++;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> length;</div><div class="line">&#125;</div><div class="line">``` </div><div class="line">``` <span class="function">C</span></div><div class="line"><span class="keyword">void</span> <span class="title">lower1</span><span class="params">(<span class="keyword">char</span> *s)</span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(s); i++)&#123;</div><div class="line">		<span class="keyword">if</span> (s[i] &gt;= ’A’ &amp;&amp; s[i] &lt;= ’Z’)</div><div class="line">		s[i] -= (’A’ - ’a’);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>优化为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lower1</span><span class="params">(<span class="keyword">char</span> *s)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> len = <span class="built_in">strlen</span>(s); <span class="comment">//循环中调用外提</span></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++)&#123;</div><div class="line">		<span class="keyword">if</span> (s[i] &gt;= ’A’ &amp;&amp; s[i] &lt;= ’Z’)</div><div class="line">		s[i] -= (’A’ - ’a’);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="2-消除不必要的存储器引用"><a href="#2-消除不必要的存储器引用" class="headerlink" title="2.消除不必要的存储器引用"></a><strong>2.消除不必要的存储器引用</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span></span></div><div class="line"> &#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> length = vec_length(v); <span class="comment">//将循环中的函数调用外提</span></div><div class="line">	*dest = IDENT; <span class="comment">//值写到存取器引用中</span></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">		<span class="keyword">data_t</span> val;</div><div class="line">		get_vec_element(v, i, &amp;val);<span class="comment">//循环内部调用函数</span></div><div class="line">		*dest = *dest OPER val;  <span class="comment">//*dest存储器引用</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在每次循环中减少中间过程读写<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Accumulate result in local variable */</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine4</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> length = vec_length(v);</div><div class="line">	<span class="keyword">data_t</span> *data = get_vec_start(v);</div><div class="line">	<span class="keyword">data_t</span> x = IDENT;</div><div class="line">	*dest = IDENT;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">		x = x OPER data[i];</div><div class="line">	&#125;</div><div class="line">	*dest = x;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="3-循环展开"><a href="#3-循环展开" class="headerlink" title="3.循环展开"></a><strong>3.循环展开</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">vsum1</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</div><div class="line">    c[i] = a[i] + b[i];</div><div class="line"> &#125;</div><div class="line">``` </div><div class="line">循环展开为</div><div class="line">``` C</div><div class="line"><span class="comment">/* Sum vector of n elements (n must be even) */</span></div><div class="line"> <span class="function"><span class="keyword">void</span> <span class="title">vsum2</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line"> &#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i+=<span class="number">2</span>) &#123;</div><div class="line">         <span class="comment">/* Compute two elements per iteration */</span></div><div class="line">        c[i] = a[i] + b[i];</div><div class="line">        c[i+<span class="number">1</span>] = a[i+<span class="number">1</span>] + b[i+<span class="number">1</span>];</div><div class="line">    &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<h3 id="4-提高并行性"><a href="#4-提高并行性" class="headerlink" title="4.提高并行性"></a><strong>4.提高并行性</strong></h3><p>使用多个临时变量，只在必要的时候将多个临时变量合并</p>
+<h3 id="5-重新结合变换"><a href="#5-重新结合变换" class="headerlink" title="5.重新结合变换"></a><strong>5.重新结合变换</strong></h3><p>acc = (acc OP data[i]) OP data[i+1];<br>每次迭代都要求前一次迭代必须结束才能开始，因为第一个操作就要求读取acc的值．<br>acc = acc OP (data[i] OP data[i+1]);<br>修改后，下一次迭代的开始可以先于当前迭代的结束，因为下一次迭代可以先计算data[i] OP data[i+1]这个操作．</p>
+<h2 id="关于定律"><a href="#关于定律" class="headerlink" title="关于定律"></a>关于定律</h2><p>阿姆达尔定律是计算机系统设计的重要定量原理之一，于1967年由IBM360系列机的主要设计者阿姆达尔首先提出。该定律是指：系统中对某一部件采用更快执行方式所能获得的系统性能改进程度，取决于这种执行方式被使用的频率，或所占总执行时间的比例。阿姆达尔定律实际上定义了采取增强（加速）某部分功能处理的措施后可获得的性能改进或执行时间的加速比。简单来说是通过更快的处理器来获得加速是由慢的系统组件所限制。<br>阿姆达尔曾致力于并行处理系统的研究。对于固定负载情况下描述并行处理效果的加速比s，阿姆达尔经过深入研究给出了如下公式：<br>$$S=1/(1-a+a/n)$$<br>其中，a为并行计算部分所占比例，n为并行处理结点个数。这样，当1-a=0时，(即没有串行，只有并行)最大加速比s=n；当a=0时（即只有串行，没有并行），最小加速比s=1；当n→∞时，极限加速比s→ 1/（1-a），这也就是加速比的上限。例如，若串行代码占整个代码的25%，则并行处理的总体性能不可能超过4。这一公式已被学术界所接受，并被称做“阿姆达尔定律”，也称为“安达尔定理”(Amdahl law)。</p>
+<h2 id="C-C-中的优化"><a href="#C-C-中的优化" class="headerlink" title="C/C++中的优化"></a>C/C++中的优化</h2><blockquote>
+<ul>
+<li>如字符串初始化使用 str[‘\0’] (避免使用memeset)</li>
+<li>char buffer[1024] = {100} 会调用memset, 可以改为:<br>char buffer[1024];<br>buffer[0] = 100</li>
+<li>选择正确的数据结构，正确选择stl的容器<ul>
+<li>数据量大时可以使用std::str1 或boost中 unordered_set/map 替代<br>map/set, 前者基于hash实现, 后者基于rb tree实现</li>
+<li>std::list 求长度 O(n)</li>
+<li>STL 的容器用完或者使用前记得reset, 否则会膨胀, 类似内存泄漏<br>reset 并没真正释放内存, 可能只是修改了长度和指针位置</li>
+<li>尽量使用std::sort, 而不是自写排序</li>
+<li>使用reverse 避免不必要的内存重分配</li>
+<li>去重和查找尽量用hashmap 而不是 vector + find</li>
+</ul>
+</li>
+<li>避免重复申请内存<ul>
+<li>用可重复初始化对象, 代替每次都new</li>
+<li>重复多次申请小块内存, 可以自己实现简单的buffer管理器</li>
+<li>使用tcmalloc ?</li>
+</ul>
+</li>
+<li>多线程<ul>
+<li>多线程的调度, 让 IO 和 CPU计算 相互重叠，降低<br>latency</li>
+<li>能提高绝对性能, 但是平均性能提升明显</li>
+</ul>
+</li>
+<li>openmp让循环中可以并行的部分得到并行处理<ul>
+<li>o 打开编译选项 -fopenmp</li>
+</ul>
+</li>
+<li>按字节固定初始有时可使用memeset,比for循环快很多<ul>
+<li>测试过1亿字符串统一赋值，用memeset比for循环赋值快10倍</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/06/30/Leetcode经典题-求数据流的中位数/" itemprop="url">
-                  Leetcode经典题-求数据流的中位数
+                  求数据流的中位数
                 </a>
               
             
@@ -330,7 +498,7 @@
       
         
           
-            <h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>假设有一连续的输入数据流，设计尽可能时间空间尽可能<br>高效的算法来求得中位数</p>
+            <h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>假设有一连续的输入数据流，设计尽可能时间空间尽可能<br>高效的算法来求得中位数-Leetcode经典题</p>
 <h2 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h2><p>主体思想，构造两个堆，一个大根堆，一个小根堆，<br>插入数据时保持两个堆的平衡，这样中位数取堆定即可</p>
 <p>以下算法实现了大根堆和小根堆</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iterator&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="keyword">class</span> getMidOnline&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v1,v2;</div><div class="line">	getMidOnline()&#123;</div><div class="line">		v1.push_back(<span class="number">-1</span>);</div><div class="line">		v2.push_back(<span class="number">-1</span>);</div><div class="line">	&#125;	</div><div class="line">	<span class="function"><span class="keyword">int</span> <span class="title">get</span><span class="params">()</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> value)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span>;</div><div class="line"><span class="keyword">private</span>: </div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">adjustDown</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> k,<span class="keyword">int</span> len)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">adjustUp</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> pos)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">adjustDown2</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> k,<span class="keyword">int</span> len)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">adjustUp2</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> pos)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">bulidHeap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> len)</span></span>;	</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">insertSmall</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> value,<span class="keyword">int</span> flag)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">headSort</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> len)</span></span>;</div><div class="line"></div><div class="line">&#125;;</div><div class="line"><span class="keyword">void</span> getMidOnline::adjustDown(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> k,<span class="keyword">int</span> len)<span class="comment">//k表示要调整的位置，len表示堆大小</span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i=k*<span class="number">2</span>;</div><div class="line">	<span class="keyword">while</span>(i&lt;=len)&#123;</div><div class="line">		<span class="keyword">if</span>(i&lt;len&amp;&amp;v[i]&lt;v[i+<span class="number">1</span>])++i;</div><div class="line">		<span class="keyword">if</span>(v[i]&gt;v[i/<span class="number">2</span>])</div><div class="line">			swap(v[i],v[i/<span class="number">2</span>]);</div><div class="line">		i = <span class="number">2</span>*i;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::adjustUp(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> pos)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span>  i=pos;</div><div class="line">	<span class="keyword">while</span>(i&gt;<span class="number">1</span>&amp;&amp;v[i]&gt;v[i/<span class="number">2</span>])</div><div class="line">	&#123;</div><div class="line">		swap(v[i],v[i/<span class="number">2</span>]);</div><div class="line">		i=i/<span class="number">2</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::adjustDown2(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> k,<span class="keyword">int</span> len)<span class="comment">//k表示要调整的位置，len表示堆大小</span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i=k*<span class="number">2</span>;</div><div class="line">	<span class="keyword">while</span>(i&lt;=len)&#123;</div><div class="line">		<span class="keyword">if</span>(i&lt;len&amp;&amp;v[i]&gt;v[i+<span class="number">1</span>])++i;</div><div class="line">		<span class="keyword">if</span>(v[i]&lt;v[i/<span class="number">2</span>])</div><div class="line">			swap(v[i],v[i/<span class="number">2</span>]);</div><div class="line">		i = <span class="number">2</span>*i;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::adjustUp2(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> pos)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span>  i=pos;</div><div class="line">	<span class="keyword">while</span>(i&gt;<span class="number">1</span>&amp;&amp;v[i]&lt;v[i/<span class="number">2</span>])</div><div class="line">	&#123;</div><div class="line">		swap(v[i],v[i/<span class="number">2</span>]);</div><div class="line">		i=i/<span class="number">2</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::bulidHeap(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> len)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=len/<span class="number">2</span>;i&gt;<span class="number">0</span>;--i)</div><div class="line">    	adjustDown(v,i,len);</div><div class="line">&#125; </div><div class="line"><span class="keyword">void</span> getMidOnline::insertSmall(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> value,<span class="keyword">int</span> flag)</div><div class="line">&#123;</div><div class="line">	v.push_back(value);</div><div class="line">	<span class="keyword">if</span>(flag==<span class="number">2</span>)adjustUp2(v,v.size()<span class="number">-1</span>);		</div><div class="line">	<span class="keyword">else</span> adjustUp(v,v.size()<span class="number">-1</span>);	</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::headSort(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> len)<span class="comment">//总体时间度O(nlogn)</span></div><div class="line">&#123;</div><div class="line">	bulidHeap(v,len);  <span class="comment">//时间复杂度O(nlogn)</span></div><div class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=len;i&gt;<span class="number">1</span>;--i)&#123; </div><div class="line">		swap(v[<span class="number">1</span>],v[i]);</div><div class="line">		adjustDown(v,<span class="number">1</span>,i<span class="number">-1</span>);<span class="comment">//时间复杂度O(logn)</span></div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">/************************************************</span></div><div class="line">*n1和n2表示两个堆的容量，新插入的数据分为三种情况</div><div class="line">*[d1-?,d1] [d1,d2], [d2,d2+?]三个区间</div><div class="line">*根据堆的大小比较以及新的数所在区间去调整堆</div><div class="line">*************************************************/</div><div class="line"><span class="keyword">void</span> getMidOnline::insert(<span class="keyword">int</span> value)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> n1=v1.size(),n2=v2.size();</div><div class="line">	<span class="keyword">if</span>(n1==<span class="number">1</span>)&#123; v1.push_back(value);<span class="keyword">return</span>;&#125;</div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(n2==<span class="number">1</span>)&#123;v2.push_back(value);<span class="keyword">return</span>;&#125;</div><div class="line">	<span class="keyword">if</span>(n1==<span class="number">2</span>&amp;&amp;n2==<span class="number">2</span>)</div><div class="line">		<span class="keyword">if</span>(v1[<span class="number">1</span>]&gt;v2[<span class="number">1</span>])swap(v1[<span class="number">1</span>],v2[<span class="number">1</span>]);</div><div class="line">	<span class="keyword">int</span> flag=<span class="number">-1</span>;</div><div class="line">	<span class="keyword">if</span>(value&gt;v2[<span class="number">1</span>])flag=<span class="number">2</span>;</div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(value&lt;v1[<span class="number">1</span>])flag=<span class="number">0</span>;</div><div class="line">	<span class="keyword">else</span> flag =<span class="number">1</span>;</div><div class="line">	<span class="keyword">if</span>(n1&lt;=n2)&#123;</div><div class="line">		<span class="keyword">switch</span>(flag)&#123;</div><div class="line">			<span class="keyword">case</span> <span class="number">0</span>:</div><div class="line">			<span class="keyword">case</span> <span class="number">1</span>:  insertSmall(v1,value,<span class="number">1</span>);<span class="keyword">break</span>;</div><div class="line">			<span class="keyword">case</span> <span class="number">2</span>: &#123;</div><div class="line">				insertSmall(v1,v2[<span class="number">1</span>],<span class="number">1</span>);</div><div class="line">			 	v2[<span class="number">1</span>]=value;</div><div class="line">			 	adjustDown2(v2,<span class="number">1</span>,v2.size()<span class="number">-1</span>);</div><div class="line">			 &#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> &#123;</div><div class="line">		<span class="keyword">switch</span>(flag)&#123;</div><div class="line">			<span class="keyword">case</span> <span class="number">1</span>:</div><div class="line">			<span class="keyword">case</span> <span class="number">2</span>:  insertSmall(v2,value,<span class="number">2</span>);<span class="keyword">break</span>;</div><div class="line">			<span class="keyword">case</span> <span class="number">0</span>:  &#123;</div><div class="line">				insertSmall(v2,v1[<span class="number">1</span>],<span class="number">2</span>);</div><div class="line">			 	v1[<span class="number">1</span>]=value;</div><div class="line">			 	adjustDown(v1,<span class="number">1</span>,v1.size()<span class="number">-1</span>);</div><div class="line">			 &#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">int</span> getMidOnline::get()</div><div class="line">&#123;</div><div class="line">	<span class="keyword">return</span> v1[<span class="number">1</span>];</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::print()</div><div class="line">&#123;</div><div class="line">    <span class="keyword">typedef</span> ostream_iterator&lt;<span class="keyword">int</span>&gt; osint;</div><div class="line">    copy(v1.begin()+<span class="number">1</span>,v1.end(),osint(<span class="built_in">cout</span>,<span class="string">" "</span>));</div><div class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">    copy(v2.begin()+<span class="number">1</span>,v2.end(),osint(<span class="built_in">cout</span>,<span class="string">" "</span>));</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line"></div><div class="line">	<span class="keyword">int</span> val;</div><div class="line">	getMidOnline s;</div><div class="line">	<span class="keyword">while</span>(<span class="number">1</span>)&#123;</div><div class="line">		<span class="keyword">int</span> val;</div><div class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="built_in">endl</span>&lt;&lt;<span class="string">"input:"</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">		<span class="built_in">cin</span>&gt;&gt;val;</div><div class="line">		s.insert(val);</div><div class="line">		</div><div class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="string">"res: "</span>&lt;&lt;s.get()&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">		s.print();</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -1298,7 +1466,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">9</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1306,7 +1474,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
