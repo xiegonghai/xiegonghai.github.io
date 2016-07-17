@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-07-17T17:14:51.169Z</updated>
+  <updated>2016-07-17T17:20:28.830Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2016/07/18/%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
     <id>http://yoursite.com/2016/07/18/程序性能优化/</id>
     <published>2016-07-18T12:20:59.000Z</published>
-    <updated>2016-07-17T17:14:51.169Z</updated>
+    <updated>2016-07-17T17:20:28.830Z</updated>
     
     <content type="html">&lt;h1 id=&quot;程序性能优化&quot;&gt;&lt;a href=&quot;#程序性能优化&quot; class=&quot;headerlink&quot; title=&quot;程序性能优化&quot;&gt;&lt;/a&gt;程序性能优化&lt;/h1&gt;&lt;p&gt; 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。&lt;/p&gt;
 &lt;h2 id=&quot;是否可优化&quot;&gt;&lt;a href=&quot;#是否可优化&quot; class=&quot;headerlink&quot; title=&quot;是否可优化&quot;&gt;&lt;/a&gt;是否可优化&lt;/h2&gt;&lt;p&gt;思考&lt;br&gt;&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;void swap(int *xp, int *yp)｛&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    *xp = *xp + *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    *yp = *xp - *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    *xp = *xp - *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;｝&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -39,9 +39,9 @@
 &lt;h2 id=&quot;关于定律&quot;&gt;&lt;a href=&quot;#关于定律&quot; class=&quot;headerlink&quot; title=&quot;关于定律&quot;&gt;&lt;/a&gt;关于定律&lt;/h2&gt;&lt;p&gt;阿姆达尔定律是计算机系统设计的重要定量原理之一，于1967年由IBM360系列机的主要设计者阿姆达尔首先提出。该定律是指：系统中对某一部件采用更快执行方式所能获得的系统性能改进程度，取决于这种执行方式被使用的频率，或所占总执行时间的比例。阿姆达尔定律实际上定义了采取增强（加速）某部分功能处理的措施后可获得的性能改进或执行时间的加速比。简单来说是通过更快的处理器来获得加速是由慢的系统组件所限制。&lt;br&gt;阿姆达尔曾致力于并行处理系统的研究。对于固定负载情况下描述并行处理效果的加速比s，阿姆达尔经过深入研究给出了如下公式：&lt;br&gt;$$S=1/(1-a+a/n)$$&lt;br&gt;其中，a为并行计算部分所占比例，n为并行处理结点个数。这样，当1-a=0时，(即没有串行，只有并行)最大加速比s=n；当a=0时（即只有串行，没有并行），最小加速比s=1；当n→∞时，极限加速比s→ 1/（1-a），这也就是加速比的上限。例如，若串行代码占整个代码的25%，则并行处理的总体性能不可能超过4。这一公式已被学术界所接受，并被称做“阿姆达尔定律”，也称为“安达尔定理”(Amdahl law)。&lt;/p&gt;
 &lt;h2 id=&quot;C-C-中的优化&quot;&gt;&lt;a href=&quot;#C-C-中的优化&quot; class=&quot;headerlink&quot; title=&quot;C/C++中的优化&quot;&gt;&lt;/a&gt;C/C++中的优化&lt;/h2&gt;&lt;blockquote&gt;
 &lt;ul&gt;
-&lt;li&gt;如字符串初始化使用 str[‘\0’] (避免使用memeset)&lt;/li&gt;
-&lt;li&gt;char buffer[1024] = {100} 会调用memset, 可以改为:&lt;br&gt;char buffer[1024];&lt;br&gt;buffer[0] = 100&lt;/li&gt;
-&lt;li&gt;选择正确的数据结构，正确选择stl的容器&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;如字符串初始化使用 str[‘\0’] (避免使用memeset)&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;char buffer[1024] = {100} 会调用memset, 可以改为:&lt;/strong&gt;&lt;br&gt;char buffer[1024];&lt;br&gt;buffer[0] = 100&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;选择正确的数据结构，正确选择stl的容器&lt;/strong&gt;&lt;ul&gt;
 &lt;li&gt;数据量大时可以使用std::str1 或boost中 unordered_set/map 替代&lt;br&gt;map/set, 前者基于hash实现, 后者基于rb tree实现&lt;/li&gt;
 &lt;li&gt;std::list 求长度 O(n)&lt;/li&gt;
 &lt;li&gt;STL 的容器用完或者使用前记得reset, 否则会膨胀, 类似内存泄漏&lt;br&gt;reset 并没真正释放内存, 可能只是修改了长度和指针位置&lt;/li&gt;
@@ -50,22 +50,22 @@
 &lt;li&gt;去重和查找尽量用hashmap 而不是 vector + find&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;避免重复申请内存&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;避免重复申请内存&lt;/strong&gt;&lt;ul&gt;
 &lt;li&gt;用可重复初始化对象, 代替每次都new&lt;/li&gt;
 &lt;li&gt;重复多次申请小块内存, 可以自己实现简单的buffer管理器&lt;/li&gt;
 &lt;li&gt;使用tcmalloc ?&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;多线程&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;多线程&lt;/strong&gt;&lt;ul&gt;
 &lt;li&gt;多线程的调度, 让 IO 和 CPU计算 相互重叠，降低&lt;br&gt;latency&lt;/li&gt;
 &lt;li&gt;能提高绝对性能, 但是平均性能提升明显&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;openmp让循环中可以并行的部分得到并行处理&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;openmp让循环中可以并行的部分得到并行处理&lt;/strong&gt;&lt;ul&gt;
 &lt;li&gt;o 打开编译选项 -fopenmp&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;按字节固定初始有时可使用memeset,比for循环快很多&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;按字节固定初始有时可使用memeset,比for循环快很多&lt;/strong&gt;&lt;ul&gt;
 &lt;li&gt;测试过1亿字符串统一赋值，用memeset比for循环赋值快10倍&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
