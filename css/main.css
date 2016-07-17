@@ -1111,7 +1111,7 @@ pre .javascript .function {
 .posts-collapse {
   position: relative;
   z-index: 1010;
-  margin-left: 55px;
+  margin-left: 5px;
 }
 .posts-collapse::after {
   content: " ";
@@ -1549,7 +1549,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #bdff61;
+  background: #4aff24;
 }
 .links-of-blogroll {
   font-size: 13px;
