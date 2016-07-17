@@ -87,21 +87,21 @@
 
 
 <meta name="description" content="程序性能优化 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。
-是否可优化思考12345void swap(int *xp, int *yp)｛    *xp = *xp + *yp;    *yp = *xp - *yp;    *xp = *xp - *yp;｝
-可否替换为12">
+是否可优化思考12345void swap(int *xp, int *yp)&amp;#123;	*xp = *xp + *yp;	*yp = *xp - *yp;	*xp = *xp - *yp;&amp;#125;
+可否替换为1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="程序性能优化方法">
 <meta property="og:url" content="http://yoursite.com/2016/07/18/程序性能优化/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
 <meta property="og:description" content="程序性能优化 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。
-是否可优化思考12345void swap(int *xp, int *yp)｛    *xp = *xp + *yp;    *yp = *xp - *yp;    *xp = *xp - *yp;｝
-可否替换为12">
-<meta property="og:updated_time" content="2016-07-17T17:20:28.830Z">
+是否可优化思考12345void swap(int *xp, int *yp)&amp;#123;	*xp = *xp + *yp;	*yp = *xp - *yp;	*xp = *xp - *yp;&amp;#125;
+可否替换为1">
+<meta property="og:updated_time" content="2016-07-17T17:31:26.991Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="程序性能优化方法">
 <meta name="twitter:description" content="程序性能优化 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。
-是否可优化思考12345void swap(int *xp, int *yp)｛    *xp = *xp + *yp;    *yp = *xp - *yp;    *xp = *xp - *yp;｝
-可否替换为12">
+是否可优化思考12345void swap(int *xp, int *yp)&amp;#123;	*xp = *xp + *yp;	*yp = *xp - *yp;	*xp = *xp - *yp;&amp;#125;
+可否替换为1">
 
 
 
@@ -331,9 +331,9 @@
 
       
         <h1 id="程序性能优化"><a href="#程序性能优化" class="headerlink" title="程序性能优化"></a>程序性能优化</h1><p> 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。</p>
-<h2 id="是否可优化"><a href="#是否可优化" class="headerlink" title="是否可优化"></a>是否可优化</h2><p>思考<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">void swap(int *xp, int *yp)｛</div><div class="line">    *xp = *xp + *yp;</div><div class="line">    *yp = *xp - *yp;</div><div class="line">    *xp = *xp - *yp;</div><div class="line">｝</div></pre></td></tr></table></figure></p>
-<p>可否替换为<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">void swap(int *xp, int *yp)｛</div><div class="line">    *xp = *xp + *yp;</div><div class="line">    *yp = *xp - *yp;</div><div class="line">    *xp = *xp - *yp;</div><div class="line">｝</div></pre></td></tr></table></figure></p>
-<p>又如<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">*xp += *yp;</div><div class="line">        *xp += *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="是否可优化"><a href="#是否可优化" class="headerlink" title="是否可优化"></a>是否可优化</h2><p>思考<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span></span>&#123;</div><div class="line">	*xp = *xp + *yp;</div><div class="line">	*yp = *xp - *yp;</div><div class="line">	*xp = *xp - *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span></span>&#123;</div><div class="line">    *xp = *xp + *yp;</div><div class="line">    *yp = *xp - *yp;</div><div class="line">    *xp = *xp - *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>又如<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">	*xp += *yp;</div><div class="line">    *xp += *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle1</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">*xp = <span class="number">2</span>* (*yp);</div><div class="line">&#125;</div><div class="line">实际上上面连个看起来是传进来了不同的参数，但是当参数相同的话，结果是不一样的，优化是错的</div><div class="line">``` <span class="function">C</span></div><div class="line"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> f() + f() + f();&#125;</div></pre></td></tr></table></figure></p>
 <p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> <span class="number">3</span>*f();&#125;</div></pre></td></tr></table></figure></p>
 <p>这种情况下，当f调用了全局变量就会产生副作用，返回值也可能会不一样</p>
