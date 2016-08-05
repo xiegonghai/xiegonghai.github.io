@@ -539,7 +539,7 @@ pre code {
 .highlight figcaption {
   font-size: 1em;
   color: #eaeaea;
-  line-height: 1em;
+  line-height: 0.8125em;
   margin-bottom: 1em;
 }
 .highlight figcaption:before,
@@ -1552,7 +1552,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #a8792d;
+  background: #0fc1db;
 }
 .links-of-blogroll {
   font-size: 13px;
