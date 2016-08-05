@@ -260,6 +260,109 @@
             
               
                 
+                <a class="post-title-link" href="/2016/08/06/网络编程基本函数/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-06T00:24:55+08:00" content="2016-08-06">
+              2016-08-06
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/06/网络编程基本函数/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/06/网络编程基本函数/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="网络编程常见数据结构定义"><a href="#网络编程常见数据结构定义" class="headerlink" title="网络编程常见数据结构定义"></a>网络编程常见数据结构定义</h1><h2 id="IP地址定义-32位无符号整数"><a href="#IP地址定义-32位无符号整数" class="headerlink" title="IP地址定义-32位无符号整数"></a>IP地址定义-32位无符号整数</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> in_addr &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> s_addr;<span class="comment">/*网络字节序，大端*/</span></div><div class="line">&#125;</div><div class="line">为何将一个变量放在结构体？-历史遗留问题，因广泛采用留下来了</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/in.h&gt;</span></span></div><div class="line"><span class="comment">//主机字节序转换为网络字节序</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">htonl</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> hostlong)</span></span>;</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> <span class="title">htons</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> hostshort)</span></span>;</div><div class="line"><span class="comment">//网络字节序转换为主机字节序</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">ntohl</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> netlong)</span></span>;</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">htohs</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> netshort)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_aton</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *p,<span class="keyword">struct</span> in_addr *inp)</span></span>;</div><div class="line"><span class="function"><span class="keyword">char</span> *<span class="title">inet_ntoa</span><span class="params">(<span class="keyword">struct</span> in_addr in)</span></span>;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">//DNS主机条目</div><div class="line">struct hostent&#123;</div><div class="line">    char *h_name; //域名</div><div class="line">    char **h_aliases; //空结束的字符串数组-域名</div><div class="line">    int h_addrtype; //主机地址类型</div><div class="line">    int h_length; //地址长度</div><div class="line">    char **h_addr_list;//非空地址结构数组</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div></pre></td><td class="code"><pre><div class="line">/* $begin csapp.h */</div><div class="line">#ifndef __CSAPP_H__</div><div class="line">#define __CSAPP_H__</div><div class="line"></div><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &lt;stdlib.h&gt;</div><div class="line">#include &lt;unistd.h&gt;</div><div class="line">#include &lt;string.h&gt;</div><div class="line">#include &lt;ctype.h&gt;</div><div class="line">#include &lt;setjmp.h&gt;</div><div class="line">#include &lt;signal.h&gt;</div><div class="line">#include &lt;sys/time.h&gt;</div><div class="line">#include &lt;sys/types.h&gt;</div><div class="line">#include &lt;sys/wait.h&gt;</div><div class="line">#include &lt;sys/stat.h&gt;</div><div class="line">#include &lt;fcntl.h&gt;</div><div class="line">#include &lt;sys/mman.h&gt;</div><div class="line">#include &lt;errno.h&gt;</div><div class="line">#include &lt;math.h&gt;</div><div class="line">#include &lt;pthread.h&gt;</div><div class="line">#include &lt;semaphore.h&gt;</div><div class="line">#include &lt;sys/socket.h&gt;</div><div class="line">#include &lt;netdb.h&gt;</div><div class="line">#include &lt;netinet/in.h&gt;</div><div class="line">#include &lt;arpa/inet.h&gt;</div><div class="line"></div><div class="line"></div><div class="line">/* Default file permissions are DEF_MODE &amp; ~DEF_UMASK */</div><div class="line">/* $begin createmasks */</div><div class="line">#define DEF_MODE   S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH</div><div class="line">#define DEF_UMASK  S_IWGRP|S_IWOTH</div><div class="line">/* $end createmasks */</div><div class="line"></div><div class="line">/* Simplifies calls to bind(), connect(), and accept() */</div><div class="line">/* $begin sockaddrdef */</div><div class="line">typedef struct sockaddr SA;</div><div class="line">/* $end sockaddrdef */</div><div class="line"></div><div class="line">/* Persistent state for the robust I/O (Rio) package */</div><div class="line">/* $begin rio_t */</div><div class="line">#define RIO_BUFSIZE 8192</div><div class="line">typedef struct &#123;</div><div class="line">    int rio_fd;                /* descriptor for this internal buf */</div><div class="line">    int rio_cnt;               /* unread bytes in internal buf */</div><div class="line">    char *rio_bufptr;          /* next unread byte in internal buf */</div><div class="line">    char rio_buf[RIO_BUFSIZE]; /* internal buffer */</div><div class="line">&#125; rio_t;</div><div class="line">/* $end rio_t */</div><div class="line"></div><div class="line">/* 外部变量 */</div><div class="line">extern int h_errno;    /* defined by BIND for DNS errors */ </div><div class="line">extern char **environ; /* defined by libc */</div><div class="line"></div><div class="line">/* Misc constants */</div><div class="line">#define MAXLINE  8192  /* max text line length */</div><div class="line">#define MAXBUF   8192  /* max I/O buffer size */</div><div class="line">#define LISTENQ  1024  /* second argument to listen() */</div><div class="line"></div><div class="line">/* 自定义错误处理函数*/</div><div class="line">void unix_error(char *msg);</div><div class="line">void posix_error(int code, char *msg);</div><div class="line">void dns_error(char *msg);</div><div class="line">void app_error(char *msg);</div><div class="line"></div><div class="line">/* 进程控制函数封装 */</div><div class="line">pid_t Fork(void);</div><div class="line">void Execve(const char *filename, char *const argv[], char *const envp[]);</div><div class="line">pid_t Wait(int *status);</div><div class="line">pid_t Waitpid(pid_t pid, int *iptr, int options);</div><div class="line">void Kill(pid_t pid, int signum);</div><div class="line">unsigned int Sleep(unsigned int secs);</div><div class="line">void Pause(void);</div><div class="line">unsigned int Alarm(unsigned int seconds);</div><div class="line">void Setpgid(pid_t pid, pid_t pgid);</div><div class="line">pid_t Getpgrp();</div><div class="line"></div><div class="line">/* 信号处理函数封装 */</div><div class="line">typedef void handler_t(int);</div><div class="line">handler_t *Signal(int signum, handler_t *handler);</div><div class="line">void Sigprocmask(int how, const sigset_t *set, sigset_t *oldset);</div><div class="line">void Sigemptyset(sigset_t *set);</div><div class="line">void Sigfillset(sigset_t *set);</div><div class="line">void Sigaddset(sigset_t *set, int signum);</div><div class="line">void Sigdelset(sigset_t *set, int signum);</div><div class="line">int Sigismember(const sigset_t *set, int signum);</div><div class="line"></div><div class="line">/* Unix I/O 函数封装 */</div><div class="line">int Open(const char *pathname, int flags, mode_t mode);</div><div class="line">ssize_t Read(int fd, void *buf, size_t count);</div><div class="line">ssize_t Write(int fd, const void *buf, size_t count);</div><div class="line">off_t Lseek(int fildes, off_t offset, int whence);</div><div class="line">void Close(int fd);</div><div class="line">int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, </div><div class="line">       struct timeval *timeout);</div><div class="line">int Dup2(int fd1, int fd2);</div><div class="line">void Stat(const char *filename, struct stat *buf);</div><div class="line">void Fstat(int fd, struct stat *buf) ;</div><div class="line"></div><div class="line">/* 内存映射函数封装 */</div><div class="line">void *Mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset);</div><div class="line">void Munmap(void *start, size_t length);</div><div class="line"></div><div class="line">/* 标准io封装*/</div><div class="line">void Fclose(FILE *fp);</div><div class="line">FILE *Fdopen(int fd, const char *type);</div><div class="line">char *Fgets(char *ptr, int n, FILE *stream);</div><div class="line">FILE *Fopen(const char *filename, const char *mode);</div><div class="line">void Fputs(const char *ptr, FILE *stream);</div><div class="line">size_t Fread(void *ptr, size_t size, size_t nmemb, FILE *stream);</div><div class="line">void Fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);</div><div class="line"></div><div class="line">/* 动态内存分配封装 */</div><div class="line">void *Malloc(size_t size);</div><div class="line">void *Realloc(void *ptr, size_t size);</div><div class="line">void *Calloc(size_t nmemb, size_t size);</div><div class="line">void Free(void *ptr);</div><div class="line"></div><div class="line">/* 套接字封装 */</div><div class="line">int Socket(int domain, int type, int protocol);</div><div class="line">void Setsockopt(int s, int level, int optname, const void *optval, int optlen);</div><div class="line">void Bind(int sockfd, struct sockaddr *my_addr, int addrlen);</div><div class="line">void Listen(int s, int backlog);</div><div class="line">int Accept(int s, struct sockaddr *addr, socklen_t *addrlen);</div><div class="line">void Connect(int sockfd, struct sockaddr *serv_addr, int addrlen);</div><div class="line"></div><div class="line">/* DNS 封装 */</div><div class="line">struct hostent *Gethostbyname(const char *name);</div><div class="line">struct hostent *Gethostbyaddr(const char *addr, int len, int type);</div><div class="line"></div><div class="line">/* Pthreads 进程控制封装*/</div><div class="line">void Pthread_create(pthread_t *tidp, pthread_attr_t *attrp, </div><div class="line">            void * (*routine)(void *), void *argp);</div><div class="line">void Pthread_join(pthread_t tid, void **thread_return);</div><div class="line">void Pthread_cancel(pthread_t tid);</div><div class="line">void Pthread_detach(pthread_t tid);</div><div class="line">void Pthread_exit(void *retval);</div><div class="line">pthread_t Pthread_self(void);</div><div class="line">void Pthread_once(pthread_once_t *once_control, void (*init_function)());</div><div class="line"></div><div class="line">/* POSIX  信号量封装*/</div><div class="line">void Sem_init(sem_t *sem, int pshared, unsigned int value);</div><div class="line">void P(sem_t *sem);</div><div class="line">void V(sem_t *sem);</div><div class="line"></div><div class="line">/* Rio (Robust I/O) package */</div><div class="line">ssize_t rio_readn(int fd, void *usrbuf, size_t n);</div><div class="line">ssize_t rio_writen(int fd, void *usrbuf, size_t n);</div><div class="line">void rio_readinitb(rio_t *rp, int fd); </div><div class="line">ssize_t rio_readnb(rio_t *rp, void *usrbuf, size_t n);</div><div class="line">ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen);</div><div class="line"></div><div class="line">/* Rio package 封装*/</div><div class="line">ssize_t Rio_readn(int fd, void *usrbuf, size_t n);</div><div class="line">void Rio_writen(int fd, void *usrbuf, size_t n);</div><div class="line">void Rio_readinitb(rio_t *rp, int fd); </div><div class="line">ssize_t Rio_readnb(rio_t *rp, void *usrbuf, size_t n);</div><div class="line">ssize_t Rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen);</div><div class="line"></div><div class="line">/* Client/server helper functions */</div><div class="line">int open_clientfd(char *hostname, int portno);</div><div class="line">int open_listenfd(int portno);</div><div class="line"></div><div class="line">/* Wrappers for client/server helper functions */</div><div class="line">/*因特网c/s通过在连接上发送和接收字节流来通信*/</div><div class="line">/*一个连接由它的两端的套接字唯一确定*/</div><div class="line">/*其中Open_clientfd封装了客户端网络通信socket和connect等函数*/</div><div class="line">int Open_clientfd(char *hostname, int port);</div><div class="line">/*Open_listenfd封装了sockt,setsocktopt,bing,accept等函数*/</div><div class="line">int Open_listenfd(int port); </div><div class="line">#include "caspp.c"</div><div class="line">#endif /* __CSAPP_H__ */</div><div class="line">/* $end csapp.h */</div></pre></td></tr></table></figure>
+<div align="center"><br><img src="img/socket.jpg" alt="CSDN图标"><br></div>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/18/程序性能优化/" itemprop="url">
                   程序性能优化方法
                 </a>
@@ -937,6 +1040,130 @@
             
               
                 
+                <a class="post-title-link" href="/2016/03/29/hexo修改样式/" itemprop="url">
+                  Hexo修改样式
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-29T15:41:56+08:00" content="2016-03-29">
+              2016-03-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Web/" itemprop="url" rel="index">
+                    <span itemprop="name">Web</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/29/hexo修改样式/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/29/hexo修改样式/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自从搭建博客之后，发现样式还不是自己最满意的，于是重新进行了修改，修改了文章页<br>宽度等，对齐了侧栏，修改了代码框显示在不同浏览器样式不一致问题，之前除了chrome以外，代码周边出现难看的滚动条，发现了插入图片功能，:),作为一位程序员，就得自己改造才舒服，就像自己代码改造latex简历一样.</p>
+<h2 id="修改宽度"><a href="#修改宽度" class="headerlink" title="修改宽度"></a>修改宽度</h2><p>\hexo\themes\next\source\css_variable\下文件<br>查看代码自定义博客页面的各模块大小颜色位置等，修改即可</p>
+<h2 id="修改代码框样式"><a href="#修改代码框样式" class="headerlink" title="修改代码框样式"></a>修改代码框样式</h2><p>\hexo\themes\next\source\css_common\components\highlight\highlight.styl theme.styl<br>浏览器调试修改css文件，查看样式，同时修改上述文件css定义</p>
+<h2 id="插入图片"><a href="#插入图片" class="headerlink" title="插入图片"></a>插入图片</h2><p>对于hexo，有两种方式：<br>使用本地路径：在hexo/source目录下新建一个img文件夹，将图片放入该文件夹下，插入图片时链接即为/img/图片名称。 </p>
+<h3 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h3><p>如何制作漂亮的简历个性化修改latex代码，可以参看我的csdn博客：<br><a href="http://blog.csdn.net/justdoithai/article/category/6186790" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/category/6186790</a><br><a href="http://blog.csdn.net/justdoithai/article/details/51206465" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/51206465</a><br><a href="http://blog.csdn.net/justdoithai/article/details/51627064" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/51627064</a><br><a href="http://blog.csdn.net/justdoithai/article/details/51627423" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/51627423</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/03/23/Word_seg朴素贝叶斯分词/" itemprop="url">
                   WordSeg-朴素贝叶斯分词
                 </a>
@@ -1298,137 +1525,13 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/03/01/hello-world/" itemprop="url">
-                  Hexo command
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-03-01T08:41:59+08:00" content="2016-03-01">
-              2016-03-01
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Web/" itemprop="url" rel="index">
-                    <span itemprop="name">Web</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/03/01/hello-world/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/01/hello-world/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1467,7 +1570,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
