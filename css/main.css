@@ -526,7 +526,7 @@ pre code {
 }
 .highlight table {
   margin: 0;
-  width: auto;
+  width: 100%;
   border: none;
 }
 .highlight td {
@@ -1549,7 +1549,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ff90f4;
+  background: #ba45e5;
 }
 .links-of-blogroll {
   font-size: 13px;

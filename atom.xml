@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-07-17T23:25:02.026Z</updated>
+  <updated>2016-08-02T15:46:28.301Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2016/07/18/%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
     <id>http://yoursite.com/2016/07/18/程序性能优化/</id>
     <published>2016-07-18T12:20:59.000Z</published>
-    <updated>2016-07-17T23:25:02.026Z</updated>
+    <updated>2016-08-02T15:46:28.301Z</updated>
     
     <content type="html">&lt;h1 id=&quot;程序性能优化&quot;&gt;&lt;a href=&quot;#程序性能优化&quot; class=&quot;headerlink&quot; title=&quot;程序性能优化&quot;&gt;&lt;/a&gt;程序性能优化&lt;/h1&gt;&lt;p&gt; 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。&lt;/p&gt;
 &lt;h2 id=&quot;是否可优化&quot;&gt;&lt;a href=&quot;#是否可优化&quot; class=&quot;headerlink&quot; title=&quot;是否可优化&quot;&gt;&lt;/a&gt;是否可优化&lt;/h2&gt;&lt;p&gt;思考&lt;br&gt;&lt;figure class=&quot;highlight c++&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;swap&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; *xp, &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; *yp)&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*xp = *xp + *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*yp = *xp - *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*xp = *xp - *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -71,6 +71,7 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
+&lt;h2 id=&quot;参考&quot;&gt;&lt;a href=&quot;#参考&quot; class=&quot;headerlink&quot; title=&quot;参考&quot;&gt;&lt;/a&gt;参考&lt;/h2&gt;&lt;p&gt;&amp;lt;&amp;lt;深入理解操作系统&amp;gt;&amp;gt;&lt;br&gt;&amp;lt;&amp;lt;大牛分享&amp;gt;&amp;gt;&lt;/p&gt;
 </content>
     
     <summary type="html">
