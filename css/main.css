@@ -529,6 +529,9 @@ pre code {
   width: auto;
   border: none;
 }
+.highlight .code {
+  width: 100%;
+}
 .highlight td {
   border: none;
   padding: 0;
@@ -1549,7 +1552,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #de584e;
+  background: #a8792d;
 }
 .links-of-blogroll {
   font-size: 13px;
