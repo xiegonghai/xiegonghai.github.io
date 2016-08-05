@@ -334,6 +334,62 @@
 <h2 id="DNS主机条目"><a href="#DNS主机条目" class="headerlink" title="DNS主机条目"></a>DNS主机条目</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">//DNS主机条目</div><div class="line">struct hostent&#123;</div><div class="line">    char *h_name; //域名</div><div class="line">    char **h_aliases; //空结束的字符串数组-域名</div><div class="line">    int h_addrtype; //主机地址类型</div><div class="line">    int h_length; //地址长度</div><div class="line">    char **h_addr_list;//非空地址结构数组</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h2 id="套接字接口"><a href="#套接字接口" class="headerlink" title="套接字接口"></a><strong>套接字接口</strong></h2><p><div align="center"><br><img src="img/socket.jpg" alt="CSDN图标"><br></div><br><strong>一般套接字地址结构</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sa_family;</div><div class="line">    <span class="keyword">char</span> sa_data[<span class="number">14</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p><strong>因特网形式的地址结构</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr_in &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sin_family;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sin_port;</div><div class="line">    <span class="keyword">struct</span> in_addr sin_addr;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> sin_zero[<span class="number">8</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="一个简单的echo-c-s通信例子"><a href="#一个简单的echo-c-s通信例子" class="headerlink" title="一个简单的echo c/s通信例子"></a>一个简单的echo c/s通信例子</h2><h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>与服务器建立连接，返回一个套接字描述符<br>主要调用socket,connect这两个函数</p>
+<pre><code class="C"><span class="comment">/* $begin open_clientfd */</span>
+<span class="function"><span class="keyword">int</span> <span class="title">open_clientfd</span><span class="params">(<span class="keyword">char</span> *hostname, <span class="keyword">int</span> port)</span> 
+</span>{
+    <span class="keyword">int</span> clientfd;
+    <span class="keyword">struct</span> hostent *hp;
+    <span class="keyword">struct</span> sockaddr_in serveraddr;
+
+    <span class="keyword">if</span> ((clientfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>)) &lt; <span class="number">0</span>) 
+    <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">/* check errno for cause of error */</span>
+
+    <span class="comment">/* Fill in the server's IP address and port */</span>
+    <span class="keyword">if</span> ((hp = gethostbyname(hostname)) == <span class="literal">NULL</span>)
+    <span class="keyword">return</span> <span class="number">-2</span>; <span class="comment">/* check h_errno for cause of error */</span>
+    bzero((<span class="keyword">char</span> *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));
+    serveraddr.sin_family = AF_INET;
+    bcopy((<span class="keyword">char</span> *)hp-&gt;h_addr_list[<span class="number">0</span>], 
+      (<span class="keyword">char</span> *)&amp;serveraddr.sin_addr.s_addr, hp-&gt;h_length);
+    serveraddr.sin_port = htons(port);
+
+    <span class="comment">/* Establish a connection with the server */</span>
+    <span class="keyword">if</span> (connect(clientfd, (SA *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr)) &lt; <span class="number">0</span>)
+    <span class="keyword">return</span> <span class="number">-1</span>;
+    <span class="keyword">return</span> clientfd;
+}
+<span class="comment">/* $end open_clientfd */</span>
+</code></pre>
+<h3 id="服务器端"><a href="#服务器端" class="headerlink" title="服务器端"></a>服务器端</h3><p>主要调用bind,listen,accept三个函数来与用户建立连接</p>
+<h4 id="bind"><a href="#bind" class="headerlink" title="bind"></a>bind</h4><p>int bind(int sockfd,struct sockaddr <em>my_addr,int addrlen);<br>成功返回0,出错返回-1<br><em>*告诉内核将my_addr中的服务器套接字地址与套接字描述符sockfd联系起来,参数addrlen＝sizeof(sockaddr_in)</em></em></p>
+<h4 id="listen"><a href="#listen" class="headerlink" title="listen"></a>listen</h4><p>int listen(int sockfd,int backlog);//成功返回0，出错返回-1<br><strong>将sockfd从一个主动套接字转化为一个监听套接字-可以接受来自客户端的连接请求</strong></p>
+<h4 id="accept函数"><a href="#accept函数" class="headerlink" title="accept函数"></a>accept函数</h4><p>int accept(int listenfd,struct sockaddr <em>addr,int </em>addrlen);//成功返回非负链接描述符，出错返回-1<br><strong>等待来自客户端的连接请求到达侦听描述符listenfd，然后在addr中填写客户端的套接字地址，返回一个已连接描述符</strong></p>
+<p>/<em> $begin open_listenfd </em>/<br>int open_listenfd(int port)<br>{<br>    int listenfd, optval=1;<br>    struct sockaddr_in serveraddr;</p>
+<pre><code>/* Create a socket descriptor */
+if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) &lt; 0)
+return -1;
+
+/* Eliminates &quot;Address already in use&quot; error from bind. */
+if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, 
+       (const void *)&amp;optval , sizeof(int)) &lt; 0)
+return -1;
+
+/* Listenfd will be an endpoint for all requests to port
+   on any IP address for this host */
+bzero((char *) &amp;serveraddr, sizeof(serveraddr));
+serveraddr.sin_family = AF_INET; 
+serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); 
+serveraddr.sin_port = htons((unsigned short)port); 
+if (bind(listenfd, (SA *)&amp;serveraddr, sizeof(serveraddr)) &lt; 0)
+return -1;
+
+/* Make it a listening socket ready to accept connection requests */
+if (listen(listenfd, LISTENQ) &lt; 0)
+return -1;
+return listenfd;
+</code></pre><p>}<br>/<em> $end open_listenfd </em>/</p>
+<h2 id="为何要有监听描述符合已连接描述符区别"><a href="#为何要有监听描述符合已连接描述符区别" class="headerlink" title="为何要有监听描述符合已连接描述符区别"></a>为何要有监听描述符合已连接描述符区别</h2><p><strong>主要为了建立并发服务器,它能够同时处理许多客户端连接,例如每一个连接请求到达<br>监听描述符时,可以派生一个新的进程通过已连接描述符与客户端通信</strong></p>
 
           
         
