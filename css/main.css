@@ -539,7 +539,7 @@ pre code {
 .highlight figcaption {
   font-size: 1em;
   color: #eaeaea;
-  line-height: 0.8125em;
+  line-height: 1em;
   margin-bottom: 1em;
 }
 .highlight figcaption:before,
@@ -563,7 +563,7 @@ pre code {
   padding-right: 20px;
 }
 .highlight .line {
-  height: 20px;
+  height: 16px;
 }
 .gist table {
   width: auto;
@@ -1552,7 +1552,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #0fc1db;
+  background: #7a985e;
 }
 .links-of-blogroll {
   font-size: 13px;
