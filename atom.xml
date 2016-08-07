@@ -118,7 +118,7 @@
     <link href="http://yoursite.com/2016/06/09/Leetcode%E7%BB%8F%E5%85%B8%E9%A2%98-%E6%B1%82%E6%95%B0%E6%8D%AE%E6%B5%81%E7%9A%84%E4%B8%AD%E4%BD%8D%E6%95%B0/"/>
     <id>http://yoursite.com/2016/06/09/Leetcode经典题-求数据流的中位数/</id>
     <published>2016-06-09T13:41:56.000Z</published>
-    <updated>2016-08-07T16:49:50.901Z</updated>
+    <updated>2016-08-07T16:50:53.553Z</updated>
     
     <content type="html">&lt;h2 id=&quot;描述&quot;&gt;&lt;a href=&quot;#描述&quot; class=&quot;headerlink&quot; title=&quot;描述&quot;&gt;&lt;/a&gt;描述&lt;/h2&gt;&lt;p&gt;假设有一连续的输入数据流，设计尽可能时间空间尽可能&lt;br&gt;高效的算法来求得中位数-Leetcode经典题&lt;/p&gt;
 &lt;h2 id=&quot;算法实现&quot;&gt;&lt;a href=&quot;#算法实现&quot; class=&quot;headerlink&quot; title=&quot;算法实现&quot;&gt;&lt;/a&gt;算法实现&lt;/h2&gt;&lt;p&gt;主体思想，构造两个堆，一个大根堆，一个小根堆，&lt;br&gt;插入数据时保持两个堆的平衡，这样中位数取堆定即可&lt;/p&gt;
