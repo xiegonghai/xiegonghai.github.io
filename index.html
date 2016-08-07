@@ -429,6 +429,152 @@
             
               
                 
+                <a class="post-title-link" href="/2016/07/18/并发编程-多进程-IO复用-多线程/" itemprop="url">
+                  并发编程之-多进程||I/O复用||多线程
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-18T01:01:59+08:00" content="2016-07-18">
+              2016-07-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/18/并发编程-多进程-IO复用-多线程/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/18/并发编程-多进程-IO复用-多线程/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="并发编程之-多进程-I-O多路复用-多线程"><a href="#并发编程之-多进程-I-O多路复用-多线程" class="headerlink" title="并发编程之-多进程-I /O多路复用-多线程"></a>并发编程之-多进程-I /O多路复用-多线程</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面以将书中示例echo服务器为例总结下：</p>
+<h2 id="多进程echo服务器"><a href="#多进程echo服务器" class="headerlink" title="多进程echo服务器"></a>多进程echo服务器</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="comment">//事件处理函数</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigchld_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">while</span> (waitpid(<span class="number">-1</span>, <span class="number">0</span>, WNOHANG) &gt; <span class="number">0</span>)</div><div class="line">    ;</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h3><ol>
+<li>服务器端打开一个socket<br>whil0e循环主体：</li>
+<li>接受来自客户端的连接,返回一个已连接套接字符</li>
+<li>fork初始化一个子进程,子进程提供服务</li>
+<li>父进程关闭连接描述符<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, connfd, port;</div><div class="line">    <span class="keyword">socklen_t</span> clientlen=<span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line">    <span class="comment">// 根据信号编号调用事件处理函数</span></div><div class="line">    Signal(SIGCHLD, sigchld_handler);<span class="comment">//用于回收子进程资源-避免僵尸进程</span></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        connfd = Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen);</div><div class="line">        <span class="keyword">if</span> (Fork() == <span class="number">0</span>) &#123; </div><div class="line">            Close(listenfd); <span class="comment">/* 子进程关闭监听描述符 */</span></div><div class="line">            echo(connfd);    <span class="comment">/* echo服务 */</span> </div><div class="line">            Close(connfd);   <span class="comment">/* 子进程关闭连接描述符 */</span> </div><div class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);         <span class="comment">/* 子进程退出 */</span></div><div class="line">        &#125;</div><div class="line">        Close(connfd); <span class="comment">/* 父进程关闭连接描述符-很重要! */</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="I-O复用echo服务器"><a href="#I-O复用echo服务器" class="headerlink" title="I/O复用echo服务器"></a>I/O复用echo服务器</h2><p>select函数处理类型为fd_set的描述符集合，逻辑上把描述符集合看出换一个大小为n的位向量，select有两个输入，一个是读集合的描述符集合和该集合的基数。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"csapp.h"</span></span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123; <span class="comment">/* 连接描述符池*/</span> </div><div class="line">    <span class="keyword">int</span> maxfd;        <span class="comment">/* 读集合的最大描述符 */</span>   </div><div class="line">    fd_set read_set;  <span class="comment">/* 所有活动描述符集合*/</span></div><div class="line">    fd_set ready_set; <span class="comment">/* 准备好读的描述符子集  */</span></div><div class="line">    <span class="keyword">int</span> nready;       <span class="comment">/* 从select中准备好读的描述符数量 */</span>   </div><div class="line">    <span class="keyword">int</span> maxi;         <span class="comment">/* highwater index into client arra */</span></div><div class="line">    <span class="keyword">int</span> clientfd[FD_SETSIZE];    <span class="comment">/* 活动描述符集 */</span></div><div class="line">    <span class="keyword">rio_t</span> clientrio[FD_SETSIZE]; <span class="comment">/* 活动读缓冲区集合 */</span></div><div class="line">&#125; pool; </div><div class="line"><span class="comment">//初始化连接池</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">init_pool</span><span class="params">(<span class="keyword">int</span> listenfd, pool *p)</span></span>;</div><div class="line"><span class="comment">//往pool添加客户端连接符</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">add_client</span><span class="params">(<span class="keyword">int</span> connfd, pool *p)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">check_clients</span><span class="params">(pool *p)</span></span>;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">int</span> byte_cnt = <span class="number">0</span>; <span class="comment">/* 计算从服务器接收的总字节*/</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, connfd, port; </div><div class="line">    <span class="keyword">socklen_t</span> clientlen = <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line">    <span class="keyword">static</span> pool pool; </div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line"></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    init_pool(listenfd, &amp;pool); <span class="comment">//初始化连接描述符池</span></div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">    <span class="comment">/* 使用select等待监听描述符上的连接请求或来自标准输入上的命令 */</span></div><div class="line">    pool.ready_set = pool.read_set;</div><div class="line">    pool.nready = Select(pool.maxfd+<span class="number">1</span>, &amp;pool.ready_set, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* 当监听描述符准备好时，添加一个新的客户端已连接描述符到连接池 */</span></div><div class="line">    <span class="keyword">if</span> (FD_ISSET(listenfd, &amp;pool.ready_set)) &#123; </div><div class="line">        connfd = Accept(listenfd, (SA *)&amp;clientaddr, &amp;clientlen); </div><div class="line">        add_client(connfd, &amp;pool); </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">/* 从每个准备好的已连接描述符回送一行文本内容 */</span> </div><div class="line">    check_clients(&amp;pool); </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="多线程echo服务器"><a href="#多线程echo服务器" class="headerlink" title="多线程echo服务器"></a>多线程echo服务器</h2><p>###重要的几点</p>
+<blockquote>
+<ul>
+<li>while循环中为何要动态分配一个整型来存放已连接描述符?</li>
+<li>thread中Pthread_detach？</li>
+</ul>
+</blockquote>
+<p>1.如果使用引用，由于线程竞争将导致意外结果，试想如果在下一次连接到来，thread例程函数中当前描述符变成下一次连接描述符<br>2.我们知道线程默认情况下被创建成可结合的，为了避免存储器泄漏(其资源如栈等)，每个结合线程要么被其他线程显式的收回，要么使用thread_detach被分离，待其终止由系统自动释放其资源，这样对于web程序而言是好的，因为web服务器每收到一个web浏览器的连接请求都创建一个对等线程，每个连接由一个单独的线程处理，没必要等也不愿意等到每个对等线程终止</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"csapp.h"</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread</span><span class="params">(<span class="keyword">void</span> *vargp)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, *connfdp, port;</div><div class="line">    <span class="keyword">socklen_t</span> clientlen=<span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line">    <span class="keyword">pthread_t</span> tid; </div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line"></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        connfdp = Malloc(<span class="keyword">sizeof</span>(<span class="keyword">int</span>)); <span class="comment">//想想为啥不直接在Pthread_create使用引用参数</span></div><div class="line">        *connfdp = Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen); </div><div class="line">        Pthread_create(&amp;tid, <span class="literal">NULL</span>, thread, connfdp);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* 一个线程例程 */</span></div><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread</span><span class="params">(<span class="keyword">void</span> *vargp)</span> </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> connfd = *((<span class="keyword">int</span> *)vargp);</div><div class="line">    Pthread_detach(pthread_self()); <span class="comment">//很重要，线程分离后才能在终止时由系统自动释放</span></div><div class="line">    Free(vargp);                   </div><div class="line">    echo(connfd);</div><div class="line">    Close(connfd);</div><div class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>##方法优劣总结</p>
+<h3 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h3><p>对于在父子进程间共享状态信息，进程有一个很清晰的模型，共享文件表不共享用户地址空间，这是优点又是缺点，一个是独立不会覆盖另一个进程的虚拟存储器，消除了许多令人迷惑的错误，另一方面使得进程间共享转态信息变的困难，共享信息-&gt;得通过IPC实现，开销高</p>
+<h3 id="I-O复用"><a href="#I-O复用" class="headerlink" title="I/O复用"></a>I/O复用</h3><p>I/O复用不等价于并发事件驱动程序，但可以作为其基础，在并发事件驱动中，流是因为某个事件而前进的，逻辑流模型=》转态机，一个转态机由一组状态，输入事件和转移构成。<br><strong>优点</strong>：</p>
+<blockquote>
+<p>给了码农更多对于程序行为的控制，比如编写一个事件驱动的并发服务器，为某些客户端提供他们需要的服务，基于多进程是很困难，（redis的事件处理基于I/O复用）<br>运行在的单一进程上下文中，每个逻辑流都能访问该进程的全部地址空间，使得在流之间共享数据变的容易-便于调试</p>
+</blockquote>
+<p><strong>缺点</strong>:<br>编码复杂，代码量大，随着并发粒度见笑，复杂性-上升迅速</p>
+<h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><p>结合上述两者的特性，在执行模型上既有着类似多进程的多线程内核自动调度，又有着I/O复用流享用的共享整个虚拟地址空间的整个内容<br>线程是运行在进程上下文中的逻辑流，线程由内核自动调度，每个线程有她自己的线程上下文，包括Thread ID,栈，栈指针，程序计数器，通用目的寄存器和条件码，共享进程的整个虚拟地址空间</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/06/11/布隆过滤器/" itemprop="url">
                   布隆过滤器浅谈
                 </a>
@@ -1429,133 +1575,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/03/10/Dp--深入理解动态规划/" itemprop="url">
-                  dp-深入理解动态规划
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-03-10T16:41:59+08:00" content="2016-03-10">
-              2016-03-10
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/03/10/Dp--深入理解动态规划/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/10/Dp--深入理解动态规划/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>   通过最近对于一些算法题的思考，越来越发现动态规划方法的在时间上高效性，往往该问题可以轻松的找到暴力破解的方法，其时间复杂度却不尽人意。下面来看看几个常见的动态规划思路的经典问题</p>
-<h3 id="实例探讨"><a href="#实例探讨" class="headerlink" title="实例探讨"></a>实例探讨</h3><p>例一.有一段楼梯有10级台阶，规定每一步只能跨一级或两级，要登上第10级台阶有几种不同的走法?（腾讯电面题之一）<br>    其状态转移方程为：</p>
-<p>$$f(n):表示n阶楼梯有多少种走法$$$$ f(n) =f(n-1)+f(n-2)$$$$f(1)=1,f(2)=2$$</p>
-<p>例二：01背包问题<br>有n个重量和价值分别为vector<int> weight, vector<int> value的物品；背包最大负重为W，求能用背包装下的物品的最大价值？<br>输入：n =4<br>weight=2, 1, 3, 2<br>value =3, 2, 4, 2<br>W=5<br>输出=7<br>$$dp[i][j]表示前i号物品中能选出重量在j之内的最大价值$$$$dp[i][j] = max(dp[i-1][j] , dp[i-1][j-w[i]] + v[i]);$$<br>例三：最大连续子序列和<br>如给定数组[-2,1,-3,4,-1,2,1,-5,4]<br>连续的子数组为[4,-1,2,1]有最大和6<br>$$f(j+1)为以下标j结尾的连续子序列和的最大值$$$$f(j+1)=max(f(j)+A[j],A[j])$$$$target = max{f[j]}$$<br>思考：最大连续子序列乘积<br>如给定数组[-2,1,-3,4,-1,2,1,-5,4]<br>连续的子数组为[4,-1,2,1]有最大和6<br>$$f(j+1)为以下标j结尾的连续子序列最大乘积值（1）$$<br>状态转移方程如何表示呢：<br>这里我们知道A[j]可能为正数(或0)或负数，那么当A[j]为正数，期望前j个乘积为正数，若为负数，则期望前面的为负数。故我们需定义两个函数来确定我们的状态转移方程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fmax(j+1)=max( max(fmax(j)*A[j],A[j]),fmin(j)*A[j])</div></pre></td></tr></table></figure></int></int></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fmin(j+1)=min(min(fmin(j)*A[j],A[j]),fmax(j)*A[j])</div></pre></td></tr></table></figure>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>1.通过以上动态问题问题的分析，可以看出<strong>最重要的是定义好相应的问题，然后写出状态转移方程</strong>，往往这也是整个问题求解最能考察你分析能力的过程。能够用动态规划求解的问题有两类性质：<br>a.重叠子问题</p>
-<p> 采用递推方式，比如上例要求出10阶楼梯走法，那么最后一步是踏一步上来或者踏2步上来，最后转化为相应的子问题，子问题深入求解就包含了重叠的子问题，所以自顶向下的实现并不高效，常采用备忘录方式保存子问题的最优解，自底向上更高效。</p>
-<p>b.最优子结构：<br> 往往子问题的最优解可以推出原问题的最优解</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1601,7 +1620,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-count">13</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

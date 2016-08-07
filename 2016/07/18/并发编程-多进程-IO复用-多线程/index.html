@@ -1,0 +1,713 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Xiegonghai's Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="并发编程之-多进程-I /O多路复用-多线程前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面以将书中示例echo服务器为例总结下：
+多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发编程之-多进程||I/O复用||多线程">
+<meta property="og:url" content="http://yoursite.com/2016/07/18/并发编程-多进程-IO复用-多线程/index.html">
+<meta property="og:site_name" content="Xiegonghai's Blog">
+<meta property="og:description" content="并发编程之-多进程-I /O多路复用-多线程前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面以将书中示例echo服务器为例总结下：
+多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int">
+<meta property="og:updated_time" content="2016-08-07T16:54:54.568Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="并发编程之-多进程||I/O复用||多线程">
+<meta name="twitter:description" content="并发编程之-多进程-I /O多路复用-多线程前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面以将书中示例echo服务器为例总结下：
+多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/07/18/并发编程-多进程-IO复用-多线程/"/>
+
+  <title> 并发编程之-多进程||I/O复用||多线程 | Xiegonghai's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Xiegonghai's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">梦想还是要有的</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                并发编程之-多进程||I/O复用||多线程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-18T01:01:59+08:00" content="2016-07-18">
+              2016-07-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/18/并发编程-多进程-IO复用-多线程/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/18/并发编程-多进程-IO复用-多线程/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="并发编程之-多进程-I-O多路复用-多线程"><a href="#并发编程之-多进程-I-O多路复用-多线程" class="headerlink" title="并发编程之-多进程-I /O多路复用-多线程"></a>并发编程之-多进程-I /O多路复用-多线程</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面以将书中示例echo服务器为例总结下：</p>
+<h2 id="多进程echo服务器"><a href="#多进程echo服务器" class="headerlink" title="多进程echo服务器"></a>多进程echo服务器</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="comment">//事件处理函数</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigchld_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">while</span> (waitpid(<span class="number">-1</span>, <span class="number">0</span>, WNOHANG) &gt; <span class="number">0</span>)</div><div class="line">    ;</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h3><ol>
+<li>服务器端打开一个socket<br>whil0e循环主体：</li>
+<li>接受来自客户端的连接,返回一个已连接套接字符</li>
+<li>fork初始化一个子进程,子进程提供服务</li>
+<li>父进程关闭连接描述符<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, connfd, port;</div><div class="line">    <span class="keyword">socklen_t</span> clientlen=<span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line">    <span class="comment">// 根据信号编号调用事件处理函数</span></div><div class="line">    Signal(SIGCHLD, sigchld_handler);<span class="comment">//用于回收子进程资源-避免僵尸进程</span></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        connfd = Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen);</div><div class="line">        <span class="keyword">if</span> (Fork() == <span class="number">0</span>) &#123; </div><div class="line">            Close(listenfd); <span class="comment">/* 子进程关闭监听描述符 */</span></div><div class="line">            echo(connfd);    <span class="comment">/* echo服务 */</span> </div><div class="line">            Close(connfd);   <span class="comment">/* 子进程关闭连接描述符 */</span> </div><div class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);         <span class="comment">/* 子进程退出 */</span></div><div class="line">        &#125;</div><div class="line">        Close(connfd); <span class="comment">/* 父进程关闭连接描述符-很重要! */</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="I-O复用echo服务器"><a href="#I-O复用echo服务器" class="headerlink" title="I/O复用echo服务器"></a>I/O复用echo服务器</h2><p>select函数处理类型为fd_set的描述符集合，逻辑上把描述符集合看出换一个大小为n的位向量，select有两个输入，一个是读集合的描述符集合和该集合的基数。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"csapp.h"</span></span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123; <span class="comment">/* 连接描述符池*/</span> </div><div class="line">    <span class="keyword">int</span> maxfd;        <span class="comment">/* 读集合的最大描述符 */</span>   </div><div class="line">    fd_set read_set;  <span class="comment">/* 所有活动描述符集合*/</span></div><div class="line">    fd_set ready_set; <span class="comment">/* 准备好读的描述符子集  */</span></div><div class="line">    <span class="keyword">int</span> nready;       <span class="comment">/* 从select中准备好读的描述符数量 */</span>   </div><div class="line">    <span class="keyword">int</span> maxi;         <span class="comment">/* highwater index into client arra */</span></div><div class="line">    <span class="keyword">int</span> clientfd[FD_SETSIZE];    <span class="comment">/* 活动描述符集 */</span></div><div class="line">    <span class="keyword">rio_t</span> clientrio[FD_SETSIZE]; <span class="comment">/* 活动读缓冲区集合 */</span></div><div class="line">&#125; pool; </div><div class="line"><span class="comment">//初始化连接池</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">init_pool</span><span class="params">(<span class="keyword">int</span> listenfd, pool *p)</span></span>;</div><div class="line"><span class="comment">//往pool添加客户端连接符</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">add_client</span><span class="params">(<span class="keyword">int</span> connfd, pool *p)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">check_clients</span><span class="params">(pool *p)</span></span>;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">int</span> byte_cnt = <span class="number">0</span>; <span class="comment">/* 计算从服务器接收的总字节*/</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, connfd, port; </div><div class="line">    <span class="keyword">socklen_t</span> clientlen = <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line">    <span class="keyword">static</span> pool pool; </div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line"></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    init_pool(listenfd, &amp;pool); <span class="comment">//初始化连接描述符池</span></div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">    <span class="comment">/* 使用select等待监听描述符上的连接请求或来自标准输入上的命令 */</span></div><div class="line">    pool.ready_set = pool.read_set;</div><div class="line">    pool.nready = Select(pool.maxfd+<span class="number">1</span>, &amp;pool.ready_set, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* 当监听描述符准备好时，添加一个新的客户端已连接描述符到连接池 */</span></div><div class="line">    <span class="keyword">if</span> (FD_ISSET(listenfd, &amp;pool.ready_set)) &#123; </div><div class="line">        connfd = Accept(listenfd, (SA *)&amp;clientaddr, &amp;clientlen); </div><div class="line">        add_client(connfd, &amp;pool); </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">/* 从每个准备好的已连接描述符回送一行文本内容 */</span> </div><div class="line">    check_clients(&amp;pool); </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="多线程echo服务器"><a href="#多线程echo服务器" class="headerlink" title="多线程echo服务器"></a>多线程echo服务器</h2><p>###重要的几点</p>
+<blockquote>
+<ul>
+<li>while循环中为何要动态分配一个整型来存放已连接描述符?</li>
+<li>thread中Pthread_detach？</li>
+</ul>
+</blockquote>
+<p>1.如果使用引用，由于线程竞争将导致意外结果，试想如果在下一次连接到来，thread例程函数中当前描述符变成下一次连接描述符<br>2.我们知道线程默认情况下被创建成可结合的，为了避免存储器泄漏(其资源如栈等)，每个结合线程要么被其他线程显式的收回，要么使用thread_detach被分离，待其终止由系统自动释放其资源，这样对于web程序而言是好的，因为web服务器每收到一个web浏览器的连接请求都创建一个对等线程，每个连接由一个单独的线程处理，没必要等也不愿意等到每个对等线程终止</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"csapp.h"</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread</span><span class="params">(<span class="keyword">void</span> *vargp)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, *connfdp, port;</div><div class="line">    <span class="keyword">socklen_t</span> clientlen=<span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line">    <span class="keyword">pthread_t</span> tid; </div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line"></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        connfdp = Malloc(<span class="keyword">sizeof</span>(<span class="keyword">int</span>)); <span class="comment">//想想为啥不直接在Pthread_create使用引用参数</span></div><div class="line">        *connfdp = Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen); </div><div class="line">        Pthread_create(&amp;tid, <span class="literal">NULL</span>, thread, connfdp);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* 一个线程例程 */</span></div><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread</span><span class="params">(<span class="keyword">void</span> *vargp)</span> </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> connfd = *((<span class="keyword">int</span> *)vargp);</div><div class="line">    Pthread_detach(pthread_self()); <span class="comment">//很重要，线程分离后才能在终止时由系统自动释放</span></div><div class="line">    Free(vargp);                   </div><div class="line">    echo(connfd);</div><div class="line">    Close(connfd);</div><div class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>##方法优劣总结</p>
+<h3 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h3><p>对于在父子进程间共享状态信息，进程有一个很清晰的模型，共享文件表不共享用户地址空间，这是优点又是缺点，一个是独立不会覆盖另一个进程的虚拟存储器，消除了许多令人迷惑的错误，另一方面使得进程间共享转态信息变的困难，共享信息-&gt;得通过IPC实现，开销高</p>
+<h3 id="I-O复用"><a href="#I-O复用" class="headerlink" title="I/O复用"></a>I/O复用</h3><p>I/O复用不等价于并发事件驱动程序，但可以作为其基础，在并发事件驱动中，流是因为某个事件而前进的，逻辑流模型=》转态机，一个转态机由一组状态，输入事件和转移构成。<br><strong>优点</strong>：</p>
+<blockquote>
+<p>给了码农更多对于程序行为的控制，比如编写一个事件驱动的并发服务器，为某些客户端提供他们需要的服务，基于多进程是很困难，（redis的事件处理基于I/O复用）<br>运行在的单一进程上下文中，每个逻辑流都能访问该进程的全部地址空间，使得在流之间共享数据变的容易-便于调试</p>
+</blockquote>
+<p><strong>缺点</strong>:<br>编码复杂，代码量大，随着并发粒度见笑，复杂性-上升迅速</p>
+<h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><p>结合上述两者的特性，在执行模型上既有着类似多进程的多线程内核自动调度，又有着I/O复用流享用的共享整个虚拟地址空间的整个内容<br>线程是运行在进程上下文中的逻辑流，线程由内核自动调度，每个线程有她自己的线程上下文，包括Thread ID,栈，栈指针，程序计数器，通用目的寄存器和条件码，共享进程的整个虚拟地址空间</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/11/布隆过滤器/" rel="next" title="布隆过滤器浅谈">
+                <i class="fa fa-chevron-left"></i> 布隆过滤器浅谈
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/18/程序性能优化/" rel="prev" title="程序性能优化方法">
+                程序性能优化方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+  </div>
+  
+<div class="bdsharebuttonbox">
+<a href="#" class="bds_more" data-cmd="more"></a>
+<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+<a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+<a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+<script>
+window._bd_share_config=
+{"common":
+  {"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/18/并发编程-多进程-IO复用-多线程/"
+           data-title="并发编程之-多进程||I/O复用||多线程" data-url="http://yoursite.com/2016/07/18/并发编程-多进程-IO复用-多线程/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/home.jpg"
+               alt="xiegonghai" />
+          <p class="site-author-name" itemprop="name">xiegonghai</p>
+          <p class="site-description motion-element" itemprop="description">while(question)just thinking;</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/justdoithai" title="我的csdn博客" target="_blank">我的csdn博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cplusplus.com/reference/algorithm" title="C++标准库" target="_blank">C++标准库</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xiegonghai" title="我的github" target="_blank">我的github</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://net.pku.edu.cn/~yhf/linux_c/" title="linux_C函数" target="_blank">linux_C函数</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://man.linuxde.net/" title="linux命令" target="_blank">linux命令</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://tool.oschina.net/" title="Tools" target="_blank">Tools</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#并发编程之-多进程-I-O多路复用-多线程"><span class="nav-number">1.</span> <span class="nav-text">并发编程之-多进程-I /O多路复用-多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多进程echo服务器"><span class="nav-number">1.2.</span> <span class="nav-text">多进程echo服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主流程"><span class="nav-number">1.2.1.</span> <span class="nav-text">主流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-O复用echo服务器"><span class="nav-number">1.3.</span> <span class="nav-text">I/O复用echo服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程echo服务器"><span class="nav-number">1.4.</span> <span class="nav-text">多线程echo服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程"><span class="nav-number">1.4.1.</span> <span class="nav-text">多进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O复用"><span class="nav-number">1.4.2.</span> <span class="nav-text">I/O复用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程"><span class="nav-number">1.4.3.</span> <span class="nav-text">多线程</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xiegonghai</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"doit"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
