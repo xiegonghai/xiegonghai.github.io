@@ -551,8 +551,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/06/15/网络编程基本函数/" itemprop="url">
-                  linux网络socket编程基础
+                <a class="post-title-link" href="/2016/06/11/布隆过滤器/" itemprop="url">
+                  布隆过滤器浅谈
                 </a>
               
             
@@ -565,8 +565,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-15T01:01:59+08:00" content="2016-06-15">
-              2016-06-15
+            <time itemprop="dateCreated" datetime="2016-06-11T20:41:56+08:00" content="2016-06-11">
+              2016-06-11
             </time>
           </span>
 
@@ -579,8 +579,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
-                    <span itemprop="name">C++与linux网络编程</span>
+                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Data structure and Algorithm</span>
                   </a>
                 </span>
 
@@ -595,8 +595,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/15/网络编程基本函数/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/15/网络编程基本函数/" itemprop="commentsCount"></span>
+                <a href="/2016/06/11/布隆过滤器/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/11/布隆过滤器/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -621,25 +621,14 @@
       
         
           
-            <h1 id="网络编程常见数据结构定义"><a href="#网络编程常见数据结构定义" class="headerlink" title="网络编程常见数据结构定义"></a>网络编程常见数据结构定义</h1><h2 id="IP地址定义-32位无符号整数"><a href="#IP地址定义-32位无符号整数" class="headerlink" title="IP地址定义-32位无符号整数"></a>IP地址定义-32位无符号整数</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> in_addr &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> s_addr;<span class="comment">/*网络字节序，大端*/</span></div><div class="line">&#125;</div><div class="line">为何将一个变量放在结构体？-历史遗留问题，因广泛采用留下来了</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/in.h&gt;</span></span></div><div class="line"><span class="comment">//主机字节序转换为网络字节序</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">htonl</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> hostlong)</span></span>;</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> <span class="title">htons</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> hostshort)</span></span>;</div><div class="line"><span class="comment">//网络字节序转换为主机字节序</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">ntohl</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> netlong)</span></span>;</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">htohs</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> netshort)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_aton</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *p,<span class="keyword">struct</span> in_addr *inp)</span></span>;</div><div class="line"><span class="function"><span class="keyword">char</span> *<span class="title">inet_ntoa</span><span class="params">(<span class="keyword">struct</span> in_addr in)</span></span>;</div></pre></td></tr></table></figure>
-<h2 id="DNS主机条目"><a href="#DNS主机条目" class="headerlink" title="DNS主机条目"></a>DNS主机条目</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//DNS主机条目</span></div><div class="line"><span class="keyword">struct</span> hostent&#123;</div><div class="line">    <span class="keyword">char</span> *h_name; <span class="comment">//域名</span></div><div class="line">    <span class="keyword">char</span> **h_aliases; <span class="comment">//空结束的字符串数组-域名</span></div><div class="line">    <span class="keyword">int</span> h_addrtype; <span class="comment">//主机地址类型</span></div><div class="line">    <span class="keyword">int</span> h_length; <span class="comment">//地址长度</span></div><div class="line">    <span class="keyword">char</span> **h_addr_list;<span class="comment">//非空地址结构数组-ip地址</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="套接字接口"><a href="#套接字接口" class="headerlink" title="套接字接口"></a><strong>套接字接口</strong></h2><p><div align="center"><br><img src="img/socket.jpg" alt="CSDN图标"><br></div><br><strong>一般套接字地址结构</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sa_family;</div><div class="line">    <span class="keyword">char</span> sa_data[<span class="number">14</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p><strong>因特网形式的地址结构*</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr_in &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sin_family;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sin_port; <span class="comment">//16位端口号0-65536</span></div><div class="line">    <span class="keyword">struct</span> in_addr sin_addr; <span class="comment">//结构体32位ip地址</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> sin_zero[<span class="number">8</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>与服务器建立连接，返回一个套接字描述符<br>主要调用socket,connect这两个函数<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* $begin open_clientfd */</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">open_clientfd</span><span class="params">(<span class="keyword">char</span> *hostname, <span class="keyword">int</span> port)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> clientfd;</div><div class="line">    <span class="keyword">struct</span> hostent *hp;</div><div class="line">    <span class="keyword">struct</span> sockaddr_in serveraddr;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((clientfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>)) &lt; <span class="number">0</span>) </div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">/* check errno for cause of error */</span></div><div class="line"></div><div class="line">    <span class="comment">/* 初始化ip地址和端口号*/</span></div><div class="line">    <span class="keyword">if</span> ((hp = gethostbyname(hostname)) == <span class="literal">NULL</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-2</span>; <span class="comment">/* check h_errno for cause of error */</span></div><div class="line">    bzero((<span class="keyword">char</span> *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</div><div class="line">    serveraddr.sin_family = AF_INET;</div><div class="line">    bcopy((<span class="keyword">char</span> *)hp-&gt;h_addr_list[<span class="number">0</span>], </div><div class="line">      (<span class="keyword">char</span> *)&amp;serveraddr.sin_addr.s_addr, hp-&gt;h_length);</div><div class="line">    serveraddr.sin_port = htons(port);</div><div class="line"></div><div class="line">    <span class="comment">/* 和服务器建立连接*/</span></div><div class="line">    <span class="keyword">if</span> (connect(clientfd, (SA *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    <span class="keyword">return</span> clientfd;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>/<em> $end open_clientfd </em>/<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">### 服务器端</div><div class="line">主要调用bind,listen,accept三个函数来与用户建立连接</div><div class="line">#### bind</div><div class="line">``` C</div><div class="line">int bind(int sockfd,struct sockaddr *my_addr,int addrlen);</div></pre></td></tr></table></figure></p>
-<p>成功返回0,出错返回-1<br><strong>告诉内核将my_addr中的服务器套接字地址与套接字描述符sockfd联系起来,参数addrlen＝sizeof(sockaddr_in)</strong></p>
-<h4 id="listen"><a href="#listen" class="headerlink" title="listen"></a>listen</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">listen</span><span class="params">(<span class="keyword">int</span> sockfd,<span class="keyword">int</span> backlog)</span></span>;<span class="comment">//成功返回0，出错返回-1</span></div></pre></td></tr></table></figure>
-<p><strong>将sockfd从一个主动套接字转化为一个监听套接字-可以接受来自客户端的连接请求</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* $begin open_listenfd */</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">open_listenfd</span><span class="params">(<span class="keyword">int</span> port)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, optval=<span class="number">1</span>;</div><div class="line">    <span class="keyword">struct</span> sockaddr_in serveraddr;</div><div class="line">  </div><div class="line">    <span class="comment">/* 创建套接字描述符 */</span></div><div class="line">    <span class="keyword">if</span> ((listenfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"> </div><div class="line">    <span class="comment">/* Eliminates "Address already in use" error from bind. */</span></div><div class="line">    <span class="keyword">if</span> (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, </div><div class="line">           (<span class="keyword">const</span> <span class="keyword">void</span> *)&amp;optval , <span class="keyword">sizeof</span>(<span class="keyword">int</span>)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Listenfd will be an endpoint for all requests to port</span></div><div class="line">       on any IP address for this host */</div><div class="line">    bzero((<span class="keyword">char</span> *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</div><div class="line">    serveraddr.sin_family = AF_INET; </div><div class="line">    serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); </div><div class="line">    serveraddr.sin_port = htons((<span class="keyword">unsigned</span> <span class="keyword">short</span>)port); </div><div class="line">    <span class="keyword">if</span> (bind(listenfd, (SA *)&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Make it a listening socket ready to accept connection requests */</span></div><div class="line">    <span class="keyword">if</span> (listen(listenfd, LISTENQ) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    <span class="keyword">return</span> listenfd;</div><div class="line">&#125;</div><div class="line"><span class="comment">/* $end open_listenfd */</span></div></pre></td></tr></table></figure>
-<h4 id="accept函数"><a href="#accept函数" class="headerlink" title="accept函数"></a>accept函数</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">accept</span><span class="params">(<span class="keyword">int</span> listenfd,<span class="keyword">struct</span> sockaddr *addr,<span class="keyword">int</span> *addrlen)</span></span>;<span class="comment">//</span></div></pre></td></tr></table></figure>
-<p>成功返回非负已连接描述符，出错返回-1<br><strong>等待来自客户端的连接请求到达侦听描述符listenfd，然后在addr中填写客户端的套接字地址，返回一个已连接描述符</strong></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h3 id="为何要有监听描述符合已连接描述符区别"><a href="#为何要有监听描述符合已连接描述符区别" class="headerlink" title="为何要有监听描述符合已连接描述符区别"></a>为何要有监听描述符合已连接描述符区别</h3><p><strong>主要为了建立并发服务器,它能够同时处理许多客户端连接,例如每一个连接请求到达<br>监听描述符时,可以派生一个新的进程通过已连接描述符与客户端通信</strong></p>
-<h3 id="客户端主要流程"><a href="#客户端主要流程" class="headerlink" title="客户端主要流程"></a>客户端主要流程</h3><blockquote>
-<p>socket-&gt;connect<br>调用socket创建套接字描述符,调用connect和服务器ip+iport进行连接,<br>阻塞在connect</p>
-</blockquote>
-<h3 id="服务器主要流程"><a href="#服务器主要流程" class="headerlink" title="服务器主要流程"></a>服务器主要流程</h3><blockquote>
-<p>socket-&gt;bind-&gt;listen-&gt;(多个accept)<br>调用socket创建套接字描述符,调用bind将ip+port与套接字描述符绑定调用listen告诉内核socket是被服务器而非客户端使用,将一个主要套接字转换为监听套接字</p>
-</blockquote>
+            <h2 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h2><h2 id="之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下"><a href="#之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下" class="headerlink" title="之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下"></a>之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下</h2><p>设计初衷：<br>（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的，不知道当时布隆为啥想到设计时究竟是碰到了啥问题，但这确实很有效<br><strong>来看下面的问题：<br>1.检查一个单词是否拼写正确-&gt;看它是否在已经字典中<br>2.网络爬虫-&gt;一个网址是否访问过<br>3.邮件过滤，建立那些发垃圾邮件的地址的黑名单</strong></p>
+<p><strong>你可能会说哈希表不就行了吗，但在2,3的问题中，网页和垃圾邮件地址全球动不动便是几十亿那，哈希的存储效率也就50%左右</strong><br>    一亿Email（一个占16字节）约为1.6GB内存，要是几十亿个地址就几百GB，需要耗费很大代码<br>所以啊，能不能少花点内存来干这事：于是布隆过滤器来了，只要12.5%到25%的哈希表空间就能干这事，但是有点小错误，这个小错误概率太小就基本不担心了</p>
+<p>工作原理：<br>一亿Email =&gt; 16亿二进制（bit)==2亿字节（哈希就是16亿字节了）</p>
+<h3 id="1-先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，-F8-产生8个信息指纹（比如md5"><a href="#1-先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，-F8-产生8个信息指纹（比如md5" class="headerlink" title="1.先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，..F8)产生8个信息指纹（比如md5),"></a>1.先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，..F8)产生8个信息指纹（比如md5),</h3><p>###2.然后用一个统一的随机数产生器G把这8个信息指纹=&gt;8个自然数g1,g2,g3..,g8,这些位置上的位置为1</p>
+<p>1亿个地址放入建好这个布隆过滤器</p>
+<p>然后新来一个，同样处理，对应8个二进制位 t1,t2,…,t8<br>如果全为1，好的=&gt;判定位垃圾邮件</p>
+<p>你会想了，这样靠谱不，万一把非垃圾邮件误判了咋办</p>
+<p>我们来看看误判的概率：<br>先来算任何一个位被置为1的概率p，这样你可以简单的就知道<br>新来一个，有8个位，如果被误判了，此时这8个位全为1，其概率为$$p^8$$<br>我们来推到下一般的情况，假设有m个位，n个元素，有k个哈希函数，<br>针对单个元素插入来说：<br>$$任一个位被置为1的概率：1/m$$<br>$$K个函数都没有把它置为1：（1-1/m)^k$$<br>$$插入了那个元素依然没有被置为1：（1-1/m)^{kn}$$<br>$$反过来说，一个位被置为1：1-（1-1/m)^{kn}$$<br>同样的新来一个，要命中其概率为：<br>$1-[1-1/m]^{kn})^k 近似（1-e^{-kn/m})^k$<br>上次k=8,n/m=1/16,计算值大约在万分之五，误判率非常低，基本可容忍。*</p>
 
           
         
@@ -766,6 +755,144 @@
 <p>get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.<br>set(key, value) - Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.</p>
 <p>Subscribe to see which companies asked this question</p>
 <p>设计一个key-value类型的LRU缓存：<br>1.首先由key-value要求可定义结构体节点<br>2.如何组织这些节点便于<br>a.快速插入或者替换<br>b.快速随机读取某个节点，比如从key读取value<br>如果cache不满：插入<br>如果cache满了：替换最老的<br>同时保持最近访问的在前面<br>从操作来看，要插入和随机读取并行<br>这个，自然想到链表，又要随机读取，那就只有靠hash了<br>3.如何设计数据结构<br>如下详解：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> LRUCache&#123;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">    <span class="keyword">struct</span> CacheNode&#123;<span class="comment">//设定key-value节点</span></div><div class="line">      <span class="keyword">int</span> key;</div><div class="line">      <span class="keyword">int</span> value;</div><div class="line">      CacheNode(<span class="keyword">int</span> <span class="number">_</span>k,<span class="keyword">int</span> <span class="number">_</span>v):key(<span class="number">_</span>k),value(<span class="number">_</span>v)&#123;&#125;;</div><div class="line">    &#125;;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    LRUCache(<span class="keyword">int</span> capacity) &#123;<span class="comment">//设定cache的容量</span></div><div class="line">        <span class="keyword">this</span>-&gt;capacity=capacity;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> key)</span> </span>&#123;<span class="comment">//随机访问如何做到？通过key做hash对象利用hash找到节点地址，再访问value</span></div><div class="line">        <span class="keyword">if</span>(CacheMap.find(key)==CacheMap.end())<span class="comment">//如果不在里面返回-1表示无</span></div><div class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">        <span class="keyword">else</span> &#123;<span class="comment">//如果在呢，自然是重新排序缓存列表，然后重建索引</span></div><div class="line">            CacheList.splice(CacheList.begin(),CacheList,CacheMap[key]);</div><div class="line">            CacheMap[key]=CacheList.begin();</div><div class="line">            <span class="keyword">return</span> CacheMap[key]-&gt;value;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> key, <span class="keyword">int</span> value)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span>(CacheMap.find(key)==CacheMap.end())&#123;<span class="comment">//如果不在cache里，自然是插入到cache</span></div><div class="line">            <span class="keyword">if</span>(CacheList.size()==capacity)&#123;<span class="comment">//cache满了呢？替换最老的</span></div><div class="line">                CacheMap.erase(CacheList.back().key);</div><div class="line">                CacheList.pop_back();</div><div class="line">            &#125;</div><div class="line">            CacheList.push_front(CacheNode(key,value));<span class="comment">//在头部插入新的，因为刚访问的优先级高</span></div><div class="line">            CacheMap[key]=CacheList.begin();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span>&#123;     <span class="comment">//本来就有key-value的映射又set，所以就是更新相应的值，并加到列表首部，刚访问的嘛</span></div><div class="line">            CacheMap[key]-&gt;value=value;</div><div class="line">            CacheList.splice(CacheList.begin(),CacheList,CacheMap[key]);</div><div class="line">            CacheMap[key]=CacheList.begin();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">list</span>&lt;CacheNode&gt; CacheList;</div><div class="line">    <span class="built_in">unordered_map</span>&lt;<span class="keyword">int</span>,<span class="built_in">list</span>&lt;CacheNode&gt;::iterator&gt; CacheMap;</div><div class="line">    <span class="keyword">int</span> capacity;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/02/网络编程基本函数/" itemprop="url">
+                  linux网络socket编程基础
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-02T01:01:59+08:00" content="2016-06-02">
+              2016-06-02
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/02/网络编程基本函数/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/02/网络编程基本函数/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="网络编程常见数据结构定义"><a href="#网络编程常见数据结构定义" class="headerlink" title="网络编程常见数据结构定义"></a>网络编程常见数据结构定义</h1><h2 id="IP地址定义-32位无符号整数"><a href="#IP地址定义-32位无符号整数" class="headerlink" title="IP地址定义-32位无符号整数"></a>IP地址定义-32位无符号整数</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> in_addr &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> s_addr;<span class="comment">/*网络字节序，大端*/</span></div><div class="line">&#125;</div><div class="line">为何将一个变量放在结构体？-历史遗留问题，因广泛采用留下来了</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/in.h&gt;</span></span></div><div class="line"><span class="comment">//主机字节序转换为网络字节序</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">htonl</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> hostlong)</span></span>;</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> <span class="title">htons</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> hostshort)</span></span>;</div><div class="line"><span class="comment">//网络字节序转换为主机字节序</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">ntohl</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> netlong)</span></span>;</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">htohs</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> netshort)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_aton</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *p,<span class="keyword">struct</span> in_addr *inp)</span></span>;</div><div class="line"><span class="function"><span class="keyword">char</span> *<span class="title">inet_ntoa</span><span class="params">(<span class="keyword">struct</span> in_addr in)</span></span>;</div></pre></td></tr></table></figure>
+<h2 id="DNS主机条目"><a href="#DNS主机条目" class="headerlink" title="DNS主机条目"></a>DNS主机条目</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//DNS主机条目</span></div><div class="line"><span class="keyword">struct</span> hostent&#123;</div><div class="line">    <span class="keyword">char</span> *h_name; <span class="comment">//域名</span></div><div class="line">    <span class="keyword">char</span> **h_aliases; <span class="comment">//空结束的字符串数组-域名</span></div><div class="line">    <span class="keyword">int</span> h_addrtype; <span class="comment">//主机地址类型</span></div><div class="line">    <span class="keyword">int</span> h_length; <span class="comment">//地址长度</span></div><div class="line">    <span class="keyword">char</span> **h_addr_list;<span class="comment">//非空地址结构数组-ip地址</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="套接字接口"><a href="#套接字接口" class="headerlink" title="套接字接口"></a><strong>套接字接口</strong></h2><p><div align="center"><br><img src="img/socket.jpg" alt="CSDN图标"><br></div><br><strong>一般套接字地址结构</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sa_family;</div><div class="line">    <span class="keyword">char</span> sa_data[<span class="number">14</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>因特网形式的地址结构*</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr_in &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sin_family;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sin_port; <span class="comment">//16位端口号0-65536</span></div><div class="line">    <span class="keyword">struct</span> in_addr sin_addr; <span class="comment">//结构体32位ip地址</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> sin_zero[<span class="number">8</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>与服务器建立连接，返回一个套接字描述符<br>主要调用socket,connect这两个函数<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* $begin open_clientfd */</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">open_clientfd</span><span class="params">(<span class="keyword">char</span> *hostname, <span class="keyword">int</span> port)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> clientfd;</div><div class="line">    <span class="keyword">struct</span> hostent *hp;</div><div class="line">    <span class="keyword">struct</span> sockaddr_in serveraddr;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((clientfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>)) &lt; <span class="number">0</span>) </div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">/* check errno for cause of error */</span></div><div class="line"></div><div class="line">    <span class="comment">/* 初始化ip地址和端口号*/</span></div><div class="line">    <span class="keyword">if</span> ((hp = gethostbyname(hostname)) == <span class="literal">NULL</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-2</span>; <span class="comment">/* check h_errno for cause of error */</span></div><div class="line">    bzero((<span class="keyword">char</span> *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</div><div class="line">    serveraddr.sin_family = AF_INET;</div><div class="line">    bcopy((<span class="keyword">char</span> *)hp-&gt;h_addr_list[<span class="number">0</span>], </div><div class="line">      (<span class="keyword">char</span> *)&amp;serveraddr.sin_addr.s_addr, hp-&gt;h_length);</div><div class="line">    serveraddr.sin_port = htons(port);</div><div class="line"></div><div class="line">    <span class="comment">/* 和服务器建立连接*/</span></div><div class="line">    <span class="keyword">if</span> (connect(clientfd, (SA *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    <span class="keyword">return</span> clientfd;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>/<em> $end open_clientfd </em>/<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">### 服务器端</div><div class="line">主要调用bind,listen,accept三个函数来与用户建立连接</div><div class="line">#### bind</div><div class="line">``` C</div><div class="line">int bind(int sockfd,struct sockaddr *my_addr,int addrlen);</div></pre></td></tr></table></figure></p>
+<p>成功返回0,出错返回-1<br><strong>告诉内核将my_addr中的服务器套接字地址与套接字描述符sockfd联系起来,参数addrlen＝sizeof(sockaddr_in)</strong></p>
+<h4 id="listen"><a href="#listen" class="headerlink" title="listen"></a>listen</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">listen</span><span class="params">(<span class="keyword">int</span> sockfd,<span class="keyword">int</span> backlog)</span></span>;<span class="comment">//成功返回0，出错返回-1</span></div></pre></td></tr></table></figure>
+<p><strong>将sockfd从一个主动套接字转化为一个监听套接字-可以接受来自客户端的连接请求</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* $begin open_listenfd */</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">open_listenfd</span><span class="params">(<span class="keyword">int</span> port)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, optval=<span class="number">1</span>;</div><div class="line">    <span class="keyword">struct</span> sockaddr_in serveraddr;</div><div class="line">  </div><div class="line">    <span class="comment">/* 创建套接字描述符 */</span></div><div class="line">    <span class="keyword">if</span> ((listenfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"> </div><div class="line">    <span class="comment">/* Eliminates "Address already in use" error from bind. */</span></div><div class="line">    <span class="keyword">if</span> (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, </div><div class="line">           (<span class="keyword">const</span> <span class="keyword">void</span> *)&amp;optval , <span class="keyword">sizeof</span>(<span class="keyword">int</span>)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Listenfd will be an endpoint for all requests to port</span></div><div class="line">       on any IP address for this host */</div><div class="line">    bzero((<span class="keyword">char</span> *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</div><div class="line">    serveraddr.sin_family = AF_INET; </div><div class="line">    serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); </div><div class="line">    serveraddr.sin_port = htons((<span class="keyword">unsigned</span> <span class="keyword">short</span>)port); </div><div class="line">    <span class="keyword">if</span> (bind(listenfd, (SA *)&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Make it a listening socket ready to accept connection requests */</span></div><div class="line">    <span class="keyword">if</span> (listen(listenfd, LISTENQ) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    <span class="keyword">return</span> listenfd;</div><div class="line">&#125;</div><div class="line"><span class="comment">/* $end open_listenfd */</span></div></pre></td></tr></table></figure>
+<h4 id="accept函数"><a href="#accept函数" class="headerlink" title="accept函数"></a>accept函数</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">accept</span><span class="params">(<span class="keyword">int</span> listenfd,<span class="keyword">struct</span> sockaddr *addr,<span class="keyword">int</span> *addrlen)</span></span>;<span class="comment">//</span></div></pre></td></tr></table></figure>
+<p>成功返回非负已连接描述符，出错返回-1<br><strong>等待来自客户端的连接请求到达侦听描述符listenfd，然后在addr中填写客户端的套接字地址，返回一个已连接描述符</strong></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h3 id="为何要有监听描述符合已连接描述符区别"><a href="#为何要有监听描述符合已连接描述符区别" class="headerlink" title="为何要有监听描述符合已连接描述符区别"></a>为何要有监听描述符合已连接描述符区别</h3><p><strong>主要为了建立并发服务器,它能够同时处理许多客户端连接,例如每一个连接请求到达<br>监听描述符时,可以派生一个新的进程通过已连接描述符与客户端通信</strong></p>
+<h3 id="客户端主要流程"><a href="#客户端主要流程" class="headerlink" title="客户端主要流程"></a>客户端主要流程</h3><blockquote>
+<p>socket-&gt;connect<br>调用socket创建套接字描述符,调用connect和服务器ip+iport进行连接,<br>阻塞在connect</p>
+</blockquote>
+<h3 id="服务器主要流程"><a href="#服务器主要流程" class="headerlink" title="服务器主要流程"></a>服务器主要流程</h3><blockquote>
+<p>socket-&gt;bind-&gt;listen-&gt;(多个accept)<br>调用socket创建套接字描述符,调用bind将ip+port与套接字描述符绑定调用listen告诉内核socket是被服务器而非客户端使用,将一个主要套接字转换为监听套接字</p>
+</blockquote>
 
           
         
@@ -1429,137 +1556,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/03/01/hexo博客搭建/" itemprop="url">
-                  Hexo博客搭建
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-03-01T15:41:56+08:00" content="2016-03-01">
-              2016-03-01
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/博客/" itemprop="url" rel="index">
-                    <span itemprop="name">博客</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/03/01/hexo博客搭建/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/01/hexo博客搭建/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近来想着搭建一个基于github的博客站点,之前在csdn的博客频繁性恶心弹窗广告，后面虽说装adblock自己是看不到了，但别人浏览还是会有的，大概了解了下，比较好的博客模板有octopress,wordpress,hexo几种，octopress还不错，开始搭建之后，由于版本更新匹配的原因，总是会有小错误，加之对ruby不熟，于是切换到hexo来搭建</p>
-<h2 id="搭建教程"><a href="#搭建教程" class="headerlink" title="搭建教程"></a>搭建教程</h2><p>主要参考<a href="http://www.mashiro.io/2015/09/hexo-guide-2/，写的很详细，就不重复" target="_blank" rel="external">http://www.mashiro.io/2015/09/hexo-guide-2/，写的很详细，就不重复</a> 造轮子了，仔细看完ok了</p>
-<h3 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h3><p>去 Git 官网下载并安装即可.</p>
-<h3 id="安装Node-Js"><a href="#安装Node-Js" class="headerlink" title="安装Node.Js"></a>安装Node.Js</h3><p>去NodeJs 官网下载并安装即可.<br>注意: 尽量使用默认路径, 以保证环境变量的自动配置.</p>
-<h3 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h3><p>使用npm命令即可直接安装 (可以直接在屏幕任意地方直接右键: Git Bash Here)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g hexo</div></pre></td></tr></table></figure></p>
-<p>静静等待安装完毕即可.</p>
-<h3 id="创建Hexo目录"><a href="#创建Hexo目录" class="headerlink" title="创建Hexo目录"></a>创建Hexo目录</h3><p>目录可以再随意地方创建 (注:尽量全英文路径 避免不必要的问题)<br>EG: C:\Users\Xuning\Documents\Hexo (这是我的本地路径)<br>现在进入Hexo目录内在里面右键选择: Git Bash Here</p>
-<p>Hexo 会自动生成建站所需要的文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo init</div></pre></td></tr></table></figure></p>
-<p>npm 会自动安装依赖环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install</div></pre></td></tr></table></figure></p>
-<h3 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h3><p>Hexo 运行方法很简单只需要一条命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo server</div></pre></td></tr></table></figure></p>
-<p>打开浏览器访问 <a href="http://localhost:4000" target="_blank" rel="external">http://localhost:4000</a> 看看效果吧 如下所示</p>
-<h2 id="配置主题以及额外功能"><a href="#配置主题以及额外功能" class="headerlink" title="配置主题以及额外功能"></a>配置主题以及额外功能</h2><p>可从此看到一些常用主题的介绍<br><a href="https://www.zhihu.com/question/24422335" target="_blank" rel="external">https://www.zhihu.com/question/24422335</a><br>next主题配置：<br><a href="http://theme-next.iissnan.com/theme-settings.html" target="_blank" rel="external">http://theme-next.iissnan.com/theme-settings.html</a><br>分类和标签<br><a href="https://hexo.io/zh-cn/docs/front-matter.html" target="_blank" rel="external">https://hexo.io/zh-cn/docs/front-matter.html</a><br>hexo and github详细教程<br><a href="http://www.mashiro.io/2015/09/hexo-guide-5/" target="_blank" rel="external">http://www.mashiro.io/2015/09/hexo-guide-5/</a><br>评论搭建<br><a href="http://www.arao.me/2015/hexo-next-theme-optimize-base/" target="_blank" rel="external">http://www.arao.me/2015/hexo-next-theme-optimize-base/</a><br>常见问题<br><a href="http://theme-next.iissnan.com/faqs.html" target="_blank" rel="external">http://theme-next.iissnan.com/faqs.html</a><br>添加微信打赏分享<br><a href="http://www.tuicool.com/articles/NVzEVz7" target="_blank" rel="external">http://www.tuicool.com/articles/NVzEVz7</a><br>添加社交登录评论功能<br><a href="https://github.com/iissnan/hexo-theme-next/pull/660" target="_blank" rel="external">https://github.com/iissnan/hexo-theme-next/pull/660</a><br>添加社交分享按钮<br><a href="http://www.jiathis.com/index2(代码加到具体主题的post.swg里面" target="_blank" rel="external">http://www.jiathis.com/index2(代码加到具体主题的post.swg里面</a>)<br>或百度分享里找代码<br>字体大小设置<br><a href="https://github.com/iissnan/hexo-theme-next/issues/400" target="_blank" rel="external">https://github.com/iissnan/hexo-theme-next/issues/400</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1605,7 +1601,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
