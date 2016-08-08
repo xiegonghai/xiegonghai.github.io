@@ -260,6 +260,147 @@
             
               
                 
+                <a class="post-title-link" href="/2016/07/21/网络爬虫总结/" itemprop="url">
+                  爬虫总结
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-21T10:01:59+08:00" content="2016-07-21">
+              2016-07-21
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/21/网络爬虫总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/21/网络爬虫总结/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在校期间由于到时I数据需求以及自己偶尔倒腾，写过一段时间爬虫，爬过csdn博客,天涯论坛,sina博客,sina微公益，学校就业系统数据(当时基本把全院就业数据爬下来了，包括每个人的身份证家庭住址联系方式就业去向等信息)等等,也爬过主流网站的信息当时想着做了一个粗糙的小型搜索引擎.在实习阶段写过一段时间爬虫系统，此时就主要用的scrapy框架了，爬取了7个主流手游网站游戏资讯论坛的信息.一直没有空去总结下,趁着有空总结下基本技巧</p>
+<h2 id="关于爬取的三个方面"><a href="#关于爬取的三个方面" class="headerlink" title="关于爬取的三个方面"></a>关于爬取的三个方面</h2><h3 id="网络爬虫归根结底是如何拿到服务器数据"><a href="#网络爬虫归根结底是如何拿到服务器数据" class="headerlink" title="网络爬虫归根结底是如何拿到服务器数据"></a>网络爬虫归根结底是如何拿到服务器数据</h3><p>在你分析完目标站点的需要的数据之后,思考如何爬取过程自动化，一般站点的数据组织方式都是有规律，比如csdn会有一个所有博客的一个汇总存档页，如果你需要爬取所有的页面博客，你需要分析第1页到第n页的页面连接url规律,然后依次请求每页数据，得到每个页的几十个博客url，下层进行每个url的深入爬取。<br><strong>如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题</strong></p>
+<blockquote>
+<p>数据是ajax请求的数据，请求方式不反应在链接上<br>数据在请求过程受到服务器频次限制,ip被封|频次限制<br>数据需要登录才能抓取数据<br>数据是js解析后才能拿到<br>部分网站不管你头部具体内容是什么，总是得到gzip后的内容<br>服务器加上了防盗链的限制<br>服务器加了限制，只让常见浏览器访问<br>url请求时加了编码信息<br>https以及http爬取<br>验证码问题<br>url如何判重<br>数据编码问题以及请求参数编码</p>
+</blockquote>
+<p><strong>大型搜索引擎爬取问题</strong></p>
+<blockquote>
+<p>在真实的大型爬虫系统中(比如百度),如何保证保证覆盖率，更新率，实效性，有效性<br>标准：全、快、准、新<br>覆盖率：链接是否已发现，网页是否已抓取<br>更新率：网页发生变化或失效后是否最大限度地发现并更新<br>时效性：新网页（时效性较高的网页）产生或网页发生变化后，是否及时发现、抓取、更新。<br>有效性：可以分为抓取有效性和存储有效性。<br>1）抓取有效性：是指抓取流量中有多少是抓取了有价值的东西，对CHK来说就是得到了新的链接，对GET抓回来了能建库的网页就是有效的。<br>2）存储有效性：是指主要是指节省link库和网页库的空间。如果存储了大量低质量的那有效性就不高。</p>
+</blockquote>
+<h3 id="上面的问题的一些解决方法"><a href="#上面的问题的一些解决方法" class="headerlink" title="上面的问题的一些解决方法"></a>上面的问题的一些解决方法</h3><p><strong> 数据是ajax请求的数据，请求方式不反应在链接上</strong><br>打开浏览器解析，分析ajax的真实请求url的规律，分析请求参数，分析结果json<br>按照实际url和参数请求<br><strong> 数据在请求过程受到服务器频次限制,ip被封|频次限制 </strong><br>使用代理IP服务器,scrapy有一个专门IP代理池<br>再一个可以使用sleep限制程序降低爬取频次<br>技术做的特别好的，封的厉害的需要获取开发者权限,token之类的</p>
+<p><strong> 数据需要登录才能抓取数据 </strong><br>使用import urllib.request<br>并用用字典封装post键值对作为open方法的参数，包括用户名密码等必要参数</p>
+<p><strong> 数据是js解析后才能拿到 </strong><br>使用selenium、phantomjs等模拟浏览器引擎构建一个真实的浏览器执行JS<br>百度也是有专门的解析器sunflower的，Sunflower采用firefox浏览器的mozilla内核，本质上就是把firefox的必要部分组装起来，得到一个同浏览器比较相似的抓取器，能够得到页面在浏览器实际展现时候的完整数据。它能够像浏览器一样处理html页面，包括js，css，xmlrequest</p>
+<p><strong> 部分网站不管你头部具体内容是什么，总是得到gzip后的内容</strong><br>使用import gzip相应方法解压,重点要知道是有得到压缩数据情况</p>
+<p><strong> 服务器加上了防盗链的限制 </strong><br>某些站点有反盗链设置，其实就是检查你发送请求的header里面，referer站点是不是他自己，我们只要把headers的referer改成该网站即可<br><strong> 服务器加了限制，只让常见浏览器访问</strong><br>请求时加上浏览器头部，伪装成浏览器<br><strong> url请求时加了编码信息 </strong><br>使用urllib.quote(‘’)</p>
+<p><strong> https以及http爬取 </strong><br>https是加密传输，其实用scrapy爬取并没什么不一样</p>
+<p><strong> 验证码问题　</strong><br>图像识别？训练好相应图片验证码模型，不过有些事要计算或者推理的，比较难</p>
+<p><strong> url如何判重 </strong><br>判重需要节省内存，一般使用布隆过滤器，在数学之美中有提到过</p>
+<p><strong> 大型搜索引擎爬取问题 </strong><br>入职百度以来看了爬虫相关文档,发现设计考虑问题还是非常多的，有空再总结下<br>相关重要问题，不涉及具体实现</p>
+<h3 id="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库"><a href="#拿到数据之后剩余的问题就是如何解析拿到想要的数据入库" class="headerlink" title="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库."></a>拿到数据之后剩余的问题就是如何解析拿到想要的数据入库.</h3><p>这里主要分为两块:<br><strong>首页如何提取html页面想要的信息*</strong></p>
+<p>解析html可以使用BeautifulSoup和xpath,有很多解析tag的方法,比起正则使用起来方便容易很多,常用的findall,find,find_next,find_parent,get_text()等等，这里不详细描述<br>参看官方文档,<a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank" rel="external">https://www.crummy.com/software/BeautifulSoup/bs4/doc/</a><br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</div></pre></td></tr></table></figure></p>
+<p>当然也可以自己实现,百度就是自己C实现了解析的基础库</p>
+<p><strong>怎么存储</strong><br>数据量小可以直接按表格形式存入excel<br>推荐两个python包<br>import xlwt3<br>from xlrd import open_workbook<br>数据量大,使用mysql数据库或者本地文件</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/20/并发编程-多进程-IO复用-多线程/" itemprop="url">
                   并发编程之-多进程-I/O复用-多线程
                 </a>
@@ -1451,130 +1592,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/03/23/Word_seg朴素贝叶斯分词/" itemprop="url">
-                  WordSeg-朴素贝叶斯分词
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-03-23T00:38:59+08:00" content="2016-03-23">
-              2016-03-23
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/03/23/Word_seg朴素贝叶斯分词/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/23/Word_seg朴素贝叶斯分词/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="小程序注解"><a href="#小程序注解" class="headerlink" title="小程序注解"></a>小程序注解</h2><p>以下是相应的Python代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#朴素贝叶斯分词(含义是分词后，得分的假设是基于两词之间是独立的，后词的出现与前词无关)</span></div><div class="line"><span class="comment"># p[i][n]表示从i到n的句子的最佳划分的得分,我们用dp表达式p[i][n]=max(freq(s[i:k])+p[k][n])</span></div><div class="line"><span class="comment"># 依次求出长度为1,2,3,n的句子划分，那么p[0][n]便是最佳划分结果,用t[i]表示产生的最佳划分每次向前走几个字符</span></div><div class="line"><span class="keyword">import</span> math</div><div class="line">d = &#123;&#125;</div><div class="line">log = <span class="keyword">lambda</span> x: float(<span class="string">'-inf'</span>) <span class="keyword">if</span> <span class="keyword">not</span> x <span class="keyword">else</span> math.log(x) <span class="comment">#匿名函数</span></div><div class="line">prob = <span class="keyword">lambda</span> x: d[x] <span class="keyword">if</span> x <span class="keyword">in</span> d <span class="keyword">else</span> <span class="number">0</span> <span class="keyword">if</span> len(x)&gt;<span class="number">1</span> <span class="keyword">else</span> <span class="number">1</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(filename=<span class="string">'SogouLabDic.dic'</span>)</span>:</span></div><div class="line">    d[<span class="string">'_N_'</span>] = <span class="number">0.0</span></div><div class="line">    <span class="keyword">with</span> open(filename, <span class="string">'r'</span>,encoding=<span class="string">'gb18030'</span>) <span class="keyword">as</span> handle:</div><div class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> handle:</div><div class="line">            <span class="comment">#print(line)</span></div><div class="line">            word, freq = line.split(<span class="string">'\t'</span>)[<span class="number">0</span>:<span class="number">2</span>]  <span class="comment">#取list的前2个元素,词和相应的词数</span></div><div class="line">            d[<span class="string">'_N_'</span>] += int(freq)+<span class="number">1</span>             <span class="comment"># 此表的词频总和,每个词数都加1    </span></div><div class="line">            <span class="keyword">try</span>:</div><div class="line">                <span class="comment">#print('utf')</span></div><div class="line">                d[word.decode(<span class="string">'utf-8'</span>)] = int(freq)+<span class="number">1</span> <span class="comment">#词数加1</span></div><div class="line">            <span class="keyword">except</span>:</div><div class="line">                <span class="comment">#print('gbk')</span></div><div class="line">                <span class="keyword">try</span>:</div><div class="line">                    d[word] = int(freq)+<span class="number">1</span>            <span class="comment">#词数加1</span></div><div class="line">                <span class="keyword">except</span>:</div><div class="line">                    print(word)</div><div class="line">                    <span class="keyword">break</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">solve</span><span class="params">(s)</span>:</span></div><div class="line">    l = len(s)</div><div class="line">    p = [<span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(l+<span class="number">1</span>)] <span class="comment">#1,2,...,l位置为0</span></div><div class="line">    t = [<span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(l)]</div><div class="line">    <span class="comment"># 如'大床房多少钱'，当前位置到末尾分别为1,2,...l长度的词，t[i]保留从当前位置向前划分的最佳长度，比如从'大'开始，</span></div><div class="line">    <span class="comment">#大床最佳，或大床房最佳，取决词库</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(l<span class="number">-1</span>, <span class="number">-1</span>, <span class="number">-1</span>): <span class="comment">#start,stop，step</span></div><div class="line">        <span class="comment"># prob(s[i:i+k])/d['_t_']为词表词频度</span></div><div class="line">        p[i], t[i] = max((prob(s[i:i+k])/d[<span class="string">'_N_'</span>]+p[i+k], k)<span class="comment">#在一个二元组列表里返回第一个元素最大的二元组,</span></div><div class="line">                         <span class="keyword">for</span> k <span class="keyword">in</span> range(<span class="number">1</span>, l-i+<span class="number">1</span>))</div><div class="line">    dis = <span class="number">0</span></div><div class="line">    <span class="keyword">while</span> dis&lt;l:  <span class="comment">#dis=0,不断向前遍历分割词汇</span></div><div class="line">        <span class="keyword">yield</span> s[dis:dis+t[dis]]</div><div class="line">        dis += t[dis]</div><div class="line">    </div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    init()</div><div class="line">    st=<span class="string">'百度是全球最大的中文搜索引擎、最大的中文网站'</span></div><div class="line">    print(len(st))</div><div class="line">    lpp=list(solve(st))</div><div class="line">    <span class="keyword">for</span> o <span class="keyword">in</span> range(len(lpp)):</div><div class="line">        print(lpp[o])</div><div class="line">    <span class="keyword">print</span> (<span class="string">' '</span>.join(list(solve(st))))</div></pre></td></tr></table></figure></p>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">百度</div><div class="line">是</div><div class="line">全球</div><div class="line">最大</div><div class="line">的</div><div class="line">中文</div><div class="line">搜索</div><div class="line">引擎</div><div class="line">、</div><div class="line">最大</div><div class="line">的</div><div class="line">中文</div><div class="line">网站</div></pre></td></tr></table></figure>
-<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>本实现基于朴素的贝叶斯思想，分词效果具有局限性，想要更精准的分词需要更大的词典以及更加好的<br>开源代码，如jieba等,推荐一个优秀的开源实现 <a href="https://github.com/yanyiwu" target="_blank" rel="external">https://github.com/yanyiwu</a></p>
-<h2 id="词典下载"><a href="#词典下载" class="headerlink" title="词典下载"></a>词典下载</h2><p>如若要运行该Python代码，需要搜狗实验室词典SogouLabDic.dic，可到我的github进行下载，仅当学习用还是不错我的，觉得不错可给star</p>
-<p>我的github:<a href="https://github.com/xiegonghai" target="_blank" rel="external">https://github.com/xiegonghai</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1620,7 +1637,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">14</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
