@@ -92,7 +92,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/07/11/网络爬虫总结/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
 <meta property="og:description" content="前言在校期间由于到时I数据需求以及自己偶尔倒腾，写过一段时间爬虫，爬过csdn博客,天涯论坛,sina博客,sina微公益，学校就业系统数据(当时基本把全院就业数据爬下来了，包括每个人的身份证家庭住址联系方式就业去向等信息)等等,也爬过主流网站的信息当时想着做了一个粗糙的小型搜索引擎.在实习阶段写过一段时间爬虫系统，此时就主要用的scrapy框架了，爬取了7个主流手游网站游戏资讯论坛的信息.一直没">
-<meta property="og:updated_time" content="2016-08-08T01:08:04.941Z">
+<meta property="og:updated_time" content="2016-08-08T16:37:43.328Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="爬虫总结">
 <meta name="twitter:description" content="前言在校期间由于到时I数据需求以及自己偶尔倒腾，写过一段时间爬虫，爬过csdn博客,天涯论坛,sina博客,sina微公益，学校就业系统数据(当时基本把全院就业数据爬下来了，包括每个人的身份证家庭住址联系方式就业去向等信息)等等,也爬过主流网站的信息当时想着做了一个粗糙的小型搜索引擎.在实习阶段写过一段时间爬虫系统，此时就主要用的scrapy框架了，爬取了7个主流手游网站游戏资讯论坛的信息.一直没">
@@ -325,12 +325,11 @@
 
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在校期间由于到时I数据需求以及自己偶尔倒腾，写过一段时间爬虫，爬过csdn博客,天涯论坛,sina博客,sina微公益，学校就业系统数据(当时基本把全院就业数据爬下来了，包括每个人的身份证家庭住址联系方式就业去向等信息)等等,也爬过主流网站的信息当时想着做了一个粗糙的小型搜索引擎.在实习阶段写过一段时间爬虫系统，此时就主要用的scrapy框架了，爬取了7个主流手游网站游戏资讯论坛的信息.一直没有空去总结下,趁着有空总结下基本技巧</p>
-<h2 id="关于爬取的三个方面"><a href="#关于爬取的三个方面" class="headerlink" title="关于爬取的三个方面"></a>关于爬取的三个方面</h2><h3 id="网络爬虫归根结底是如何拿到服务器数据"><a href="#网络爬虫归根结底是如何拿到服务器数据" class="headerlink" title="网络爬虫归根结底是如何拿到服务器数据"></a>网络爬虫归根结底是如何拿到服务器数据</h3><p>在你分析完目标站点的需要的数据之后,思考如何爬取过程自动化，一般站点的数据组织方式都是有规律，比如csdn会有一个所有博客的一个汇总存档页，如果你需要爬取所有的页面博客，你需要分析第1页到第n页的页面连接url规律,然后依次请求每页数据，得到每个页的几十个博客url，下层进行每个url的深入爬取。<br><strong>如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题</strong></p>
-<blockquote>
+<h2 id="关于爬取的三个方面"><a href="#关于爬取的三个方面" class="headerlink" title="关于爬取的三个方面"></a>关于爬取的三个方面</h2><h3 id="网络爬虫归根结底是如何拿到服务器数据"><a href="#网络爬虫归根结底是如何拿到服务器数据" class="headerlink" title="网络爬虫归根结底是如何拿到服务器数据"></a>网络爬虫归根结底是如何拿到服务器数据</h3><p>在你分析完目标站点的需要的数据之后,思考如何爬取过程自动化，一般站点的数据组织方式都是有规律，比如csdn会有一个所有博客的一个汇总存档页，如果你需要爬取所有的页面博客，你需要分析第1页到第n页的页面连接url规律,然后依次请求每页数据，得到每个页的几十个博客url，下层进行每个url的深入爬取。</p>
+<h3 id="如果你写过爬虫-你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列-总结下遇到的问题以及别人总结的一些问题"><a href="#如果你写过爬虫-你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列-总结下遇到的问题以及别人总结的一些问题" class="headerlink" title="如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题"></a>如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题</h3><blockquote>
 <p>数据是ajax请求的数据，请求方式不反应在链接上<br>数据在请求过程受到服务器频次限制,ip被封|频次限制<br>数据需要登录才能抓取数据<br>数据是js解析后才能拿到<br>部分网站不管你头部具体内容是什么，总是得到gzip后的内容<br>服务器加上了防盗链的限制<br>服务器加了限制，只让常见浏览器访问<br>url请求时加了编码信息<br>https以及http爬取<br>验证码问题<br>url如何判重<br>数据编码问题以及请求参数编码</p>
 </blockquote>
-<p><strong>大型搜索引擎爬取问题</strong></p>
-<blockquote>
+<h3 id="大型搜索引擎爬取问题"><a href="#大型搜索引擎爬取问题" class="headerlink" title="大型搜索引擎爬取问题"></a>大型搜索引擎爬取问题</h3><blockquote>
 <p>在真实的大型爬虫系统中(比如百度),如何保证保证覆盖率，更新率，实效性，有效性<br>标准：全、快、准、新<br>覆盖率：链接是否已发现，网页是否已抓取<br>更新率：网页发生变化或失效后是否最大限度地发现并更新<br>时效性：新网页（时效性较高的网页）产生或网页发生变化后，是否及时发现、抓取、更新。<br>有效性：可以分为抓取有效性和存储有效性。<br>1）抓取有效性：是指抓取流量中有多少是抓取了有价值的东西，对CHK来说就是得到了新的链接，对GET抓回来了能建库的网页就是有效的。<br>2）存储有效性：是指主要是指节省link库和网页库的空间。如果存储了大量低质量的那有效性就不高。</p>
 </blockquote>
 <h3 id="上面的问题的一些解决方法"><a href="#上面的问题的一些解决方法" class="headerlink" title="上面的问题的一些解决方法"></a>上面的问题的一些解决方法</h3><p><strong> 数据是ajax请求的数据，请求方式不反应在链接上</strong><br>打开浏览器解析，分析ajax的真实请求url的规律，分析请求参数，分析结果json<br>按照实际url和参数请求<br><strong> 数据在请求过程受到服务器频次限制,ip被封|频次限制 </strong><br>使用代理IP服务器,scrapy有一个专门IP代理池<br>再一个可以使用sleep限制程序降低爬取频次<br>技术做的特别好的，封的厉害的需要获取开发者权限,token之类的</p>
@@ -342,7 +341,7 @@
 <p><strong> 验证码问题　</strong><br>图像识别？训练好相应图片验证码模型，不过有些事要计算或者推理的，比较难</p>
 <p><strong> url如何判重 </strong><br>判重需要节省内存，一般使用布隆过滤器，在数学之美中有提到过</p>
 <p><strong> 大型搜索引擎爬取问题 </strong><br>入职百度以来看了爬虫相关文档,发现设计考虑问题还是非常多的，有空再总结下<br>相关重要问题，不涉及具体实现</p>
-<h3 id="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库"><a href="#拿到数据之后剩余的问题就是如何解析拿到想要的数据入库" class="headerlink" title="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库."></a>拿到数据之后剩余的问题就是如何解析拿到想要的数据入库.</h3><p>这里主要分为两块:<br><strong>首页如何提取html页面想要的信息*</strong></p>
+<h3 id="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库"><a href="#拿到数据之后剩余的问题就是如何解析拿到想要的数据入库" class="headerlink" title="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库."></a>拿到数据之后剩余的问题就是如何解析拿到想要的数据入库.</h3><p>这里主要分为两块:<br><strong>首页如何提取html页面想要的信息</strong></p>
 <p>解析html可以使用BeautifulSoup和xpath,有很多解析tag的方法,比起正则使用起来方便容易很多,常用的findall,find,find_next,find_parent,get_text()等等，这里不详细描述<br>参看官方文档,<a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank" rel="external">https://www.crummy.com/software/BeautifulSoup/bs4/doc/</a><br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</div></pre></td></tr></table></figure></p>
 <p>当然也可以自己实现,百度就是自己C实现了解析的基础库</p>
 <p><strong>怎么存储</strong><br>数据量小可以直接按表格形式存入excel<br>推荐两个python包<br>import xlwt3<br>from xlrd import open_workbook<br>数据量大,使用mysql数据库或者本地文件</p>
@@ -543,7 +542,7 @@ window._bd_share_config=
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于爬取的三个方面"><span class="nav-number">2.</span> <span class="nav-text">关于爬取的三个方面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络爬虫归根结底是如何拿到服务器数据"><span class="nav-number">2.1.</span> <span class="nav-text">网络爬虫归根结底是如何拿到服务器数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上面的问题的一些解决方法"><span class="nav-number">2.2.</span> <span class="nav-text">上面的问题的一些解决方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拿到数据之后剩余的问题就是如何解析拿到想要的数据入库"><span class="nav-number">2.3.</span> <span class="nav-text">拿到数据之后剩余的问题就是如何解析拿到想要的数据入库.</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于爬取的三个方面"><span class="nav-number">2.</span> <span class="nav-text">关于爬取的三个方面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络爬虫归根结底是如何拿到服务器数据"><span class="nav-number">2.1.</span> <span class="nav-text">网络爬虫归根结底是如何拿到服务器数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如果你写过爬虫-你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列-总结下遇到的问题以及别人总结的一些问题"><span class="nav-number">2.2.</span> <span class="nav-text">如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大型搜索引擎爬取问题"><span class="nav-number">2.3.</span> <span class="nav-text">大型搜索引擎爬取问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上面的问题的一些解决方法"><span class="nav-number">2.4.</span> <span class="nav-text">上面的问题的一些解决方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拿到数据之后剩余的问题就是如何解析拿到想要的数据入库"><span class="nav-number">2.5.</span> <span class="nav-text">拿到数据之后剩余的问题就是如何解析拿到想要的数据入库.</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
