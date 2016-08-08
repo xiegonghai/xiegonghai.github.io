@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-08-07T17:07:33.006Z</updated>
+  <updated>2016-08-08T16:49:44.710Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,9 +20,9 @@
     <link href="http://yoursite.com/2016/07/20/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%A4%9A%E8%BF%9B%E7%A8%8B-IO%E5%A4%8D%E7%94%A8-%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
     <id>http://yoursite.com/2016/07/20/并发编程-多进程-IO复用-多线程/</id>
     <published>2016-07-20T02:01:59.000Z</published>
-    <updated>2016-08-07T17:07:33.006Z</updated>
+    <updated>2016-08-08T16:49:44.710Z</updated>
     
-    <content type="html">&lt;h1 id=&quot;并发编程之-多进程-IO多-路复用-多线程&quot;&gt;&lt;a href=&quot;#并发编程之-多进程-IO多-路复用-多线程&quot; class=&quot;headerlink&quot; title=&quot;并发编程之-多进程-IO多 路复用-多线程&quot;&gt;&lt;/a&gt;并发编程之-多进程-IO多 路复用-多线程&lt;/h1&gt;&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：&lt;/p&gt;
+    <content type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：&lt;/p&gt;
 &lt;h2 id=&quot;多进程echo服务器&quot;&gt;&lt;a href=&quot;#多进程echo服务器&quot; class=&quot;headerlink&quot; title=&quot;多进程echo服务器&quot;&gt;&lt;/a&gt;多进程echo服务器&lt;/h2&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;echo&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; connfd)&lt;/span&gt;&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//事件处理函数&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;sigchld_handler&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; sig)&lt;/span&gt; &lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; (waitpid(&lt;span class=&quot;number&quot;&gt;-1&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, WNOHANG) &amp;gt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    ;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;h3 id=&quot;主流程&quot;&gt;&lt;a href=&quot;#主流程&quot; class=&quot;headerlink&quot; title=&quot;主流程&quot;&gt;&lt;/a&gt;主流程&lt;/h3&gt;&lt;ol&gt;
 &lt;li&gt;服务器端打开一个socket&lt;br&gt;whil0e循环主体：&lt;/li&gt;
@@ -53,7 +53,7 @@
     
     <summary type="html">
     
-      &lt;h1 id=&quot;并发编程之-多进程-IO多-路复用-多线程&quot;&gt;&lt;a href=&quot;#并发编程之-多进程-IO多-路复用-多线程&quot; class=&quot;headerlink&quot; title=&quot;并发编程之-多进程-IO多 路复用-多线程&quot;&gt;&lt;/a&gt;并发编程之-多进程-IO多 路复用-多线程&lt;/
+      &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是
     
     </summary>
     

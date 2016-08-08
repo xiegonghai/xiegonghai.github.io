@@ -86,19 +86,19 @@
 
 
 
-<meta name="description" content="并发编程之-多进程-IO多 路复用-多线程前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：
-多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int sig">
+<meta name="description" content="前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：
+多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int sig) &amp;#123;    while (wa">
 <meta property="og:type" content="article">
 <meta property="og:title" content="并发编程之-多进程-I/O复用-多线程">
 <meta property="og:url" content="http://yoursite.com/2016/07/20/并发编程-多进程-IO复用-多线程/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
-<meta property="og:description" content="并发编程之-多进程-IO多 路复用-多线程前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：
-多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int sig">
-<meta property="og:updated_time" content="2016-08-07T17:07:33.006Z">
+<meta property="og:description" content="前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：
+多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int sig) &amp;#123;    while (wa">
+<meta property="og:updated_time" content="2016-08-08T16:49:44.710Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="并发编程之-多进程-I/O复用-多线程">
-<meta name="twitter:description" content="并发编程之-多进程-IO多 路复用-多线程前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：
-多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int sig">
+<meta name="twitter:description" content="前言自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：
+多进程echo服务器12345678void echo(int connfd);//事件处理函数void sigchld_handler(int sig) &amp;#123;    while (wa">
 
 
 
@@ -327,7 +327,7 @@
       
 
       
-        <h1 id="并发编程之-多进程-IO多-路复用-多线程"><a href="#并发编程之-多进程-IO多-路复用-多线程" class="headerlink" title="并发编程之-多进程-IO多 路复用-多线程"></a>并发编程之-多进程-IO多 路复用-多线程</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：</p>
 <h2 id="多进程echo服务器"><a href="#多进程echo服务器" class="headerlink" title="多进程echo服务器"></a>多进程echo服务器</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="comment">//事件处理函数</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigchld_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">while</span> (waitpid(<span class="number">-1</span>, <span class="number">0</span>, WNOHANG) &gt; <span class="number">0</span>)</div><div class="line">    ;</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h3 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h3><ol>
 <li>服务器端打开一个socket<br>whil0e循环主体：</li>
@@ -547,7 +547,7 @@ window._bd_share_config=
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#并发编程之-多进程-IO多-路复用-多线程"><span class="nav-number">1.</span> <span class="nav-text">并发编程之-多进程-IO多 路复用-多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多进程echo服务器"><span class="nav-number">1.2.</span> <span class="nav-text">多进程echo服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主流程"><span class="nav-number">1.2.1.</span> <span class="nav-text">主流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-O复用echo服务器"><span class="nav-number">1.3.</span> <span class="nav-text">I/O复用echo服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程echo服务器"><span class="nav-number">1.4.</span> <span class="nav-text">多线程echo服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程"><span class="nav-number">1.4.1.</span> <span class="nav-text">多进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O复用"><span class="nav-number">1.4.2.</span> <span class="nav-text">I/O复用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程"><span class="nav-number">1.4.3.</span> <span class="nav-text">多线程</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多进程echo服务器"><span class="nav-number">2.</span> <span class="nav-text">多进程echo服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主流程"><span class="nav-number">2.1.</span> <span class="nav-text">主流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-O复用echo服务器"><span class="nav-number">3.</span> <span class="nav-text">I/O复用echo服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程echo服务器"><span class="nav-number">4.</span> <span class="nav-text">多线程echo服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程"><span class="nav-number">4.1.</span> <span class="nav-text">多进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O复用"><span class="nav-number">4.2.</span> <span class="nav-text">I/O复用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程"><span class="nav-number">4.3.</span> <span class="nav-text">多线程</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
