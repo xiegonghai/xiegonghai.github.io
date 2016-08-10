@@ -88,14 +88,14 @@
 
 <meta name="description" content="网络编程常见数据结构定义IP地址定义-32位无符号整数123456789101112131415struct in_addr &amp;#123;    unsigned int s_addr;/*网络字节序，大端*/&amp;#125;为何将一个变量放在结构体？-历史遗留问题，因广泛采用留下来了#include &amp;lt;netinet/in.h&amp;gt;//主机字节序转换为网络字节序unsigned long i">
 <meta property="og:type" content="article">
-<meta property="og:title" content="linux网络socket编程基础">
-<meta property="og:url" content="http://yoursite.com/2016/06/02/网络编程基本函数/index.html">
+<meta property="og:title" content="linux网络socket编程(一)">
+<meta property="og:url" content="http://yoursite.com/2016/06/15/网络编程基础(一)/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
 <meta property="og:description" content="网络编程常见数据结构定义IP地址定义-32位无符号整数123456789101112131415struct in_addr &amp;#123;    unsigned int s_addr;/*网络字节序，大端*/&amp;#125;为何将一个变量放在结构体？-历史遗留问题，因广泛采用留下来了#include &amp;lt;netinet/in.h&amp;gt;//主机字节序转换为网络字节序unsigned long i">
 <meta property="og:image" content="http://yoursite.com/img/socket.jpg">
-<meta property="og:updated_time" content="2016-08-07T16:22:32.909Z">
+<meta property="og:updated_time" content="2016-08-10T01:09:27.240Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="linux网络socket编程基础">
+<meta name="twitter:title" content="linux网络socket编程(一)">
 <meta name="twitter:description" content="网络编程常见数据结构定义IP地址定义-32位无符号整数123456789101112131415struct in_addr &amp;#123;    unsigned int s_addr;/*网络字节序，大端*/&amp;#125;为何将一个变量放在结构体？-历史遗留问题，因广泛采用留下来了#include &amp;lt;netinet/in.h&amp;gt;//主机字节序转换为网络字节序unsigned long i">
 <meta name="twitter:image" content="http://yoursite.com/img/socket.jpg">
 
@@ -118,9 +118,9 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/06/02/网络编程基本函数/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/06/15/网络编程基础(一)/"/>
 
-  <title> linux网络socket编程基础 | Xiegonghai's Blog </title>
+  <title> linux网络socket编程(一) | Xiegonghai's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -260,7 +260,7 @@
             
             
               
-                linux网络socket编程基础
+                linux网络socket编程(一)
               
             
           </h1>
@@ -272,8 +272,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-02T01:01:59+08:00" content="2016-06-02">
-              2016-06-02
+            <time itemprop="dateCreated" datetime="2016-06-15T01:01:59+08:00" content="2016-06-15">
+              2016-06-15
             </time>
           </span>
 
@@ -302,8 +302,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/02/网络编程基本函数/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/02/网络编程基本函数/" itemprop="commentsCount"></span>
+                <a href="/2016/06/15/网络编程基础(一)/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/15/网络编程基础(一)/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -370,16 +370,16 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/05/01/tinyhttpd-轻量级httpServer的源码实现/" rel="next" title="tinyhttpd-轻量级httpServer的源码实现">
-                <i class="fa fa-chevron-left"></i> tinyhttpd-轻量级httpServer的源码实现
+              <a href="/2016/06/11/布隆过滤器/" rel="next" title="布隆过滤器浅谈">
+                <i class="fa fa-chevron-left"></i> 布隆过滤器浅谈
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/06/03/设计一个LRU Cache/" rel="prev" title="设计一个LRU-Cache">
-                设计一个LRU-Cache <i class="fa fa-chevron-right"></i>
+              <a href="/2016/06/18/网络编程基础(二)/" rel="prev" title="linux网络socket编程(二)">
+                linux网络socket编程(二) <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -416,8 +416,8 @@ window._bd_share_config=
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/06/02/网络编程基本函数/"
-           data-title="linux网络socket编程基础" data-url="http://yoursite.com/2016/06/02/网络编程基本函数/">
+      <div class="ds-thread" data-thread-key="2016/06/15/网络编程基础(一)/"
+           data-title="linux网络socket编程(一)" data-url="http://yoursite.com/2016/06/15/网络编程基础(一)/">
       </div>
     
   </div>
@@ -462,7 +462,7 @@ window._bd_share_config=
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">14</span>
+              <span class="site-state-item-count">15</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
