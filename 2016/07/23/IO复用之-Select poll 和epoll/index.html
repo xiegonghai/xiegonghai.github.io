@@ -1,0 +1,747 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Xiegonghai's Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="I/O复用应用场景
+当客户同时处理多个描述符(交互式输入和网络套接字)TCP服务器同时处理监听套接字和已连接套接字既要处理TCP又要处理UDP处理多个服务或者多个协议
+
+五种I/O模型阻塞式I/O
+
+
+阻塞式I/O
+I/O复用信号驱动式I/O异步I/O
+
+五种I/O模型总结
+
+Selectselect的第一个参数为fdset集合中最大描述符值加1，select对应于内核中的sys_select调用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux I/O复用之-select epoll">
+<meta property="og:url" content="http://yoursite.com/2016/07/23/IO复用之-Select poll 和epoll/index.html">
+<meta property="og:site_name" content="Xiegonghai's Blog">
+<meta property="og:description" content="I/O复用应用场景
+当客户同时处理多个描述符(交互式输入和网络套接字)TCP服务器同时处理监听套接字和已连接套接字既要处理TCP又要处理UDP处理多个服务或者多个协议
+
+五种I/O模型阻塞式I/O
+
+
+阻塞式I/O
+I/O复用信号驱动式I/O异步I/O
+
+五种I/O模型总结
+
+Selectselect的第一个参数为fdset集合中最大描述符值加1，select对应于内核中的sys_select调用">
+<meta property="og:image" content="http://yoursite.com/img/io1.jpg">
+<meta property="og:image" content="http://yoursite.com/img/io2.jpg">
+<meta property="og:image" content="http://yoursite.com/img/io3.jpg">
+<meta property="og:image" content="http://yoursite.com/img/io4.jpg">
+<meta property="og:image" content="http://yoursite.com/img/io5.jpg">
+<meta property="og:image" content="http://yoursite.com/img/io-summary.jpg">
+<meta property="og:updated_time" content="2016-08-11T01:06:27.603Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux I/O复用之-select epoll">
+<meta name="twitter:description" content="I/O复用应用场景
+当客户同时处理多个描述符(交互式输入和网络套接字)TCP服务器同时处理监听套接字和已连接套接字既要处理TCP又要处理UDP处理多个服务或者多个协议
+
+五种I/O模型阻塞式I/O
+
+
+阻塞式I/O
+I/O复用信号驱动式I/O异步I/O
+
+五种I/O模型总结
+
+Selectselect的第一个参数为fdset集合中最大描述符值加1，select对应于内核中的sys_select调用">
+<meta name="twitter:image" content="http://yoursite.com/img/io1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/07/23/IO复用之-Select poll 和epoll/"/>
+
+  <title> linux I/O复用之-select epoll | Xiegonghai's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Xiegonghai's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">梦想还是要有的</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                linux I/O复用之-select epoll
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-23T01:01:59+08:00" content="2016-07-23">
+              2016-07-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/23/IO复用之-Select poll 和epoll/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/23/IO复用之-Select poll 和epoll/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="I-O复用应用场景"><a href="#I-O复用应用场景" class="headerlink" title="I/O复用应用场景"></a>I/O复用应用场景</h2><blockquote>
+<p>当客户同时处理多个描述符(交互式输入和网络套接字)<br>TCP服务器同时处理监听套接字和已连接套接字<br>既要处理TCP又要处理UDP<br>处理多个服务或者多个协议</p>
+</blockquote>
+<h2 id="五种I-O模型"><a href="#五种I-O模型" class="headerlink" title="五种I/O模型"></a>五种I/O模型</h2><p><strong>阻塞式I/O</strong></p>
+<div align="center"><br><img src="img/io1.jpg" alt="CSDN图标"><br></div>
+
+<p><strong>阻塞式I/O</strong></p>
+<div align="center"><br><img src="img/io2.jpg" alt="CSDN图标"><br></div><br><strong>I/O复用</strong><br><div align="center"><br><img src="img/io3.jpg" alt="CSDN图标"><br></div><br><strong>信号驱动式I/O</strong><br><div align="center"><br><img src="img/io4.jpg" alt="CSDN图标"><br></div><br><strong>异步I/O</strong><br><div align="center"><br><img src="img/io5.jpg" alt="CSDN图标"><br></div>
+
+<h3 id="五种I-O模型总结"><a href="#五种I-O模型总结" class="headerlink" title="五种I/O模型总结"></a>五种I/O模型总结</h3><div align="center"><br><img src="img/io-summary.jpg" alt="CSDN图标"><br></div>
+
+<h2 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h2><p>select的第一个参数为fdset集合中最大描述符值加1，select对应于内核中的sys_select调用，sys_select首先将第二三四个参数指向的fd_set拷贝到内核，然后对每个被SET的描述符进行poll，并记录在临时结果中(fdset)，如果有事件发生，select会将临时结果写到用户空间并返回，当轮询一遍后没有任何事件发生，如果指定了超时时间，则select会睡眠到超时，睡眠结束后再进行下一次轮询，并将临时结果写到用户空间，然后返回。select返回后，需要逐一检查关注的描述符是否被SET（事件是否发生）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds, <span class="keyword">struct</span> timeval* timeout)</span></span>;</div></pre></td></tr></table></figure></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">参数                  描述</div><div class="line">nfds             sets的文件描述符的最大值</div><div class="line">readfds          fd_set type 类型，只读的描述符集 </div><div class="line">writefds         fd_set type 类型，只写的描述符集 </div><div class="line">errorfds         fd_set type 类型，错误的描述符集 </div><div class="line">timeout          超时等待时间</div></pre></td></tr></table></figure>
+<p>修改fd_set类型的参数，用到以下操作<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> fd_set</div><div class="line">&#123;</div><div class="line">    u_int fd_count;</div><div class="line">    <span class="keyword">int</span> fd_array[FD_SETSIZE];</div><div class="line">&#125;</div><div class="line"><span class="comment">//fd_array可SIZE*8个socket</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">FD_ISSET</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>;</div><div class="line"><span class="comment">//返回值：若fd在描述符集中则返回非0值，否则返回0</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_CLR</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>; <span class="comment">//fd指描述符</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_SET</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_ZERO</span><span class="params">(fd_set *fdset)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>整体运行过程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> sock;</div><div class="line">FILE *fp;</div><div class="line"><span class="keyword">struct</span> fd_set fds;</div><div class="line"><span class="keyword">struct</span> timeval timeout=&#123;<span class="number">3</span>,<span class="number">0</span>&#125;; <span class="comment">//select等待3秒，3秒轮询，要非阻塞就置0</span></div><div class="line"><span class="keyword">char</span> buffer[<span class="number">256</span>]=&#123;<span class="number">0</span>&#125;; <span class="comment">//256字节的接收缓冲区</span></div><div class="line"><span class="comment">//假定已经建立UDP连接，具体过程不写，简单，当然TCP也同理，主机ip和port都已经给定，要写的文件已经打开</span></div><div class="line">sock=socket(...);</div><div class="line">bind(...);</div><div class="line">fp=fopen(...);</div><div class="line"><span class="keyword">while</span>(<span class="number">1</span>)</div><div class="line">&#123;</div><div class="line">    FD_ZERO(&amp;amp;fds); <span class="comment">//每次循环都要清空集合，否则不能检测描述符变化</span></div><div class="line">    FD_SET(sock,&amp;amp;fds); <span class="comment">//添加描述符</span></div><div class="line">    FD_SET(fp,&amp;amp;fds); <span class="comment">//同上</span></div><div class="line">    maxfdp=sock&amp;gt;fp?sock+<span class="number">1</span>:fp+<span class="number">1</span>; <span class="comment">//描述符最大值加1</span></div><div class="line">    <span class="comment">// for(int i =0 ;i &amp;lt; maxfds; i++) if(FD_ISSET()) &#123; &#125;</span></div><div class="line">    <span class="keyword">switch</span>(select(maxfdp,&amp;amp;fds,&amp;amp;fds,<span class="literal">NULL</span>,&amp;amp;timeout)) <span class="comment">//select使用</span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="number">-1</span>: <span class="built_in">exit</span>(<span class="number">-1</span>);<span class="keyword">break</span>; <span class="comment">//select错误，退出程序</span></div><div class="line">        <span class="keyword">case</span> <span class="number">0</span>:<span class="keyword">break</span>; <span class="comment">//再次轮询</span></div><div class="line">        <span class="keyword">default</span>:</div><div class="line">            <span class="keyword">if</span>(FD_ISSET(sock,&amp;amp;fds)) <span class="comment">//测试sock是否可读，即是否网络上有数据</span></div><div class="line">            &#123;</div><div class="line">                recvfrom(sock,buffer,<span class="number">256</span>,.....);<span class="comment">//接受网络数据</span></div><div class="line">                <span class="keyword">if</span>(FD_ISSET(fp,&amp;amp;fds)) <span class="comment">//测试文件是否可写</span></div><div class="line">                fwrite(fp,buffer...);<span class="comment">//写入文件</span></div><div class="line"> ......</div><div class="line">            &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h2><p>poll函数类似于 select，可用于任何类型的文件描述符，与 select 不同，poll不是为每个状态（可读性、可写性和异常状态）构造一个描述符集，而是构造一个pollfd 结构数组向内核传递需要关注的事件，故没有描述符个数的限制，每个数组元素指定一个描述符编号以及对其所关心的状态，pollfd中的events字段和revents字段分别用于标示关注的事件和发生的事件。</p>
+<p>poll的实现机制与select类似，其对应内核中的sys_poll，只不过poll向内核传递pollfd数组，然后对pollfd中的每个描述符进行poll，poll返回后，需要对pollfd中的每个元素检查其revents值，来判断事件是否发生。</p>
+<p>返回值：</p>
+<p>-1：有错误产生<br>0：超时时间到，而且没有描述符有状态变化<br>大于0：有状态变化的描述符个数<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span><span class="params">(<span class="keyword">struct</span> pollfd fdarray[],<span class="keyword">nfds_t</span> nfds,<span class="keyword">int</span> timeout)</span></span>;</div><div class="line"><span class="keyword">struct</span> pollfd&#123;</div><div class="line">    <span class="keyword">int</span> fd; <span class="comment">//需要检查的文件描述符</span></div><div class="line">    <span class="keyword">short</span> events; <span class="comment">//等待的需要测试事件</span></div><div class="line">    <span class="keyword">short</span> revents; <span class="comment">//实际发生了的事件，也就是返回结果</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>应将每个数组元素的events成员设置为下图所示的值。通过这些值告诉内核我们对该描述符关心的是什么。返回时，内核设置revents成员，以说明对于该描述符已经发生了什么事件。（注意，poll没有更改events成员，这与select不同，select修改其参数以指示哪一个描述符已准备好了。）</p>
+<p>timeout == -1 永远等待。当所指定的描述符中的一个已准备好，或捕捉到一个信号时则返回。如果捕捉到一个信号，则poll返回-1，errno设置为EINTR timeout == 0 不等待 timeout &gt; 0 等待timeout毫秒，如果已超时但是还没有一个描述符准备好，则返回值是0。</p>
+<p>运行流程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> pollfd fds[IN_FILES];</div><div class="line"><span class="keyword">char</span> buf[MAX_BUFFER_SIZE];</div><div class="line"><span class="keyword">int</span> i,res,real_read, maxfd;</div><div class="line">fds[<span class="number">0</span>].fd = <span class="number">0</span>;</div><div class="line"><span class="keyword">if</span>((fds[<span class="number">1</span>].fd=open(&amp;quot;data1&amp;quot;,O_RDONLY|O_NONBLOCK)) &amp;lt; <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,&amp;quot;open data1 error:%s&amp;quot;,strerror(errno));</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span>((fds[<span class="number">2</span>].fd=open(&amp;quot;data2&amp;quot;,O_RDONLY|O_NONBLOCK)) &amp;lt; <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,&amp;quot;open data2 error:%s&amp;quot;,strerror(errno));</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &amp;lt; IN_FILES; i++)</div><div class="line">&#123;</div><div class="line">    fds[i].events = POLLIN;</div><div class="line">&#125;</div><div class="line"><span class="keyword">while</span>(fds[<span class="number">0</span>].events || fds[<span class="number">1</span>].events || fds[<span class="number">2</span>].events)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (poll(fds, IN_FILES, TIME_DELAY) &amp;lt;= <span class="number">0</span>)</div><div class="line">    &#123;</div><div class="line">        <span class="built_in">printf</span>(&amp;quot;Poll error\n&amp;quot;);</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i&amp;lt; IN_FILES; i++)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">if</span> (fds[i].revents)</div><div class="line">        &#123;</div><div class="line">            <span class="built_in">memset</span>(buf, <span class="number">0</span>, MAX_BUFFER_SIZE);</div><div class="line">            real_read = read(fds[i].fd, buf, MAX_BUFFER_SIZE);</div><div class="line">            <span class="keyword">if</span> (real_read &amp;lt; <span class="number">0</span>)</div><div class="line">            &#123;</div><div class="line">                <span class="keyword">if</span> (errno != EAGAIN)</div><div class="line">                &#123;</div><div class="line">                    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (!real_read)</div><div class="line">            &#123;</div><div class="line">                close(fds[i].fd);</div><div class="line">                fds[i].events = <span class="number">0</span>;</div><div class="line">            ......</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><p>epoll通过epoll_create创建一个用于epoll轮询的描述符，通过epoll_ctl添加/修改/删除事件，通过epoll_wait 检查事件，epoll_wait 的第二个参数用于存放结果。</p>
+<p>epoll与select、poll不同，首先，其不用每次调用都向内核拷贝事件描述信息，在第一次调用后，事件信息就会与对应的epoll描述符关联起来。另外epoll不是通过轮询，而是通过在等待的描述符上注册回调函数，当事件发生时，回调函数负责把发生的事件存储在就绪事件链表中，最后写到用户空间。</p>
+<p>epoll返回后，该参数指向的缓冲区中即为发生的事件，对缓冲区中每个元素进行处理即可，而不需要像poll、select那样进行轮询检查。</p>
+<p>系统调用：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大。</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</div><div class="line"><span class="comment">/*</span></div><div class="line">epoll的事件注册函数，它与select()是在监听事件时告诉内核要监听什么类型的事件不同，而是在这里先注册要监听的事件类型。第一个参数是epoll_create()的返回值，第二个参数表示动作，用三个宏来表示：</div><div class="line">EPOLL_CTL_ADD：注册新的fd到epfd中；</div><div class="line">EPOLL_CTL_MOD：修改已经注册的fd的监听事件；</div><div class="line">EPOLL_CTL_DEL：从epfd中删除一个fd；</div><div class="line">第三个参数是需要监听的fd，第四个参数是告诉内核需要监听什么事。</div><div class="line">*/</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, <span class="keyword">struct</span> epoll_event *event)</span></span>;</div><div class="line"><span class="keyword">struct</span> epoll_event结构如下：</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> epoll_data &#123;</div><div class="line">    <span class="keyword">void</span> *ptr;</div><div class="line">    <span class="keyword">int</span> fd;</div><div class="line">    <span class="keyword">__uint32_t</span> u32;</div><div class="line">    <span class="keyword">__uint64_t</span> u64;</div><div class="line">&#125; <span class="keyword">epoll_data_t</span>;</div><div class="line"><span class="keyword">struct</span> epoll_event</div><div class="line">&#123;</div><div class="line">    <span class="keyword">__uint32_t</span> events; <span class="comment">//Epoll events</span></div><div class="line">    <span class="keyword">epoll_data_t</span> data; <span class="comment">//User data variable</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>events可以是以下几个宏的集合：<br>EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；<br>EPOLLOUT：表示对应的文件描述符可以写；<br>EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；<br>EPOLLERR：表示对应的文件描述符发生错误；<br>EPOLLHUP：表示对应的文件描述符被挂断；<br>EPOLLET： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。<br>EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里<br>运行流程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (n = <span class="number">0</span>; n &amp;lt; nfds; ++n) &#123;</div><div class="line">    <span class="keyword">if</span> (events[n].data.fd == listener) &#123; <span class="comment">// 如果是主socket的事件的话，则表示</span></div><div class="line">    <span class="comment">// 有新连接进入了，进行新连接的处理。</span></div><div class="line">    client = accept(listener, (<span class="keyword">struct</span> sockaddr *) &amp;amp;local, &amp;amp;addrlen);</div><div class="line">    <span class="keyword">if</span> (client &amp;lt; <span class="number">0</span>)&#123;</div><div class="line">    perror(&amp;quot;accept&amp;quot;);</div><div class="line">    <span class="keyword">continue</span>;</div><div class="line">&#125;</div><div class="line">setnonblocking(client); <span class="comment">// 将新连接置于非阻塞模式</span></div><div class="line">ev.events = EPOLLIN | EPOLLET; <span class="comment">// 并且将新连接也加入EPOLL的监听队列。</span></div><div class="line"><span class="comment">// 注意，这里的参数EPOLLIN | EPOLLET并没有设置对写socket的监听，</span></div><div class="line"><span class="comment">// 如果有写操作的话，这个时候epoll是不会返回事件的，如果要对写操作</span></div><div class="line"><span class="comment">// 也监听的话，应该是EPOLLIN | EPOLLOUT | EPOLLET</span></div><div class="line">ev.data.fd = client;</div><div class="line"><span class="keyword">if</span> (epoll_ctl(kdpfd, EPOLL_CTL_ADD, client, &amp;amp;ev) &amp;lt; <span class="number">0</span>) &#123;</div><div class="line">    <span class="comment">// 设置好event之后，将这个新的event通过epoll_ctl加入到epoll的监听队列里面，</span></div><div class="line">    <span class="comment">// 这里用EPOLL_CTL_ADD来加一个新的epoll事件，通过EPOLL_CTL_DEL来减少一个</span></div><div class="line">    <span class="comment">// epoll事件，通过EPOLL_CTL_MOD来改变一个事件的监听方式。</span></div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, &amp;quot;epoll <span class="built_in">set</span> insertion error: fd=%d0, client);</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">&#125;</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (event[n].events &amp;amp; EPOLLIN) &#123; <span class="comment">// 如果是已经连接的用户，并且收到数据，</span></div><div class="line">    <span class="comment">// 那么进行读入</span></div><div class="line">    <span class="keyword">int</span> sockfd_r;</div><div class="line">    <span class="keyword">if</span> ((sockfd_r = event[n].data.fd) &amp;lt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">continue</span>;</div><div class="line">    read(sockfd_r, buffer, MAXSIZE);</div><div class="line">    <span class="comment">// 修改sockfd_r上要处理的事件为EPOLLOUT</span></div><div class="line">    ev.data.fd = sockfd_r;</div><div class="line">    ev.events = EPOLLOUT | EPOLLET;</div><div class="line">    epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd_r, &amp;amp;ev)</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (event[n].events &amp;amp; EPOLLOUT) &#123; <span class="comment">// 如果有数据发送</span></div><div class="line">    <span class="keyword">int</span> sockfd_w = events[n].data.fd;</div><div class="line">    write(sockfd_w, buffer, <span class="keyword">sizeof</span>(buffer));</div><div class="line">    <span class="comment">// 修改sockfd_w上要处理的事件为EPOLLIN</span></div><div class="line">    ev.data.fd = sockfd_w;</div><div class="line">    ev.events = EPOLLIN | EPOLLET;</div><div class="line">    epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd_r, &amp;amp;ev)</div><div class="line">&#125;</div><div class="line">    do_use_fd(events[n].data.fd);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>《UNIX环境高级编程》<br>《UNIX网络编程I卷》<br> <a href="http://armsword.com/2014/03/07/linux-io-multiplexing/" target="_blank" rel="external">http://armsword.com/2014/03/07/linux-io-multiplexing/</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/20/并发编程-多进程-IO复用-多线程/" rel="next" title="并发编程之-多进程-I/O复用-多线程">
+                <i class="fa fa-chevron-left"></i> 并发编程之-多进程-I/O复用-多线程
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+  </div>
+  
+<div class="bdsharebuttonbox">
+<a href="#" class="bds_more" data-cmd="more"></a>
+<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+<a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+<a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+<script>
+window._bd_share_config=
+{"common":
+  {"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/23/IO复用之-Select poll 和epoll/"
+           data-title="linux I/O复用之-select epoll" data-url="http://yoursite.com/2016/07/23/IO复用之-Select poll 和epoll/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/home.jpg"
+               alt="xiegonghai" />
+          <p class="site-author-name" itemprop="name">xiegonghai</p>
+          <p class="site-description motion-element" itemprop="description">while(question)just thinking;</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">17</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/justdoithai" title="我的csdn博客" target="_blank">我的csdn博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cplusplus.com/reference/algorithm" title="C++标准库" target="_blank">C++标准库</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xiegonghai" title="我的github" target="_blank">我的github</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://net.pku.edu.cn/~yhf/linux_c/" title="linux_C函数" target="_blank">linux_C函数</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://man.linuxde.net/" title="linux命令" target="_blank">linux命令</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://tool.oschina.net/" title="Tools" target="_blank">Tools</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-O复用应用场景"><span class="nav-number">1.</span> <span class="nav-text">I/O复用应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五种I-O模型"><span class="nav-number">2.</span> <span class="nav-text">五种I/O模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#五种I-O模型总结"><span class="nav-number">2.1.</span> <span class="nav-text">五种I/O模型总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Select"><span class="nav-number">3.</span> <span class="nav-text">Select</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#poll"><span class="nav-number">4.</span> <span class="nav-text">poll</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#epoll"><span class="nav-number">5.</span> <span class="nav-text">epoll</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xiegonghai</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"doit"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
