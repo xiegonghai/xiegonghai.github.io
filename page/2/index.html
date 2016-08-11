@@ -260,6 +260,130 @@
             
               
                 
+                <a class="post-title-link" href="/2016/05/10/编辑距离/" itemprop="url">
+                  编辑距离
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-10T17:41:59+08:00" content="2016-05-10">
+              2016-05-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Data structure and Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/10/编辑距离/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/10/编辑距离/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="编辑距离概念描述"><a href="#编辑距离概念描述" class="headerlink" title="编辑距离概念描述"></a>编辑距离概念描述</h2><p>编辑距离，又称Levenshtein距离，是指两个字串之间，由一个转成另一个所需的最少编辑操作次数。许可的编辑操作包括将一个字符替换成另一个字符，插入一个字符，删除一个字符。<br>例如将kitten一字转成sitting：</p>
+<p>sitten （k→s）<br>sittin （e→i）<br>sitting （→g）<br>俄罗斯科学家Vladimir Levenshtein在1965年提出这个概念。<br>问题：找出字符串的编辑距离，即把一个字符串s1最少经过多少步操作变成编程字符串s2，操作有三种，添加一个字符，删除一个字符，修改一个字符</p>
+<h2 id="最短编辑距离"><a href="#最短编辑距离" class="headerlink" title="最短编辑距离"></a>最短编辑距离</h2><p>思路：动态规划</p>
+<p>edit(i, j):它表示第一个字符串的长度为i的子串到第二<br>个字符串的长度为j的子串的编辑距离。</p>
+<p>状态转移方程：<br>edit(i, j) == min{ edit(i-1, j) + 1, edit(i, j-1) + 1, edit(i-1, j-1) +(s[i]==s[j]?0:1) },i&gt;0,j&gt;0最后表示末尾字符是否相等<br>边界情况：<br>if i == 0 且 j == 0，edit(i, j) = 0<br>if i == 0 且 j &gt; 0，edit(i, j) = j<br>if i &gt; 0 且j == 0，edit(i, j) = i</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/05/01/tinyhttpd-轻量级httpServer的源码实现/" itemprop="url">
                   tinyhttpd-轻量级httpServer的源码实现
                 </a>
@@ -1178,7 +1302,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">17</span>
+              <span class="site-state-item-count">18</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
