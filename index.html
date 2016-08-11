@@ -1124,6 +1124,140 @@
             
               
                 
+                <a class="post-title-link" href="/2016/06/10/字典树实现/" itemprop="url">
+                  字典树实现
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-10T21:41:56+08:00" content="2016-06-10">
+              2016-06-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Data structure and Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/10/字典树实现/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/10/字典树实现/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>Trie树，又称字典树，单词查找树或者前缀树，是一种用于快速检索的多叉树结构，如英文字母的字典树是一个26叉树，数字的字典树是一个10叉树。</p>
+<h3 id="Trie树的基本性质可以归纳为："><a href="#Trie树的基本性质可以归纳为：" class="headerlink" title="Trie树的基本性质可以归纳为："></a>Trie树的基本性质可以归纳为：</h3><p>（1）根节点不包含字符，除根节点意外每个节点只包含一个字符。</p>
+<p>（2）从根节点到某一个节点，路径上经过的字符连接起来，为该节点对应的字符串。</p>
+<p>（3）每个节点的所有子节点包含的字符串不相同。</p>
+<h3 id="Trie树复杂度分析"><a href="#Trie树复杂度分析" class="headerlink" title="Trie树复杂度分析"></a>Trie树复杂度分析</h3><p>（1） 插入、查找的时间复杂度均为O(N)，其中N为字符串长度。</p>
+<p>（2） 空间复杂度是26^n级别的，非常庞大（可采用双数组实现改善）。</p>
+<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><p>Trie是一种非常简单高效的数据结构，但有大量的应用实例<br>1） 字符串检索<br>事先将已知的一些字符串（字典）的有关信息保存到trie树里，查找另外一些未知字符串是否出现过或者出现频率</p>
+<p>举例：<br>@  给出N 个单词组成的熟词表，以及一篇全用小写英文书写的文章，请你按最早出现的顺序写出所有不在熟词表中的生词</p>
+<p>@  给出一个词典，其中的单词为不良单词。单词均为小写字母。再给出一段文本，文本的每一行也由小写字母构成。判断文本中是否含有任何不良单词。例如，若rob是不良单词，那么文本problem含有不良单词</p>
+<p>2）字符串最长公共前缀</p>
+<p>Trie树利用多个字符串的公共前缀来节省存储空间，反之，当我们把大量字符串存储到一棵trie树上时，我们可以快速得到某些字符串的公共前缀</p>
+<p>@ 给出N 个小写英文字母串，以及Q 个询问，即询问某两个串的最长公共前缀的长度是多少？</p>
+<p>解决方案：首先对所有的串建立其对应的字母树。此时发现，对于两个串的最长公共前缀的长度即它们所在结点的公共祖先个数，于是，问题就转化为了离线（Offline）的最近公共祖先（Least Common Ancestor，简称LCA）问题</p>
+<p>3）排序</p>
+<p>Trie树是一棵多叉树，只要先序遍历整棵树，输出相应的字符串便是按字典序排序的结果</p>
+<h2 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxBranchNum = <span class="number">26</span>;<span class="comment">//如果区分大小写，可以扩展到52</span></div><div class="line"></div><div class="line"><span class="comment">/*定义trie树结点*/</span></div><div class="line"><span class="keyword">class</span> TrieNode</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">     <span class="keyword">char</span>* word; <span class="comment">//节点表示的单词</span></div><div class="line">     <span class="keyword">int</span> count;  <span class="comment">//单词出现的次数</span></div><div class="line">     TrieNode* nextBranch[MaxBranchNum];<span class="comment">//指向26个字符节点的指针</span></div><div class="line"><span class="keyword">public</span>:</div><div class="line">     TrieNode() : word(<span class="literal">NULL</span>),count(<span class="number">0</span>)</div><div class="line">     &#123;</div><div class="line">          <span class="built_in">memset</span>(nextBranch,<span class="literal">NULL</span>,<span class="keyword">sizeof</span>(TrieNode*) * MaxBranchNum);</div><div class="line">     &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">/*定义类Trie*/</span></div><div class="line"><span class="keyword">class</span> Trie</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">     Trie();</div><div class="line">     ~Trie();</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Insert</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//插入字符串str</span></div><div class="line">     <span class="function"><span class="keyword">bool</span> <span class="title">Search</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str,<span class="keyword">int</span>&amp; count)</span></span>;<span class="comment">//查找字符串str，并返回出现的次数</span></div><div class="line">     <span class="function"><span class="keyword">bool</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//删除字符串str</span></div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">PrintALL</span><span class="params">()</span></span>;<span class="comment">//打印trie树中所有的结点</span></div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">PrintPre</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//打印以str为前缀的单词</span></div><div class="line"><span class="keyword">private</span>:</div><div class="line">     TrieNode* pRoot;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Destory</span><span class="params">(TrieNode* pRoot)</span></span>;</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">(TrieNode* pRoot)</span></span>;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">Trie::Trie()</div><div class="line">&#123;</div><div class="line">     pRoot = <span class="keyword">new</span> TrieNode();<span class="comment">//注意字典树的根不存放字符</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">Trie::~Trie()</div><div class="line">&#123;</div><div class="line">     Destory(pRoot);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*插入一个单词*/</span></div><div class="line"><span class="keyword">void</span> Trie::Insert(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(<span class="literal">NULL</span> != str);</div><div class="line">     <span class="keyword">int</span> index;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;str[i];i++)</div><div class="line">     &#123;</div><div class="line">          index = str[i] - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          <span class="keyword">if</span> (<span class="literal">NULL</span> == pLoc-&gt;nextBranch[index])<span class="comment">//该单词的前缀不存在，要生成该结点</span></div><div class="line">          &#123;</div><div class="line">               pLoc-&gt;nextBranch[index] = <span class="keyword">new</span> TrieNode();</div><div class="line">          &#125;</div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pLoc-&gt;word)<span class="comment">//单词已经出现过</span></div><div class="line">     &#123;</div><div class="line">          pLoc-&gt;count++;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">else</span>    <span class="comment">//单词没有出现过，应该插入单词</span></div><div class="line">     &#123;</div><div class="line">          pLoc-&gt;count++;</div><div class="line">          pLoc-&gt;word = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="built_in">strlen</span>(str) + <span class="number">1</span>];</div><div class="line">          assert(<span class="literal">NULL</span> != pLoc-&gt;word);</div><div class="line">          <span class="built_in">strcpy</span>(pLoc-&gt;word,str);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*查找一个单词，如果存在该单词，则返回其出现次数*/</span></div><div class="line"><span class="keyword">bool</span> Trie::Search(<span class="keyword">const</span> <span class="keyword">char</span>* str,<span class="keyword">int</span>&amp; count)</div><div class="line">&#123;</div><div class="line">     assert(str != <span class="literal">NULL</span>);</div><div class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc &amp;&amp; pLoc-&gt;word)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          count = pLoc-&gt;count;</div><div class="line">          <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> Trie::Remove(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(<span class="literal">NULL</span> != str);</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc &amp;&amp; pLoc-&gt; word)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          <span class="keyword">delete</span>[] pLoc-&gt;word;</div><div class="line">          pLoc-&gt;word = <span class="literal">NULL</span>;</div><div class="line">          <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Trie::PrintALL()</div><div class="line">&#123;</div><div class="line">     Print(pRoot);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Trie::PrintPre(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(str != <span class="literal">NULL</span>);</div><div class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          Print(pLoc);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*按照字典顺序输出以pRoot为根的所有的单词*/</span></div><div class="line"><span class="keyword">void</span> Trie::Print(TrieNode* pRoot)</div><div class="line">&#123;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> == pRoot)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//输出单词</span></div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pRoot-&gt;word)</div><div class="line">     &#123;</div><div class="line">          <span class="built_in">cout</span>&lt;&lt;pRoot-&gt;word&lt;&lt;<span class="string">" "</span>&lt;&lt;pRoot-&gt;count&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//递归处理分支</span></div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; MaxBranchNum;i++)</div><div class="line">     &#123;</div><div class="line">          Print(pRoot-&gt;nextBranch[i]);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*销毁trie树*/</span></div><div class="line"><span class="keyword">void</span> Trie::Destory(TrieNode* pRoot)</div><div class="line">&#123;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> == pRoot)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; MaxBranchNum;i++)</div><div class="line">     &#123;</div><div class="line">          Destory(pRoot-&gt;nextBranch[i]);</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//销毁单词占得空间</span></div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pRoot-&gt;word)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">delete</span> []pRoot-&gt;word;</div><div class="line">          pRoot-&gt;word = <span class="literal">NULL</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">delete</span> pRoot;<span class="comment">//销毁结点</span></div><div class="line">     pRoot = <span class="literal">NULL</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">     Trie t;</div><div class="line">     <span class="built_in">string</span> str;</div><div class="line">     <span class="comment">//int count = -1;</span></div><div class="line">     <span class="keyword">int</span> n,m,count;</div><div class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)</div><div class="line">    &#123;</div><div class="line">         <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;++i)</div><div class="line">          &#123;</div><div class="line">               <span class="built_in">cin</span>&gt;&gt;str;</div><div class="line">               t.Insert(str.c_str());</div><div class="line">          &#125;</div><div class="line">          <span class="built_in">cin</span>&gt;&gt;m;</div><div class="line">          <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;++i)</div><div class="line">          &#123;</div><div class="line">               <span class="built_in">cin</span>&gt;&gt;str;</div><div class="line">               <span class="keyword">bool</span> isFind = t.Search(str.c_str(),count);</div><div class="line">               <span class="built_in">cout</span>&lt;&lt;<span class="string">"isfind:"</span>&lt;&lt;isFind&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">               <span class="keyword">if</span>(isFind)<span class="built_in">cout</span>&lt;&lt;count&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">               <span class="keyword">else</span> <span class="built_in">cout</span>&lt;&lt;<span class="number">0</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">          &#125;</div><div class="line">    &#125;</div><div class="line">     system(<span class="string">"pause"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/06/09/Leetcode经典题-求数据流的中位数/" itemprop="url">
                   求数据流的中位数
                 </a>
@@ -1479,138 +1613,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/04/09/redis中dict实现以及常用的哈希方法/" itemprop="url">
-                  redis中dict实现以及常用的哈希方法
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-09T00:38:59+08:00" content="2016-04-09">
-              2016-04-09
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/04/09/redis中dict实现以及常用的哈希方法/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/09/redis中dict实现以及常用的哈希方法/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="redis中dict解析"><a href="#redis中dict解析" class="headerlink" title="redis中dict解析"></a>redis中dict解析</h2><p> 最近看了redis的源码的基本数据结构部分，redis中dict能够根据key快速查找其value，用哈希实现，解决冲突用拉链法，将所有关键字为同义词的结点链接在同一个单链表中，以下是dict的实现结构图<br><img src="http://pic002.cnblogs.com/images/2011/81339/2011052111471677.png" alt="file-list"></p>
-<h2 id="dict源码定义"><a href="#dict源码定义" class="headerlink" title="dict源码定义"></a>dict源码定义</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> dictEntry &#123;</div><div class="line">    <span class="keyword">void</span> *key;</div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        <span class="keyword">void</span> *val;</div><div class="line">        <span class="keyword">uint64_t</span> u64;</div><div class="line">        <span class="keyword">int64_t</span> s64;</div><div class="line">        <span class="keyword">double</span> d;</div><div class="line">    &#125; v;</div><div class="line">    <span class="keyword">struct</span> dictEntry *next;</div><div class="line">&#125; dictEntry;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> dictType &#123;</div><div class="line">    <span class="function"><span class="keyword">unsigned</span> <span class="title">int</span> <span class="params">(*hashFunction)</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *key)</span></span>;</div><div class="line">    <span class="keyword">void</span> *(*keyDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key);</div><div class="line">    <span class="keyword">void</span> *(*valDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *obj);</div><div class="line">    <span class="keyword">int</span> (*keyCompare)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key1, <span class="keyword">const</span> <span class="keyword">void</span> *key2);</div><div class="line">    <span class="keyword">void</span> (*keyDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *key);</div><div class="line">    <span class="keyword">void</span> (*valDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *obj);</div><div class="line">&#125; dictType;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> dictht &#123;</div><div class="line">    dictEntry **table;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</div><div class="line">&#125; dictht;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> dict &#123;</div><div class="line">    dictType *type;</div><div class="line">    <span class="keyword">void</span> *privdata;</div><div class="line">    dictht ht[<span class="number">2</span>];</div><div class="line">    <span class="keyword">long</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> iterators; <span class="comment">/* number of iterators currently running */</span></div><div class="line">&#125; dict;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> dictIterator &#123;</div><div class="line">    dict *d;</div><div class="line">    <span class="keyword">long</span> index;</div><div class="line">    <span class="keyword">int</span> table, safe;</div><div class="line">    dictEntry *entry, *nextEntry;</div><div class="line">    <span class="comment">/* unsafe iterator fingerprint for misuse detection. */</span></div><div class="line">    <span class="keyword">long</span> <span class="keyword">long</span> fingerprint;</div><div class="line">&#125; dictIterator;</div></pre></td></tr></table></figure>
-<h2 id="实现的哈希方法汇总"><a href="#实现的哈希方法汇总" class="headerlink" title="实现的哈希方法汇总"></a>实现的哈希方法汇总</h2><p>dict实现里出现了这么一些哈希方法<br>Thoms wang 提到一个好的哈希函数应该具备以下两点:</p>
-<p>1.<strong>哈希函数是可逆的即，对于哈希函数输入值x和输出值y，如果存在f(x) = y，就一定存在g(y) = x。说白了，就是哈希函数可以将某一个值x转换成一个key，也可以把这个key还原回成x</strong></p>
-<p>2.<strong>哈希函数一个好的哈希函数应该容易造成雪崩效应。这里的雪崩效应是从比特位的角度出发的，它指的是，输入值1bit位的变化会造成输出值1/2的bit位发生变化。</strong><br>dic里主要出现了一下哈希方法</p>
-<blockquote>
-<p><strong>32 bit MixFunction</strong><br><strong>64 bit Mix Functions</strong><br><strong>MurmurHash2</strong><br><strong>djb hash</strong></p>
-</blockquote>
-<p>我们来看看源码：<br>a. <strong>32 bit MixFunction</strong><br>主要操作都是加法和移位操作的混合，加减，抑或都是可逆的操作<br>抑或也可以使得哈希数据分布均匀，这里有个关于为何使用抑或的解释<br><a href="http://stackoverflow.com/questions/5889238/why-is-xor-the-default-way-to-combine-hashes，" target="_blank" rel="external">http://stackoverflow.com/questions/5889238/why-is-xor-the-default-way-to-combine-hashes，</a><br>至于为何是以下操作的组合效果，估计作者也是进行了大量实验的<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Thomas Wang's 32 bit Mix Function */</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">dictIntHashFunction</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> key)</span></span></div><div class="line">&#123;</div><div class="line">    key += ~(key &lt;&lt; <span class="number">15</span>);</div><div class="line">    key ^=  (key &gt;&gt; <span class="number">10</span>);</div><div class="line">    key +=  (key &lt;&lt; <span class="number">3</span>);</div><div class="line">    key ^=  (key &gt;&gt; <span class="number">6</span>);</div><div class="line">    key += ~(key &lt;&lt; <span class="number">11</span>);</div><div class="line">    key ^=  (key &gt;&gt; <span class="number">16</span>);</div><div class="line">    <span class="keyword">return</span> key;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>b. <strong>64 bit Mix Functions</strong><br>用来生成一个字典在给定时间的指纹，当迭代器初始化和释放的时候检查时候检查其哈希指纹，若不一样说明用户进行了非法操作<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* A fingerprint is a 64 bit number that represents the state of the dictionary</span></div><div class="line"> * at a given time, it's just a few dict properties xored together.</div><div class="line"> * When an unsafe iterator is initialized, we get the dict fingerprint, and check</div><div class="line"> * the fingerprint again when the iterator is released.</div><div class="line"> * If the two fingerprints are different it means that the user of the iterator</div><div class="line"> * performed forbidden operations against the dictionary while iterating. */</div><div class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">long</span> <span class="title">dictFingerprint</span><span class="params">(dict *d)</span> </span>&#123;</div><div class="line">    <span class="keyword">long</span> <span class="keyword">long</span> integers[<span class="number">6</span>], hash = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> j;</div><div class="line"></div><div class="line">    integers[<span class="number">0</span>] = (<span class="keyword">long</span>) d-&gt;ht[<span class="number">0</span>].table;</div><div class="line">    integers[<span class="number">1</span>] = d-&gt;ht[<span class="number">0</span>].size;</div><div class="line">    integers[<span class="number">2</span>] = d-&gt;ht[<span class="number">0</span>].used;</div><div class="line">    integers[<span class="number">3</span>] = (<span class="keyword">long</span>) d-&gt;ht[<span class="number">1</span>].table;</div><div class="line">    integers[<span class="number">4</span>] = d-&gt;ht[<span class="number">1</span>].size;</div><div class="line">    integers[<span class="number">5</span>] = d-&gt;ht[<span class="number">1</span>].used;</div><div class="line"></div><div class="line">    <span class="comment">/* We hash N integers by summing every successive integer with the integer</span></div><div class="line">     * hashing of the previous sum. Basically:</div><div class="line">     *</div><div class="line">     * Result = hash(hash(hash(int1)+int2)+int3) ...</div><div class="line">     *</div><div class="line">     * This way the same set of integers in a different order will (likely) hash</div><div class="line">     * to a different number. */</div><div class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; <span class="number">6</span>; j++) &#123;</div><div class="line">        hash += integers[j];</div><div class="line">        <span class="comment">/* For the hashing step we use Tomas Wang's 64 bit integer hash. */</span></div><div class="line">        hash = (~hash) + (hash &lt;&lt; <span class="number">21</span>); <span class="comment">// hash = (hash &lt;&lt; 21) - hash - 1;</span></div><div class="line">        hash = hash ^ (hash &gt;&gt; <span class="number">24</span>);</div><div class="line">        hash = (hash + (hash &lt;&lt; <span class="number">3</span>)) + (hash &lt;&lt; <span class="number">8</span>); <span class="comment">// hash * 265</span></div><div class="line">        hash = hash ^ (hash &gt;&gt; <span class="number">14</span>);</div><div class="line">        hash = (hash + (hash &lt;&lt; <span class="number">2</span>)) + (hash &lt;&lt; <span class="number">4</span>); <span class="comment">// hash * 21</span></div><div class="line">        hash = hash ^ (hash &gt;&gt; <span class="number">28</span>);</div><div class="line">        hash = hash + (hash &lt;&lt; <span class="number">31</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> hash;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>c. <strong>MurmurHash2</strong><br>MurmurHash是一种很出名的非加密型哈希函数，适用于一般的哈希检索操作。目前有三个版本（MurmurHash1、MurmurHash2、MurmurHash3）。最新的是MurmurHash3，可以产生出32-bit或128-bit哈希值。redis中应用的是MurmurHash2，能产生32-bit或64-bit哈希值<br>每次取4个字节<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* MurmurHash2, by Austin Appleby</span></div><div class="line"> * Note - This code makes a few assumptions about how your machine behaves -</div><div class="line"> * 1. We can read a 4-byte value from any address without crashing</div><div class="line"> * 2. sizeof(int) == 4</div><div class="line"> *</div><div class="line"> * And it has a few limitations -</div><div class="line"> *</div><div class="line"> * 1. It will not work incrementally.</div><div class="line"> * 2. It will not produce the same results on little-endian and big-endian</div><div class="line"> *    machines.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">dictGenHashFunction</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *key, <span class="keyword">int</span> len)</span> </span>&#123;</div><div class="line">    <span class="comment">/* 'm' and 'r' are mixing constants generated offline.</span></div><div class="line">     They're not really 'magic', they just happen to work well.  */</div><div class="line">    <span class="keyword">uint32_t</span> seed = dict_hash_function_seed;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">uint32_t</span> m = <span class="number">0x5bd1e995</span>;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">int</span> r = <span class="number">24</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the hash to a 'random' value */</span></div><div class="line">    <span class="keyword">uint32_t</span> h = seed ^ len;</div><div class="line"></div><div class="line">    <span class="comment">/* Mix 4 bytes at a time into the hash */</span></div><div class="line">    <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *data = (<span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *)key;</div><div class="line"></div><div class="line">    <span class="keyword">while</span>(len &gt;= <span class="number">4</span>) &#123;</div><div class="line">        <span class="keyword">uint32_t</span> k = *(<span class="keyword">uint32_t</span>*)data;<span class="comment">//每次取4个字节，看成一个uint32</span></div><div class="line"></div><div class="line">        k *= m;</div><div class="line">        k ^= k &gt;&gt; r;</div><div class="line">        k *= m;</div><div class="line"></div><div class="line">        h *= m;</div><div class="line">        h ^= k;</div><div class="line"></div><div class="line">        data += <span class="number">4</span>;</div><div class="line">        len -= <span class="number">4</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/* Handle the last few bytes of the input array  */</span></div><div class="line">    <span class="keyword">switch</span>(len) &#123;</div><div class="line">    <span class="keyword">case</span> <span class="number">3</span>: h ^= data[<span class="number">2</span>] &lt;&lt; <span class="number">16</span>;</div><div class="line">    <span class="keyword">case</span> <span class="number">2</span>: h ^= data[<span class="number">1</span>] &lt;&lt; <span class="number">8</span>;</div><div class="line">    <span class="keyword">case</span> <span class="number">1</span>: h ^= data[<span class="number">0</span>]; h *= m;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    <span class="comment">/* Do a few final mixes of the hash to ensure the last few</span></div><div class="line">     * bytes are well-incorporated. */</div><div class="line">    h ^= h &gt;&gt; <span class="number">13</span>;</div><div class="line">    h *= m;</div><div class="line">    h ^= h &gt;&gt; <span class="number">15</span>;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> (<span class="keyword">unsigned</span> <span class="keyword">int</span>)h;</div><div class="line">&#125;</div><div class="line">``` </div><div class="line">d. **djb hash**</div><div class="line">俗称的time33方法，每次hash乘以<span class="number">33</span>，hash*<span class="number">33</span> = hash&lt;&lt;<span class="number">5</span>+hash,乘法除法用移位快</div><div class="line">``` C</div><div class="line"><span class="comment">//static uint32_t dict_hash_function_seed = 5381;</span></div><div class="line"><span class="comment">/* And a case insensitive hash function (based on djb hash) */</span></div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> dictGenCaseHashFunction(<span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *buf, <span class="keyword">int</span> len) &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> hash = (<span class="keyword">unsigned</span> <span class="keyword">int</span>)dict_hash_function_seed;</div><div class="line"></div><div class="line">    <span class="keyword">while</span> (len--)</div><div class="line">        hash = ((hash &lt;&lt; <span class="number">5</span>) + hash) + (<span class="built_in">tolower</span>(*buf++)); <span class="comment">/* hash * 33 + c */</span></div><div class="line">    <span class="keyword">return</span> hash;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="顺便看个神奇位翻转方法"><a href="#顺便看个神奇位翻转方法" class="headerlink" title="顺便看个神奇位翻转方法"></a>顺便看个神奇位翻转方法</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="title">rev</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> v)</span> </span>&#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> s = <span class="number">8</span> * <span class="keyword">sizeof</span>(v); <span class="comment">// bit size; must be power of 2</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> mask = ~<span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> ((s &gt;&gt;= <span class="number">1</span>) &gt; <span class="number">0</span>) &#123;</div><div class="line">        mask ^= (mask &lt;&lt; s);</div><div class="line">        v = ((v &gt;&gt; s) &amp; mask) | ((v &lt;&lt; s) &amp; ~mask);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> v;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>十进制14<br>0000 0000 0000 0000 0000 0000 0000 1110<br>翻转后十进制1879048902<br>0111 0000 0000 0000 0000 0000 0000 0000</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1656,7 +1658,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-count">16</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
