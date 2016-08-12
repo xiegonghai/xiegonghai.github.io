@@ -86,19 +86,21 @@
 
 
 
-<meta name="description" content="编辑距离概念描述编辑距离，又称Levenshtein距离，是指两个字串之间，由一个转成另一个所需的最少编辑操作次数。许可的编辑操作包括将一个字符替换成另一个字符，插入一个字符，删除一个字符。例如将kitten一字转成sitting：
-sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir Levenshtein在1965年提出这个概念。问题：找出字符串">
+<meta name="description" content="前言 用过sorted set的话，都知道sorted set是redis非常首欢迎的数据结构，Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。有序集合的成员是唯一的,但分数(score)却可以重复。 而sorted set的底层实现便是skiplist">
 <meta property="og:type" content="article">
-<meta property="og:title" content="编辑距离">
-<meta property="og:url" content="http://yoursite.com/2016/05/10/编辑距离/index.html">
+<meta property="og:title" content="redis中跳表实现(vs红黑树)">
+<meta property="og:url" content="http://yoursite.com/2016/07/29/redis中跳表分析(vs红黑树)/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
-<meta property="og:description" content="编辑距离概念描述编辑距离，又称Levenshtein距离，是指两个字串之间，由一个转成另一个所需的最少编辑操作次数。许可的编辑操作包括将一个字符替换成另一个字符，插入一个字符，删除一个字符。例如将kitten一字转成sitting：
-sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir Levenshtein在1965年提出这个概念。问题：找出字符串">
-<meta property="og:updated_time" content="2016-08-11T01:12:03.823Z">
+<meta property="og:description" content="前言 用过sorted set的话，都知道sorted set是redis非常首欢迎的数据结构，Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。有序集合的成员是唯一的,但分数(score)却可以重复。 而sorted set的底层实现便是skiplist">
+<meta property="og:image" content="http://yoursite.com/img/skiplist1.jpg">
+<meta property="og:image" content="http://yoursite.com/img/skiplist2.jpg">
+<meta property="og:image" content="http://yoursite.com/img/skiplist3.jpg">
+<meta property="og:image" content="http://yoursite.com/img/skiplist4.jpg">
+<meta property="og:updated_time" content="2016-08-12T01:33:31.209Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="编辑距离">
-<meta name="twitter:description" content="编辑距离概念描述编辑距离，又称Levenshtein距离，是指两个字串之间，由一个转成另一个所需的最少编辑操作次数。许可的编辑操作包括将一个字符替换成另一个字符，插入一个字符，删除一个字符。例如将kitten一字转成sitting：
-sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir Levenshtein在1965年提出这个概念。问题：找出字符串">
+<meta name="twitter:title" content="redis中跳表实现(vs红黑树)">
+<meta name="twitter:description" content="前言 用过sorted set的话，都知道sorted set是redis非常首欢迎的数据结构，Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。有序集合的成员是唯一的,但分数(score)却可以重复。 而sorted set的底层实现便是skiplist">
+<meta name="twitter:image" content="http://yoursite.com/img/skiplist1.jpg">
 
 
 
@@ -119,9 +121,9 @@ sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/05/10/编辑距离/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/07/29/redis中跳表分析(vs红黑树)/"/>
 
-  <title> 编辑距离 | Xiegonghai's Blog </title>
+  <title> redis中跳表实现(vs红黑树) | Xiegonghai's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -261,7 +263,7 @@ sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir
             
             
               
-                编辑距离
+                redis中跳表实现(vs红黑树)
               
             
           </h1>
@@ -273,8 +275,8 @@ sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-10T17:41:59+08:00" content="2016-05-10">
-              2016-05-10
+            <time itemprop="dateCreated" datetime="2016-07-29T17:38:59+08:00" content="2016-07-29">
+              2016-07-29
             </time>
           </span>
 
@@ -287,8 +289,8 @@ sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
+                  <a href="/categories/Redis学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis学习</span>
                   </a>
                 </span>
 
@@ -303,8 +305,8 @@ sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/10/编辑距离/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/10/编辑距离/" itemprop="commentsCount"></span>
+                <a href="/2016/07/29/redis中跳表分析(vs红黑树)/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/redis中跳表分析(vs红黑树)/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -327,11 +329,42 @@ sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir
       
 
       
-        <h2 id="编辑距离概念描述"><a href="#编辑距离概念描述" class="headerlink" title="编辑距离概念描述"></a>编辑距离概念描述</h2><p>编辑距离，又称Levenshtein距离，是指两个字串之间，由一个转成另一个所需的最少编辑操作次数。许可的编辑操作包括将一个字符替换成另一个字符，插入一个字符，删除一个字符。<br>例如将kitten一字转成sitting：</p>
-<p>sitten （k→s）<br>sittin （e→i）<br>sitting （→g）<br>俄罗斯科学家Vladimir Levenshtein在1965年提出这个概念。<br>问题：找出字符串的编辑距离，即把一个字符串s1最少经过多少步操作变成编程字符串s2，操作有三种，添加一个字符，删除一个字符，修改一个字符</p>
-<h2 id="最短编辑距离"><a href="#最短编辑距离" class="headerlink" title="最短编辑距离"></a>最短编辑距离</h2><p>思路：动态规划</p>
-<p>edit(i, j):它表示第一个字符串的长度为i的子串到第二<br>个字符串的长度为j的子串的编辑距离。</p>
-<p>状态转移方程：<br>edit(i, j) == min{ edit(i-1, j) + 1, edit(i, j-1) + 1, edit(i-1, j-1) +(s[i]==s[j]?0:1) },i&gt;0,j&gt;0最后表示末尾字符是否相等<br>边界情况：<br>if i == 0 且 j == 0，edit(i, j) = 0<br>if i == 0 且 j &gt; 0，edit(i, j) = j<br>if i &gt; 0 且j == 0，edit(i, j) = i</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p> 用过sorted set的话，都知道sorted set是redis非常首欢迎的数据结构，Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。有序集合的成员是唯一的,但分数(score)却可以重复。<br> 而sorted set的底层实现便是skiplist</p>
+<h2 id="跳表与红黑树"><a href="#跳表与红黑树" class="headerlink" title="跳表与红黑树?"></a>跳表与红黑树?</h2><p>虽然我们知道redis用skiplist用实现排序集,但了解过C++ STL的源码实现相关资料就会产生疑问,类似于redis的sorted set，STL的set,multiset,map,multimap底层均采用的RB-tree这里,这里skiplist与RB-Tree究竟有啥不一样,作者为何采用skiplist,它们有什么优缺点?在并行编程与利用并行硬件方面其特性表现如何？</p>
+<h2 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h2><p>红黑树是一种平衡二叉搜索树，自动排序效果不错，可在平均时间复杂度O(logn)内完成查找，插入，删除等操作,其基本性质如下：<br>性质1. 节点是红色或黑色<br>性质2. 根是黑色<br>性质3. 所有叶子都是黑色（叶子是NIL节点）<br>性质4. 如果一个节点是红的，则它的两个儿子都是黑的<br>性质5. 从任一节点到其叶子的所有简单路径都包含相同数目的黑色节点。<br>关于红黑树插入删除的不同情况下树的调整可阅读STL源码解析。其实现过程还是非常繁杂的，而skiplist相对来说是比较简单的。</p>
+<h2 id="skiplist结构定义"><a href="#skiplist结构定义" class="headerlink" title="skiplist结构定义"></a>skiplist结构定义</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> zskiplistNode &#123;</div><div class="line">    sds ele;</div><div class="line">    <span class="keyword">double</span> score;</div><div class="line">    <span class="keyword">struct</span> zskiplistNode *backward;</div><div class="line">    <span class="keyword">struct</span> zskiplistLevel &#123;</div><div class="line">        <span class="keyword">struct</span> zskiplistNode *forward;</div><div class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> span;</div><div class="line">    &#125; level[];</div><div class="line">&#125; zskiplistNode;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> zskiplist &#123;</div><div class="line">    <span class="keyword">struct</span> zskiplistNode *header, *tail;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> length;</div><div class="line">    <span class="keyword">int</span> level;</div><div class="line">&#125; zskiplist;</div></pre></td></tr></table></figure>
+<h2 id="跳表的实现原理"><a href="#跳表的实现原理" class="headerlink" title="跳表的实现原理"></a>跳表的实现原理</h2><p>我们知道在一个单链有序表搜索的时候，查找成功的平均时间复杂度O(n+1/2)<br>从该有序表中搜索元素 &lt; 23, 43, 59 &gt; ，需要比较的次数分别为 &lt; 2, 4, 6 &gt;，总共比较的次数为 2 + 4 + 6 = 12 次</p>
+<div align="center"><br><img src="img/skiplist1.jpg"><br></div><br>如果我们把一些节点提取出来作为索引,发现搜索次数减少<br><div align="center"><br><img src="img/skiplist2.jpg"><br></div><br>我们还可以再从一级索引提取一些元素出来，作为二级索引，变成如下结构<br><div align="center"><br><img src="img/skiplist3.jpg"><br></div><br><strong>从中可以看出跳表的核心思想，其实是一种空间换时间的做法，通过每增加每个节点向前的指针，同时存储冗余。跳跃列表是按层建造的。底层是一个普通的有序链表。每个更高层都充当下面列表的「快速跑道」，这里在层 i 中的元素按某个固定的概率 p (通常<br>为0.5或0.25)出现在层 i+1 中。平均起来，每个元素都在 1/(1-p) 个列表中出现, 而最高层的元素（通常是在跳跃列表前端的一个特殊的头元素）<br>在 O(log1/p n) 个列表中出现。我们知道红黑树充分利用了节点的索引性质来加速查找效率，跳表其实也含有这么一种思想在里面，充分利用节点索引</strong><br><br><div align="center"><br><img src="img/skiplist4.jpg"><br></div>
+
+<h2 id="skiplist基本实现"><a href="#skiplist基本实现" class="headerlink" title="skiplist基本实现"></a>skiplist基本实现</h2><h3 id="基本函数"><a href="#基本函数" class="headerlink" title="基本函数"></a>基本函数</h3><pre><code class="C">/** 创建一个skiplist */ 
+zskiplist *zslCreate(void)
+
+/** 创建一个skiplist节点 */
+zskiplistNode *zslCreateNode(int level, double score, robj *obj)；
+
+/** 释放一个节点的内存 */
+void zslFreeNode(zskiplistNode *node);
+
+/** 释放整个skiplist */
+void zslFree(zskiplist *zsl);
+
+/** 插入一个节点 */
+zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj)
+
+/** 删除一个节点，根据score删除 */
+int zslDelete(zskiplist *zsl, double score, robj *obj)；
+
+/** 这个函数是查询某个节点对应的排名,其实就是在跳表中位置 */
+unsigned long zslGetRank(zskiplist *zsl, double score, robj *o)；
+</code></pre>
+<h3 id="重要实现函数解析"><a href="#重要实现函数解析" class="headerlink" title="重要实现函数解析"></a>重要实现函数解析</h3><p>未完待续</p>
+<h3 id="并行编程结构分析"><a href="#并行编程结构分析" class="headerlink" title="并行编程结构分析"></a>并行编程结构分析</h3><p>红黑树在更新的时候牵涉较广范围的节点，其更新不能充分利用局部特性<br>红黑树在内存与cache共享写数据与同步的代价高<br>红黑树在顺序加锁上很难想单链表那样保证正确<br>设计数据结构在并行编程性能特性分析有两点：</p>
+<blockquote>
+<p>第一：在并行编程方面,其性能应该考虑允许多线程在同一时间访问数据<br>第二：在并行硬件方面，最小化内存同步的代价<br>设计一个好的数据结构能够让不同的线程可以同时访问不同部分数据，并避免大的潜在的内存同步带来的开销</p>
+</blockquote>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
+<p>《redis设计与实现》<br><a href="http://blog.csdn.net/daniel_ustc/article/details/20218489?utm_source=tuicool&amp;utm_medium=referral" target="_blank" rel="external">http://blog.csdn.net/daniel_ustc/article/details/20218489?utm_source=tuicool&amp;utm_medium=referral</a><br><a href="http://www.drdobbs.com/parallel/choose-concurrency-friendly-data-structu/208801371?pgno=3" target="_blank" rel="external">http://www.drdobbs.com/parallel/choose-concurrency-friendly-data-structu/208801371?pgno=3</a></p>
+</blockquote>
 
       
     </div>
@@ -357,17 +390,13 @@ sitten （k→s）sittin （e→i）sitting （→g）俄罗斯科学家Vladimir
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/05/01/tinyhttpd-轻量级httpServer的源码实现/" rel="next" title="tinyhttpd-轻量级httpServer的源码实现">
-                <i class="fa fa-chevron-left"></i> tinyhttpd-轻量级httpServer的源码实现
+              <a href="/2016/07/23/IO复用之-Select poll 和epoll/" rel="next" title="linux I/O复用之-select epoll">
+                <i class="fa fa-chevron-left"></i> linux I/O复用之-select epoll
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/06/03/设计一个LRU Cache/" rel="prev" title="设计一个LRU-Cache">
-                设计一个LRU-Cache <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -403,8 +432,8 @@ window._bd_share_config=
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/05/10/编辑距离/"
-           data-title="编辑距离" data-url="http://yoursite.com/2016/05/10/编辑距离/">
+      <div class="ds-thread" data-thread-key="2016/07/29/redis中跳表分析(vs红黑树)/"
+           data-title="redis中跳表实现(vs红黑树)" data-url="http://yoursite.com/2016/07/29/redis中跳表分析(vs红黑树)/">
       </div>
     
   </div>
@@ -529,7 +558,7 @@ window._bd_share_config=
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编辑距离概念描述"><span class="nav-number">1.</span> <span class="nav-text">编辑距离概念描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最短编辑距离"><span class="nav-number">2.</span> <span class="nav-text">最短编辑距离</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跳表与红黑树"><span class="nav-number">2.</span> <span class="nav-text">跳表与红黑树?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#红黑树"><span class="nav-number">3.</span> <span class="nav-text">红黑树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#skiplist结构定义"><span class="nav-number">4.</span> <span class="nav-text">skiplist结构定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跳表的实现原理"><span class="nav-number">5.</span> <span class="nav-text">跳表的实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#skiplist基本实现"><span class="nav-number">6.</span> <span class="nav-text">skiplist基本实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本函数"><span class="nav-number">6.1.</span> <span class="nav-text">基本函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重要实现函数解析"><span class="nav-number">6.2.</span> <span class="nav-text">重要实现函数解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并行编程结构分析"><span class="nav-number">6.3.</span> <span class="nav-text">并行编程结构分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">7.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
             
           </div>
         </section>

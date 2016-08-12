@@ -260,6 +260,132 @@
             
               
                 
+                <a class="post-title-link" href="/2016/06/03/设计一个LRU Cache/" itemprop="url">
+                  设计一个LRU-Cache
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-03T20:41:56+08:00" content="2016-06-03">
+              2016-06-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Data structure and Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/03/设计一个LRU Cache/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/03/设计一个LRU Cache/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="设计一个LRU-Cache"><a href="#设计一个LRU-Cache" class="headerlink" title="设计一个LRU Cache"></a>设计一个LRU Cache</h1><p>本题源自LeetCode,发现是一个比较好的问题，就拿来分析下</p>
+<ol>
+<li>LRU Cache My Submissions QuestionEditorial Solution<br>Total Accepted: 74197 Total Submissions: 469395 Difficulty: Hard<br>Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get and set.</li>
+</ol>
+<p>get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.<br>set(key, value) - Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.</p>
+<p>Subscribe to see which companies asked this question</p>
+<p>设计一个key-value类型的LRU缓存：<br>1.首先由key-value要求可定义结构体节点<br>2.如何组织这些节点便于<br>a.快速插入或者替换<br>b.快速随机读取某个节点，比如从key读取value<br>如果cache不满：插入<br>如果cache满了：替换最老的<br>同时保持最近访问的在前面<br>从操作来看，要插入和随机读取并行<br>这个，自然想到链表，又要随机读取，那就只有靠hash了<br>3.如何设计数据结构<br>如下详解：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> LRUCache&#123;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">    <span class="keyword">struct</span> CacheNode&#123;<span class="comment">//设定key-value节点</span></div><div class="line">      <span class="keyword">int</span> key;</div><div class="line">      <span class="keyword">int</span> value;</div><div class="line">      CacheNode(<span class="keyword">int</span> <span class="number">_</span>k,<span class="keyword">int</span> <span class="number">_</span>v):key(<span class="number">_</span>k),value(<span class="number">_</span>v)&#123;&#125;;</div><div class="line">    &#125;;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    LRUCache(<span class="keyword">int</span> capacity) &#123;<span class="comment">//设定cache的容量</span></div><div class="line">        <span class="keyword">this</span>-&gt;capacity=capacity;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> key)</span> </span>&#123;<span class="comment">//随机访问如何做到？通过key做hash对象利用hash找到节点地址，再访问value</span></div><div class="line">        <span class="keyword">if</span>(CacheMap.find(key)==CacheMap.end())<span class="comment">//如果不在里面返回-1表示无</span></div><div class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">        <span class="keyword">else</span> &#123;<span class="comment">//如果在呢，自然是重新排序缓存列表，然后重建索引</span></div><div class="line">            CacheList.splice(CacheList.begin(),CacheList,CacheMap[key]);</div><div class="line">            CacheMap[key]=CacheList.begin();</div><div class="line">            <span class="keyword">return</span> CacheMap[key]-&gt;value;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> key, <span class="keyword">int</span> value)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span>(CacheMap.find(key)==CacheMap.end())&#123;<span class="comment">//如果不在cache里，自然是插入到cache</span></div><div class="line">            <span class="keyword">if</span>(CacheList.size()==capacity)&#123;<span class="comment">//cache满了呢？替换最老的</span></div><div class="line">                CacheMap.erase(CacheList.back().key);</div><div class="line">                CacheList.pop_back();</div><div class="line">            &#125;</div><div class="line">            CacheList.push_front(CacheNode(key,value));<span class="comment">//在头部插入新的，因为刚访问的优先级高</span></div><div class="line">            CacheMap[key]=CacheList.begin();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span>&#123;     <span class="comment">//本来就有key-value的映射又set，所以就是更新相应的值，并加到列表首部，刚访问的嘛</span></div><div class="line">            CacheMap[key]-&gt;value=value;</div><div class="line">            CacheList.splice(CacheList.begin(),CacheList,CacheMap[key]);</div><div class="line">            CacheMap[key]=CacheList.begin();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">list</span>&lt;CacheNode&gt; CacheList;</div><div class="line">    <span class="built_in">unordered_map</span>&lt;<span class="keyword">int</span>,<span class="built_in">list</span>&lt;CacheNode&gt;::iterator&gt; CacheMap;</div><div class="line">    <span class="keyword">int</span> capacity;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/05/10/编辑距离/" itemprop="url">
                   编辑距离
                 </a>
@@ -540,8 +666,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
+                  <a href="/categories/Redis学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis学习</span>
                   </a>
                 </span>
 
@@ -1302,7 +1428,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">18</span>
+              <span class="site-state-item-count">19</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1310,7 +1436,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
