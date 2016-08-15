@@ -397,6 +397,145 @@
             
               
                 
+                <a class="post-title-link" href="/2016/07/29/redis持久化之AOF&RDB/" itemprop="url">
+                  redis持久化之RDB与AOF
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-29T13:38:59+08:00" content="2016-07-29">
+              2016-07-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Redis学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis学习</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/29/redis持久化之AOF&RDB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/redis持久化之AOF&RDB/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们知道redis是内存数据库，如果不将数据库转态(当前服务器非空数据库以及键值对)保存在内存中,就得保存在磁盘里，否则一旦服务器退出，服务器中的数据库转态也会消失<br>为了解决这个问题，redis采用了两种持久化方式，一种为RDB，一种为AOF</p>
+<h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><p>rdb方式就是手动或者配置定期化将数据库以及键值对保存到一个RDB文件中，称之为RDB持久化，这里需要了解的是:</p>
+<div align="center"><br><img src="/img/rdb.jpg"><br></div>
+
+<h3 id="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"><a href="#RDB如何是如何创建的，执行SAVE或者BGSAVE的流程" class="headerlink" title="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"></a>RDB如何是如何创建的，执行SAVE或者BGSAVE的流程</h3><p>BGSAVE主要的实现是利用fork()创建一个子进程，保存工作由子进程执行，所以子进程在创建子进程的过程中，Redis服务器仍然可以响应客户端请求而不会阻塞，但是在BGSAVE的过程中，拒绝BGSAVE,SAVE执行，BGREWRITEAOF延迟执行，主要为了避免竞争。<br>子进程：fork()-&gt;rdbsave(…)-&gt;_exit()||exit()<br>父进程：记录fork与子进程相关信息，输出日志，然后马上返回状态</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">rdbSaveBackground</span><span class="params">(<span class="keyword">char</span> *filename)</span> </span>&#123;</div><div class="line">    <span class="keyword">pid_t</span> childpid;</div><div class="line">    <span class="keyword">long</span> <span class="keyword">long</span> start;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (server.rdb_child_pid != <span class="number">-1</span>) <span class="keyword">return</span> C_ERR;</div><div class="line"></div><div class="line">    server.dirty_before_bgsave = server.dirty;</div><div class="line">    server.lastbgsave_try = time(<span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    start = ustime();</div><div class="line">    <span class="keyword">if</span> ((childpid = fork()) == <span class="number">0</span>) &#123; </div><div class="line">        <span class="keyword">int</span> retval;</div><div class="line"></div><div class="line">        <span class="comment">/* Child */</span></div><div class="line">        closeListeningSockets(<span class="number">0</span>);</div><div class="line">        redisSetProcTitle(<span class="string">"redis-rdb-bgsave"</span>);</div><div class="line">        retval = rdbSave(filename);</div><div class="line">        <span class="keyword">if</span> (retval == C_OK) &#123;</div><div class="line">            <span class="keyword">size_t</span> private_dirty = zmalloc_get_private_dirty();</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (private_dirty) &#123;</div><div class="line">                serverLog(LL_NOTICE,</div><div class="line">                    <span class="string">"RDB: %zu MB of memory used by copy-on-write"</span>,</div><div class="line">                    private_dirty/(<span class="number">1024</span>*<span class="number">1024</span>));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        exitFromChild((retval == C_OK) ? <span class="number">0</span> : <span class="number">1</span>);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">/* Parent */</span></div><div class="line">        server.stat_fork_time = ustime()-start;</div><div class="line">        server.stat_fork_rate = (<span class="keyword">double</span>) zmalloc_used_memory() * <span class="number">1000000</span> / server.stat_fork_time / (<span class="number">1024</span>*<span class="number">1024</span>*<span class="number">1024</span>); <span class="comment">/* GB per second. */</span></div><div class="line">        latencyAddSampleIfNeeded(<span class="string">"fork"</span>,server.stat_fork_time/<span class="number">1000</span>);</div><div class="line">        <span class="keyword">if</span> (childpid == <span class="number">-1</span>) &#123;</div><div class="line">            server.lastbgsave_status = C_ERR;</div><div class="line">            serverLog(LL_WARNING,<span class="string">"Can't save in background: fork: %s"</span>,</div><div class="line">                strerror(errno));</div><div class="line">            <span class="keyword">return</span> C_ERR;</div><div class="line">        &#125;</div><div class="line">        serverLog(LL_NOTICE,<span class="string">"Background saving started by pid %d"</span>,childpid);</div><div class="line">        server.rdb_save_time_start = time(<span class="literal">NULL</span>);</div><div class="line">        server.rdb_child_pid = childpid;</div><div class="line">        server.rdb_child_type = RDB_CHILD_TYPE_DISK;</div><div class="line">        updateDictResizePolicy();</div><div class="line">        <span class="keyword">return</span> C_OK;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> C_OK; <span class="comment">/* unreached */</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/* After an RDB dump or AOF rewrite we exit from children using _exit() instead of</span></div><div class="line"> * exit(), because the latter may interact with the same file objects used by</div><div class="line"> * the parent process. However if we are testing the coverage normal exit() is</div><div class="line"> * used in order to obtain the right coverage information. */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">exitFromChild</span><span class="params">(<span class="keyword">int</span> retcode)</span> </span>&#123;</div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> COVERAGE_TEST</span></div><div class="line">    <span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">    <span class="number">_</span><span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="如何定期保存"><a href="#如何定期保存" class="headerlink" title="如何定期保存"></a>如何定期保存</h3><p>服务器除了记录saveparam这样的结构体数组来保存用户自定义的多个保存条件<br>(在多少秒之内进行了多少次修改),还另外记录了dirty，即每一次执行一个数据库修改命令，程序对dirty计数加一，lastsave是上一次执行保存的时间，redis的服务器周期性函数servercron默认每隔100ms检查save选项所设置的保存条件是否满足</p>
+<p>``` C<br>struct redisServer{<br>    /<em> RDB persistence </em>/<br>    long long dirty;                /<em> Changes to DB from the last save </em>/<br>    pid_t rdb_child_pid;            /<em> PID of RDB saving child </em>/<br>    struct saveparam <em>saveparams;   /</em> Save points array for RDB <em>/<br>    time_t lastsave;                /</em> Unix time of last successful save */</p>
+<p>}</p>
+<h3 id="RDB文件结构设计"><a href="#RDB文件结构设计" class="headerlink" title="RDB文件结构设计"></a>RDB文件结构设计</h3><p>RDB文件是一个经过压缩的二进制文件，由多个部分组成</p>
+<div align="center"><br><img src="/img/rdbfile.jpg"><br></div>
+
+<div align="center"><br><img src="/img/rdbfile1.jpg"><br></div>
+
+<div align="center"><br><img src="/img/rdbfile2.jpg"><br></div><br>## AOF<br>RDB是通过保存数据库的键值对来记录数据库转态，而AOF(APPEND ONLY FILE)持久化则是通过保存redis服务器所执行的写命令来记录数据库转态的<br><div align="center"><br><img src="/img/aof.jpg"><br></div>
+
+<h3 id="实现要点"><a href="#实现要点" class="headerlink" title="实现要点"></a>实现要点</h3><p>未完待续</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
+<p>《redis设计与实现》<br> redis github源码</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/23/IO复用之-Select poll 和epoll/" itemprop="url">
                   linux I/O复用之-select epoll
                 </a>
@@ -1225,14 +1364,14 @@
         
           
             <h1 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h1><h2 id="TCP特性"><a href="#TCP特性" class="headerlink" title="TCP特性"></a>TCP特性</h2><p>1.在做任何处理之前，首先要建立连接。<br>2.提供数据通信可靠保障。TCP向另一端发送数据时，它要求对方返回一个确认。<br>3.TCP的全双工工作<br>4.TCP为发送数据的每一个字节都关联了一个序列号。如果数据不是按照指定的顺序到来，TCP会在自己的重组缓冲区中重组、去重数据，再传递给应用程序。<br>5.TCP提供流量控制。在双方进行交互时，会彼此通知自己目前接收缓冲区最多可以接收的数据量（通告窗口），以此确保发送方发送的数据不会溢出接收缓冲区</p>
-<h2 id="三次握手四次挥手细节"><a href="#三次握手四次挥手细节" class="headerlink" title="三次握手四次挥手细节"></a>三次握手四次挥手细节</h2><p><div align="center"><br><img src="img/tcp3.jpg" alt="CSDN图标"><br></div></p>
+<h2 id="三次握手四次挥手细节"><a href="#三次握手四次挥手细节" class="headerlink" title="三次握手四次挥手细节"></a>三次握手四次挥手细节</h2><p><div align="center"><br><img src="/img/tcp3.jpg" alt="CSDN图标"><br></div></p>
 <h2 id="tcp三次握手"><a href="#tcp三次握手" class="headerlink" title="tcp三次握手"></a>tcp三次握手</h2><p>1.服务器通过socket, bind, listen来准备接<br>受外来的连接<br>2.客户端调用connect连接服务器。这时，客户TCP发送一个SYN包，告诉服务器它将要发送数据的初始序列号。<br>3.服务器确认客户的SYN发送ACK包，同时自己也发送一个AYN包。<br>4.客户端确认服务器的SYN</p>
 <p>###需要说明：<br>每个SYN包都可以含有若干个TCP选项，例如：</p>
 <ol>
 <li>MMS。通知对方他能够接受的每个TCP分节最大的数据量。<br>2.窗口大小。通知对方自己最大的窗口大小</li>
 </ol>
 <h2 id="tcp四次挥手"><a href="#tcp四次挥手" class="headerlink" title="tcp四次挥手"></a>tcp四次挥手</h2><p>•某一端调用close，主动关闭连接。向对方发送FIN包。<br>• 接收到FIN包的另一端将文件结束符传递给接收方的应用程序。<br>• 一段时间后，接收到文件结束符的应用程序调用close关闭自己的套接口，同时发送一个FIN包。<br>• 接收到FIN包的原发送方发送ACK对它进行确认</p>
-<h2 id="TCP状态转换图"><a href="#TCP状态转换图" class="headerlink" title="TCP状态转换图"></a>TCP状态转换图</h2><h2 id="理解整个图才能理解网络编程的各个转态转换流程"><a href="#理解整个图才能理解网络编程的各个转态转换流程" class="headerlink" title="理解整个图才能理解网络编程的各个转态转换流程"></a>理解整个图才能理解网络编程的各个转态转换流程</h2><p><div align="center"><br><img src="img/tcp-trans.jpg" alt="CSDN图标"><br></div><br>整个图类似于一个状态机，给定转态和输入事件，从当前转态转换到另一个转态，<br>理解整个流程，在网络编程过程结合netstat才能充分理解所有套接字通信过程</p>
+<h2 id="TCP状态转换图"><a href="#TCP状态转换图" class="headerlink" title="TCP状态转换图"></a>TCP状态转换图</h2><h2 id="理解整个图才能理解网络编程的各个转态转换流程"><a href="#理解整个图才能理解网络编程的各个转态转换流程" class="headerlink" title="理解整个图才能理解网络编程的各个转态转换流程"></a>理解整个图才能理解网络编程的各个转态转换流程</h2><p><div align="center"><br><img src="/img/tcp-trans.jpg" alt="CSDN图标"><br></div><br>整个图类似于一个状态机，给定转态和输入事件，从当前转态转换到另一个转态，<br>理解整个流程，在网络编程过程结合netstat才能充分理解所有套接字通信过程</p>
 <h2 id="注意问题"><a href="#注意问题" class="headerlink" title="注意问题"></a>注意问题</h2><p>需要注意的问题：<br>• 关于图中time_wait状态该状态持续的时间2MSL（测试本机的MSL）<br>• 存在理由<br>维持全双工的工作过程<br>准许老的重复分节在网络中消逝<br>• word总图，tcpdump</p>
 <h2 id="套接口的缓冲机制"><a href="#套接口的缓冲机制" class="headerlink" title="套接口的缓冲机制"></a>套接口的缓冲机制</h2><p>IPv4数据报最大大小是65535字节。<br>• 最大传输单元MTU（与硬件相关）。<br>• 如果IP数据包超过MTU，将被分片，各片断到达目的地前不会被重组。<br>• IPv4定义了最小重组缓冲区大小。<br>• TCP的MMS通告的目的就是告诉对方重组缓冲区大小的实际值，从而避免分片</p>
 <p>需要注意的问题：<br>• 如果套接口发送缓冲区容不下应用程序的所有数据，并且应用进程是阻塞的，应用进程将被挂起，直到所有的数据都拷贝到套接口缓冲区。<br>• 写一个TCP套接口的write成功返回，仅是表示可以重新使用应用进程的缓冲区，并不能<br>代表对方TCP或对方进程已经收到数据。<br>• 只有收到对方应答后，才删除自己的套接口缓冲区的内容</p>
@@ -1542,145 +1681,11 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/06/10/字典树实现/" itemprop="url">
-                  字典树实现
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-10T21:41:56+08:00" content="2016-06-10">
-              2016-06-10
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/06/10/字典树实现/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/10/字典树实现/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>Trie树，又称字典树，单词查找树或者前缀树，是一种用于快速检索的多叉树结构，如英文字母的字典树是一个26叉树，数字的字典树是一个10叉树。</p>
-<h3 id="Trie树的基本性质可以归纳为："><a href="#Trie树的基本性质可以归纳为：" class="headerlink" title="Trie树的基本性质可以归纳为："></a>Trie树的基本性质可以归纳为：</h3><p>（1）根节点不包含字符，除根节点意外每个节点只包含一个字符。</p>
-<p>（2）从根节点到某一个节点，路径上经过的字符连接起来，为该节点对应的字符串。</p>
-<p>（3）每个节点的所有子节点包含的字符串不相同。</p>
-<h3 id="Trie树复杂度分析"><a href="#Trie树复杂度分析" class="headerlink" title="Trie树复杂度分析"></a>Trie树复杂度分析</h3><p>（1） 插入、查找的时间复杂度均为O(N)，其中N为字符串长度。</p>
-<p>（2） 空间复杂度是26^n级别的，非常庞大（可采用双数组实现改善）。</p>
-<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><p>Trie是一种非常简单高效的数据结构，但有大量的应用实例<br>1） 字符串检索<br>事先将已知的一些字符串（字典）的有关信息保存到trie树里，查找另外一些未知字符串是否出现过或者出现频率</p>
-<p>举例：<br>@  给出N 个单词组成的熟词表，以及一篇全用小写英文书写的文章，请你按最早出现的顺序写出所有不在熟词表中的生词</p>
-<p>@  给出一个词典，其中的单词为不良单词。单词均为小写字母。再给出一段文本，文本的每一行也由小写字母构成。判断文本中是否含有任何不良单词。例如，若rob是不良单词，那么文本problem含有不良单词</p>
-<p>2）字符串最长公共前缀</p>
-<p>Trie树利用多个字符串的公共前缀来节省存储空间，反之，当我们把大量字符串存储到一棵trie树上时，我们可以快速得到某些字符串的公共前缀</p>
-<p>@ 给出N 个小写英文字母串，以及Q 个询问，即询问某两个串的最长公共前缀的长度是多少？</p>
-<p>解决方案：首先对所有的串建立其对应的字母树。此时发现，对于两个串的最长公共前缀的长度即它们所在结点的公共祖先个数，于是，问题就转化为了离线（Offline）的最近公共祖先（Least Common Ancestor，简称LCA）问题</p>
-<p>3）排序</p>
-<p>Trie树是一棵多叉树，只要先序遍历整棵树，输出相应的字符串便是按字典序排序的结果</p>
-<h2 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxBranchNum = <span class="number">26</span>;<span class="comment">//如果区分大小写，可以扩展到52</span></div><div class="line"></div><div class="line"><span class="comment">/*定义trie树结点*/</span></div><div class="line"><span class="keyword">class</span> TrieNode</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">     <span class="keyword">char</span>* word; <span class="comment">//节点表示的单词</span></div><div class="line">     <span class="keyword">int</span> count;  <span class="comment">//单词出现的次数</span></div><div class="line">     TrieNode* nextBranch[MaxBranchNum];<span class="comment">//指向26个字符节点的指针</span></div><div class="line"><span class="keyword">public</span>:</div><div class="line">     TrieNode() : word(<span class="literal">NULL</span>),count(<span class="number">0</span>)</div><div class="line">     &#123;</div><div class="line">          <span class="built_in">memset</span>(nextBranch,<span class="literal">NULL</span>,<span class="keyword">sizeof</span>(TrieNode*) * MaxBranchNum);</div><div class="line">     &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">/*定义类Trie*/</span></div><div class="line"><span class="keyword">class</span> Trie</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">     Trie();</div><div class="line">     ~Trie();</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Insert</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//插入字符串str</span></div><div class="line">     <span class="function"><span class="keyword">bool</span> <span class="title">Search</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str,<span class="keyword">int</span>&amp; count)</span></span>;<span class="comment">//查找字符串str，并返回出现的次数</span></div><div class="line">     <span class="function"><span class="keyword">bool</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//删除字符串str</span></div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">PrintALL</span><span class="params">()</span></span>;<span class="comment">//打印trie树中所有的结点</span></div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">PrintPre</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//打印以str为前缀的单词</span></div><div class="line"><span class="keyword">private</span>:</div><div class="line">     TrieNode* pRoot;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Destory</span><span class="params">(TrieNode* pRoot)</span></span>;</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">(TrieNode* pRoot)</span></span>;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">Trie::Trie()</div><div class="line">&#123;</div><div class="line">     pRoot = <span class="keyword">new</span> TrieNode();<span class="comment">//注意字典树的根不存放字符</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">Trie::~Trie()</div><div class="line">&#123;</div><div class="line">     Destory(pRoot);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*插入一个单词*/</span></div><div class="line"><span class="keyword">void</span> Trie::Insert(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(<span class="literal">NULL</span> != str);</div><div class="line">     <span class="keyword">int</span> index;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;str[i];i++)</div><div class="line">     &#123;</div><div class="line">          index = str[i] - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          <span class="keyword">if</span> (<span class="literal">NULL</span> == pLoc-&gt;nextBranch[index])<span class="comment">//该单词的前缀不存在，要生成该结点</span></div><div class="line">          &#123;</div><div class="line">               pLoc-&gt;nextBranch[index] = <span class="keyword">new</span> TrieNode();</div><div class="line">          &#125;</div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pLoc-&gt;word)<span class="comment">//单词已经出现过</span></div><div class="line">     &#123;</div><div class="line">          pLoc-&gt;count++;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">else</span>    <span class="comment">//单词没有出现过，应该插入单词</span></div><div class="line">     &#123;</div><div class="line">          pLoc-&gt;count++;</div><div class="line">          pLoc-&gt;word = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="built_in">strlen</span>(str) + <span class="number">1</span>];</div><div class="line">          assert(<span class="literal">NULL</span> != pLoc-&gt;word);</div><div class="line">          <span class="built_in">strcpy</span>(pLoc-&gt;word,str);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*查找一个单词，如果存在该单词，则返回其出现次数*/</span></div><div class="line"><span class="keyword">bool</span> Trie::Search(<span class="keyword">const</span> <span class="keyword">char</span>* str,<span class="keyword">int</span>&amp; count)</div><div class="line">&#123;</div><div class="line">     assert(str != <span class="literal">NULL</span>);</div><div class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc &amp;&amp; pLoc-&gt;word)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          count = pLoc-&gt;count;</div><div class="line">          <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> Trie::Remove(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(<span class="literal">NULL</span> != str);</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc &amp;&amp; pLoc-&gt; word)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          <span class="keyword">delete</span>[] pLoc-&gt;word;</div><div class="line">          pLoc-&gt;word = <span class="literal">NULL</span>;</div><div class="line">          <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Trie::PrintALL()</div><div class="line">&#123;</div><div class="line">     Print(pRoot);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Trie::PrintPre(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(str != <span class="literal">NULL</span>);</div><div class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          Print(pLoc);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*按照字典顺序输出以pRoot为根的所有的单词*/</span></div><div class="line"><span class="keyword">void</span> Trie::Print(TrieNode* pRoot)</div><div class="line">&#123;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> == pRoot)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//输出单词</span></div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pRoot-&gt;word)</div><div class="line">     &#123;</div><div class="line">          <span class="built_in">cout</span>&lt;&lt;pRoot-&gt;word&lt;&lt;<span class="string">" "</span>&lt;&lt;pRoot-&gt;count&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//递归处理分支</span></div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; MaxBranchNum;i++)</div><div class="line">     &#123;</div><div class="line">          Print(pRoot-&gt;nextBranch[i]);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*销毁trie树*/</span></div><div class="line"><span class="keyword">void</span> Trie::Destory(TrieNode* pRoot)</div><div class="line">&#123;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> == pRoot)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; MaxBranchNum;i++)</div><div class="line">     &#123;</div><div class="line">          Destory(pRoot-&gt;nextBranch[i]);</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//销毁单词占得空间</span></div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pRoot-&gt;word)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">delete</span> []pRoot-&gt;word;</div><div class="line">          pRoot-&gt;word = <span class="literal">NULL</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">delete</span> pRoot;<span class="comment">//销毁结点</span></div><div class="line">     pRoot = <span class="literal">NULL</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">     Trie t;</div><div class="line">     <span class="built_in">string</span> str;</div><div class="line">     <span class="comment">//int count = -1;</span></div><div class="line">     <span class="keyword">int</span> n,m,count;</div><div class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)</div><div class="line">    &#123;</div><div class="line">         <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;++i)</div><div class="line">          &#123;</div><div class="line">               <span class="built_in">cin</span>&gt;&gt;str;</div><div class="line">               t.Insert(str.c_str());</div><div class="line">          &#125;</div><div class="line">          <span class="built_in">cin</span>&gt;&gt;m;</div><div class="line">          <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;++i)</div><div class="line">          &#123;</div><div class="line">               <span class="built_in">cin</span>&gt;&gt;str;</div><div class="line">               <span class="keyword">bool</span> isFind = t.Search(str.c_str(),count);</div><div class="line">               <span class="built_in">cout</span>&lt;&lt;<span class="string">"isfind:"</span>&lt;&lt;isFind&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">               <span class="keyword">if</span>(isFind)<span class="built_in">cout</span>&lt;&lt;count&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">               <span class="keyword">else</span> <span class="built_in">cout</span>&lt;&lt;<span class="number">0</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">          &#125;</div><div class="line">    &#125;</div><div class="line">     system(<span class="string">"pause"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1721,7 +1726,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">20</span>
+              <span class="site-state-item-count">21</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

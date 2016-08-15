@@ -94,7 +94,7 @@
 <meta property="og:description" content="TCP协议TCP特性1.在做任何处理之前，首先要建立连接。2.提供数据通信可靠保障。TCP向另一端发送数据时，它要求对方返回一个确认。3.TCP的全双工工作4.TCP为发送数据的每一个字节都关联了一个序列号。如果数据不是按照指定的顺序到来，TCP会在自己的重组缓冲区中重组、去重数据，再传递给应用程序。5.TCP提供流量控制。在双方进行交互时，会彼此通知自己目前接收缓冲区最多可以接收的数据量（通告窗">
 <meta property="og:image" content="http://yoursite.com/img/tcp3.jpg">
 <meta property="og:image" content="http://yoursite.com/img/tcp-trans.jpg">
-<meta property="og:updated_time" content="2016-08-10T01:09:08.812Z">
+<meta property="og:updated_time" content="2016-08-15T00:30:24.245Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux网络socket编程(二)">
 <meta name="twitter:description" content="TCP协议TCP特性1.在做任何处理之前，首先要建立连接。2.提供数据通信可靠保障。TCP向另一端发送数据时，它要求对方返回一个确认。3.TCP的全双工工作4.TCP为发送数据的每一个字节都关联了一个序列号。如果数据不是按照指定的顺序到来，TCP会在自己的重组缓冲区中重组、去重数据，再传递给应用程序。5.TCP提供流量控制。在双方进行交互时，会彼此通知自己目前接收缓冲区最多可以接收的数据量（通告窗">
@@ -328,14 +328,14 @@
 
       
         <h1 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h1><h2 id="TCP特性"><a href="#TCP特性" class="headerlink" title="TCP特性"></a>TCP特性</h2><p>1.在做任何处理之前，首先要建立连接。<br>2.提供数据通信可靠保障。TCP向另一端发送数据时，它要求对方返回一个确认。<br>3.TCP的全双工工作<br>4.TCP为发送数据的每一个字节都关联了一个序列号。如果数据不是按照指定的顺序到来，TCP会在自己的重组缓冲区中重组、去重数据，再传递给应用程序。<br>5.TCP提供流量控制。在双方进行交互时，会彼此通知自己目前接收缓冲区最多可以接收的数据量（通告窗口），以此确保发送方发送的数据不会溢出接收缓冲区</p>
-<h2 id="三次握手四次挥手细节"><a href="#三次握手四次挥手细节" class="headerlink" title="三次握手四次挥手细节"></a>三次握手四次挥手细节</h2><p><div align="center"><br><img src="img/tcp3.jpg" alt="CSDN图标"><br></div></p>
+<h2 id="三次握手四次挥手细节"><a href="#三次握手四次挥手细节" class="headerlink" title="三次握手四次挥手细节"></a>三次握手四次挥手细节</h2><p><div align="center"><br><img src="/img/tcp3.jpg" alt="CSDN图标"><br></div></p>
 <h2 id="tcp三次握手"><a href="#tcp三次握手" class="headerlink" title="tcp三次握手"></a>tcp三次握手</h2><p>1.服务器通过socket, bind, listen来准备接<br>受外来的连接<br>2.客户端调用connect连接服务器。这时，客户TCP发送一个SYN包，告诉服务器它将要发送数据的初始序列号。<br>3.服务器确认客户的SYN发送ACK包，同时自己也发送一个AYN包。<br>4.客户端确认服务器的SYN</p>
 <p>###需要说明：<br>每个SYN包都可以含有若干个TCP选项，例如：</p>
 <ol>
 <li>MMS。通知对方他能够接受的每个TCP分节最大的数据量。<br>2.窗口大小。通知对方自己最大的窗口大小</li>
 </ol>
 <h2 id="tcp四次挥手"><a href="#tcp四次挥手" class="headerlink" title="tcp四次挥手"></a>tcp四次挥手</h2><p>•某一端调用close，主动关闭连接。向对方发送FIN包。<br>• 接收到FIN包的另一端将文件结束符传递给接收方的应用程序。<br>• 一段时间后，接收到文件结束符的应用程序调用close关闭自己的套接口，同时发送一个FIN包。<br>• 接收到FIN包的原发送方发送ACK对它进行确认</p>
-<h2 id="TCP状态转换图"><a href="#TCP状态转换图" class="headerlink" title="TCP状态转换图"></a>TCP状态转换图</h2><h2 id="理解整个图才能理解网络编程的各个转态转换流程"><a href="#理解整个图才能理解网络编程的各个转态转换流程" class="headerlink" title="理解整个图才能理解网络编程的各个转态转换流程"></a>理解整个图才能理解网络编程的各个转态转换流程</h2><p><div align="center"><br><img src="img/tcp-trans.jpg" alt="CSDN图标"><br></div><br>整个图类似于一个状态机，给定转态和输入事件，从当前转态转换到另一个转态，<br>理解整个流程，在网络编程过程结合netstat才能充分理解所有套接字通信过程</p>
+<h2 id="TCP状态转换图"><a href="#TCP状态转换图" class="headerlink" title="TCP状态转换图"></a>TCP状态转换图</h2><h2 id="理解整个图才能理解网络编程的各个转态转换流程"><a href="#理解整个图才能理解网络编程的各个转态转换流程" class="headerlink" title="理解整个图才能理解网络编程的各个转态转换流程"></a>理解整个图才能理解网络编程的各个转态转换流程</h2><p><div align="center"><br><img src="/img/tcp-trans.jpg" alt="CSDN图标"><br></div><br>整个图类似于一个状态机，给定转态和输入事件，从当前转态转换到另一个转态，<br>理解整个流程，在网络编程过程结合netstat才能充分理解所有套接字通信过程</p>
 <h2 id="注意问题"><a href="#注意问题" class="headerlink" title="注意问题"></a>注意问题</h2><p>需要注意的问题：<br>• 关于图中time_wait状态该状态持续的时间2MSL（测试本机的MSL）<br>• 存在理由<br>维持全双工的工作过程<br>准许老的重复分节在网络中消逝<br>• word总图，tcpdump</p>
 <h2 id="套接口的缓冲机制"><a href="#套接口的缓冲机制" class="headerlink" title="套接口的缓冲机制"></a>套接口的缓冲机制</h2><p>IPv4数据报最大大小是65535字节。<br>• 最大传输单元MTU（与硬件相关）。<br>• 如果IP数据包超过MTU，将被分片，各片断到达目的地前不会被重组。<br>• IPv4定义了最小重组缓冲区大小。<br>• TCP的MMS通告的目的就是告诉对方重组缓冲区大小的实际值，从而避免分片</p>
 <p>需要注意的问题：<br>• 如果套接口发送缓冲区容不下应用程序的所有数据，并且应用进程是阻塞的，应用进程将被挂起，直到所有的数据都拷贝到套接口缓冲区。<br>• 写一个TCP套接口的write成功返回，仅是表示可以重新使用应用进程的缓冲区，并不能<br>代表对方TCP或对方进程已经收到数据。<br>• 只有收到对方应答后，才删除自己的套接口缓冲区的内容</p>
@@ -469,7 +469,7 @@ window._bd_share_config=
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">20</span>
+              <span class="site-state-item-count">21</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
