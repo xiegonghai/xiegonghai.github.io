@@ -260,6 +260,145 @@
             
               
                 
+                <a class="post-title-link" href="/2016/07/31/redis持久化之AOF&RDB/" itemprop="url">
+                  redis持久化之RDB与AOF
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-31T13:38:59+08:00" content="2016-07-31">
+              2016-07-31
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Redis学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis学习</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/31/redis持久化之AOF&RDB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/31/redis持久化之AOF&RDB/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们知道redis是内存数据库，如果不将数据库转态(当前服务器非空数据库以及键值对)保存在内存中,就得保存在磁盘里，否则一旦服务器退出，服务器中的数据库转态也会消失<br>为了解决这个问题，redis采用了两种持久化方式，一种为RDB，一种为AOF</p>
+<h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><p>rdb方式就是手动或者配置定期化将数据库以及键值对保存到一个RDB文件中，称之为RDB持久化，这里需要了解的是:</p>
+<div align="center"><br><img src="/img/rdb.jpg"><br></div>
+
+<h3 id="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"><a href="#RDB如何是如何创建的，执行SAVE或者BGSAVE的流程" class="headerlink" title="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"></a>RDB如何是如何创建的，执行SAVE或者BGSAVE的流程</h3><p>BGSAVE主要的实现是利用fork()创建一个子进程，保存工作由子进程执行，所以子进程在创建子进程的过程中，Redis服务器仍然可以响应客户端请求而不会阻塞，但是在BGSAVE的过程中，拒绝BGSAVE,SAVE执行，BGREWRITEAOF延迟执行，主要为了避免竞争。<br>子进程：fork()-&gt;rdbsave(…)-&gt;_exit()||exit()<br>父进程：记录fork与子进程相关信息，输出日志，然后马上返回状态</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">rdbSaveBackground</span><span class="params">(<span class="keyword">char</span> *filename)</span> </span>&#123;</div><div class="line">    <span class="keyword">pid_t</span> childpid;</div><div class="line">    <span class="keyword">long</span> <span class="keyword">long</span> start;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (server.rdb_child_pid != <span class="number">-1</span>) <span class="keyword">return</span> C_ERR;</div><div class="line"></div><div class="line">    server.dirty_before_bgsave = server.dirty;</div><div class="line">    server.lastbgsave_try = time(<span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    start = ustime();</div><div class="line">    <span class="keyword">if</span> ((childpid = fork()) == <span class="number">0</span>) &#123; </div><div class="line">        <span class="keyword">int</span> retval;</div><div class="line"></div><div class="line">        <span class="comment">/* Child */</span></div><div class="line">        closeListeningSockets(<span class="number">0</span>);</div><div class="line">        redisSetProcTitle(<span class="string">"redis-rdb-bgsave"</span>);</div><div class="line">        retval = rdbSave(filename);</div><div class="line">        <span class="keyword">if</span> (retval == C_OK) &#123;</div><div class="line">            <span class="keyword">size_t</span> private_dirty = zmalloc_get_private_dirty();</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (private_dirty) &#123;</div><div class="line">                serverLog(LL_NOTICE,</div><div class="line">                    <span class="string">"RDB: %zu MB of memory used by copy-on-write"</span>,</div><div class="line">                    private_dirty/(<span class="number">1024</span>*<span class="number">1024</span>));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        exitFromChild((retval == C_OK) ? <span class="number">0</span> : <span class="number">1</span>);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">/* Parent */</span></div><div class="line">        server.stat_fork_time = ustime()-start;</div><div class="line">        server.stat_fork_rate = (<span class="keyword">double</span>) zmalloc_used_memory() * <span class="number">1000000</span> / server.stat_fork_time / (<span class="number">1024</span>*<span class="number">1024</span>*<span class="number">1024</span>); <span class="comment">/* GB per second. */</span></div><div class="line">        latencyAddSampleIfNeeded(<span class="string">"fork"</span>,server.stat_fork_time/<span class="number">1000</span>);</div><div class="line">        <span class="keyword">if</span> (childpid == <span class="number">-1</span>) &#123;</div><div class="line">            server.lastbgsave_status = C_ERR;</div><div class="line">            serverLog(LL_WARNING,<span class="string">"Can't save in background: fork: %s"</span>,</div><div class="line">                strerror(errno));</div><div class="line">            <span class="keyword">return</span> C_ERR;</div><div class="line">        &#125;</div><div class="line">        serverLog(LL_NOTICE,<span class="string">"Background saving started by pid %d"</span>,childpid);</div><div class="line">        server.rdb_save_time_start = time(<span class="literal">NULL</span>);</div><div class="line">        server.rdb_child_pid = childpid;</div><div class="line">        server.rdb_child_type = RDB_CHILD_TYPE_DISK;</div><div class="line">        updateDictResizePolicy();</div><div class="line">        <span class="keyword">return</span> C_OK;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> C_OK; <span class="comment">/* unreached */</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/* After an RDB dump or AOF rewrite we exit from children using _exit() instead of</span></div><div class="line"> * exit(), because the latter may interact with the same file objects used by</div><div class="line"> * the parent process. However if we are testing the coverage normal exit() is</div><div class="line"> * used in order to obtain the right coverage information. */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">exitFromChild</span><span class="params">(<span class="keyword">int</span> retcode)</span> </span>&#123;</div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> COVERAGE_TEST</span></div><div class="line">    <span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">    <span class="number">_</span><span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="如何定期保存"><a href="#如何定期保存" class="headerlink" title="如何定期保存"></a>如何定期保存</h3><p>服务器除了记录saveparam这样的结构体数组来保存用户自定义的多个保存条件<br>(在多少秒之内进行了多少次修改),还另外记录了dirty，即每一次执行一个数据库修改命令，程序对dirty计数加一，lastsave是上一次执行保存的时间，redis的服务器周期性函数servercron默认每隔100ms检查save选项所设置的保存条件是否满足</p>
+<p>``` C<br>struct redisServer{<br>    /<em> RDB persistence </em>/<br>    long long dirty;                /<em> Changes to DB from the last save </em>/<br>    pid_t rdb_child_pid;            /<em> PID of RDB saving child </em>/<br>    struct saveparam <em>saveparams;   /</em> Save points array for RDB <em>/<br>    time_t lastsave;                /</em> Unix time of last successful save */</p>
+<p>}</p>
+<h3 id="RDB文件结构设计"><a href="#RDB文件结构设计" class="headerlink" title="RDB文件结构设计"></a>RDB文件结构设计</h3><p>RDB文件是一个经过压缩的二进制文件，由多个部分组成</p>
+<div align="center"><br><img src="/img/rdbfile.jpg"><br></div>
+
+<div align="center"><br><img src="/img/rdbfile1.jpg"><br></div>
+
+<div align="center"><br><img src="/img/rdbfile2.jpg"><br></div><br>## AOF<br>RDB是通过保存数据库的键值对来记录数据库转态，而AOF(APPEND ONLY FILE)持久化则是通过保存redis服务器所执行的写命令来记录数据库转态的<br><div align="center"><br><img src="/img/aof.jpg"><br></div>
+
+<h3 id="实现要点"><a href="#实现要点" class="headerlink" title="实现要点"></a>实现要点</h3><p>未完待续</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
+<p>《redis设计与实现》<br> redis github源码</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/29/redis中跳表分析(vs红黑树)/" itemprop="url">
                   redis中跳表实现(vs红黑树)
                 </a>
@@ -347,145 +486,6 @@
 </blockquote>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
 <p>《redis设计与实现》<br><a href="http://blog.csdn.net/daniel_ustc/article/details/20218489?utm_source=tuicool&amp;utm_medium=referral" target="_blank" rel="external">http://blog.csdn.net/daniel_ustc/article/details/20218489?utm_source=tuicool&amp;utm_medium=referral</a><br><a href="http://www.drdobbs.com/parallel/choose-concurrency-friendly-data-structu/208801371?pgno=3" target="_blank" rel="external">http://www.drdobbs.com/parallel/choose-concurrency-friendly-data-structu/208801371?pgno=3</a></p>
-</blockquote>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/07/29/redis持久化之AOF&RDB/" itemprop="url">
-                  redis持久化之RDB与AOF
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-29T13:38:59+08:00" content="2016-07-29">
-              2016-07-29
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Redis学习/" itemprop="url" rel="index">
-                    <span itemprop="name">Redis学习</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/29/redis持久化之AOF&RDB/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/redis持久化之AOF&RDB/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们知道redis是内存数据库，如果不将数据库转态(当前服务器非空数据库以及键值对)保存在内存中,就得保存在磁盘里，否则一旦服务器退出，服务器中的数据库转态也会消失<br>为了解决这个问题，redis采用了两种持久化方式，一种为RDB，一种为AOF</p>
-<h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><p>rdb方式就是手动或者配置定期化将数据库以及键值对保存到一个RDB文件中，称之为RDB持久化，这里需要了解的是:</p>
-<div align="center"><br><img src="/img/rdb.jpg"><br></div>
-
-<h3 id="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"><a href="#RDB如何是如何创建的，执行SAVE或者BGSAVE的流程" class="headerlink" title="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"></a>RDB如何是如何创建的，执行SAVE或者BGSAVE的流程</h3><p>BGSAVE主要的实现是利用fork()创建一个子进程，保存工作由子进程执行，所以子进程在创建子进程的过程中，Redis服务器仍然可以响应客户端请求而不会阻塞，但是在BGSAVE的过程中，拒绝BGSAVE,SAVE执行，BGREWRITEAOF延迟执行，主要为了避免竞争。<br>子进程：fork()-&gt;rdbsave(…)-&gt;_exit()||exit()<br>父进程：记录fork与子进程相关信息，输出日志，然后马上返回状态</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">rdbSaveBackground</span><span class="params">(<span class="keyword">char</span> *filename)</span> </span>&#123;</div><div class="line">    <span class="keyword">pid_t</span> childpid;</div><div class="line">    <span class="keyword">long</span> <span class="keyword">long</span> start;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (server.rdb_child_pid != <span class="number">-1</span>) <span class="keyword">return</span> C_ERR;</div><div class="line"></div><div class="line">    server.dirty_before_bgsave = server.dirty;</div><div class="line">    server.lastbgsave_try = time(<span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    start = ustime();</div><div class="line">    <span class="keyword">if</span> ((childpid = fork()) == <span class="number">0</span>) &#123; </div><div class="line">        <span class="keyword">int</span> retval;</div><div class="line"></div><div class="line">        <span class="comment">/* Child */</span></div><div class="line">        closeListeningSockets(<span class="number">0</span>);</div><div class="line">        redisSetProcTitle(<span class="string">"redis-rdb-bgsave"</span>);</div><div class="line">        retval = rdbSave(filename);</div><div class="line">        <span class="keyword">if</span> (retval == C_OK) &#123;</div><div class="line">            <span class="keyword">size_t</span> private_dirty = zmalloc_get_private_dirty();</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (private_dirty) &#123;</div><div class="line">                serverLog(LL_NOTICE,</div><div class="line">                    <span class="string">"RDB: %zu MB of memory used by copy-on-write"</span>,</div><div class="line">                    private_dirty/(<span class="number">1024</span>*<span class="number">1024</span>));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        exitFromChild((retval == C_OK) ? <span class="number">0</span> : <span class="number">1</span>);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">/* Parent */</span></div><div class="line">        server.stat_fork_time = ustime()-start;</div><div class="line">        server.stat_fork_rate = (<span class="keyword">double</span>) zmalloc_used_memory() * <span class="number">1000000</span> / server.stat_fork_time / (<span class="number">1024</span>*<span class="number">1024</span>*<span class="number">1024</span>); <span class="comment">/* GB per second. */</span></div><div class="line">        latencyAddSampleIfNeeded(<span class="string">"fork"</span>,server.stat_fork_time/<span class="number">1000</span>);</div><div class="line">        <span class="keyword">if</span> (childpid == <span class="number">-1</span>) &#123;</div><div class="line">            server.lastbgsave_status = C_ERR;</div><div class="line">            serverLog(LL_WARNING,<span class="string">"Can't save in background: fork: %s"</span>,</div><div class="line">                strerror(errno));</div><div class="line">            <span class="keyword">return</span> C_ERR;</div><div class="line">        &#125;</div><div class="line">        serverLog(LL_NOTICE,<span class="string">"Background saving started by pid %d"</span>,childpid);</div><div class="line">        server.rdb_save_time_start = time(<span class="literal">NULL</span>);</div><div class="line">        server.rdb_child_pid = childpid;</div><div class="line">        server.rdb_child_type = RDB_CHILD_TYPE_DISK;</div><div class="line">        updateDictResizePolicy();</div><div class="line">        <span class="keyword">return</span> C_OK;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> C_OK; <span class="comment">/* unreached */</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/* After an RDB dump or AOF rewrite we exit from children using _exit() instead of</span></div><div class="line"> * exit(), because the latter may interact with the same file objects used by</div><div class="line"> * the parent process. However if we are testing the coverage normal exit() is</div><div class="line"> * used in order to obtain the right coverage information. */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">exitFromChild</span><span class="params">(<span class="keyword">int</span> retcode)</span> </span>&#123;</div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> COVERAGE_TEST</span></div><div class="line">    <span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">    <span class="number">_</span><span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="如何定期保存"><a href="#如何定期保存" class="headerlink" title="如何定期保存"></a>如何定期保存</h3><p>服务器除了记录saveparam这样的结构体数组来保存用户自定义的多个保存条件<br>(在多少秒之内进行了多少次修改),还另外记录了dirty，即每一次执行一个数据库修改命令，程序对dirty计数加一，lastsave是上一次执行保存的时间，redis的服务器周期性函数servercron默认每隔100ms检查save选项所设置的保存条件是否满足</p>
-<p>``` C<br>struct redisServer{<br>    /<em> RDB persistence </em>/<br>    long long dirty;                /<em> Changes to DB from the last save </em>/<br>    pid_t rdb_child_pid;            /<em> PID of RDB saving child </em>/<br>    struct saveparam <em>saveparams;   /</em> Save points array for RDB <em>/<br>    time_t lastsave;                /</em> Unix time of last successful save */</p>
-<p>}</p>
-<h3 id="RDB文件结构设计"><a href="#RDB文件结构设计" class="headerlink" title="RDB文件结构设计"></a>RDB文件结构设计</h3><p>RDB文件是一个经过压缩的二进制文件，由多个部分组成</p>
-<div align="center"><br><img src="/img/rdbfile.jpg"><br></div>
-
-<div align="center"><br><img src="/img/rdbfile1.jpg"><br></div>
-
-<div align="center"><br><img src="/img/rdbfile2.jpg"><br></div><br>## AOF<br>RDB是通过保存数据库的键值对来记录数据库转态，而AOF(APPEND ONLY FILE)持久化则是通过保存redis服务器所执行的写命令来记录数据库转态的<br><div align="center"><br><img src="/img/aof.jpg"><br></div>
-
-<h3 id="实现要点"><a href="#实现要点" class="headerlink" title="实现要点"></a>实现要点</h3><p>未完待续</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
-<p>《redis设计与实现》<br> redis github源码</p>
 </blockquote>
 
           
