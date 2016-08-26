@@ -96,7 +96,7 @@
 <meta property="og:description" content="程序性能优化 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。
 是否可优化思考12345void swap(int *xp, int *yp)&amp;#123;	*xp = *xp + *yp;	*yp = *xp - *yp;	*xp = *xp - *yp;&amp;#125;
 可否替换为1">
-<meta property="og:updated_time" content="2016-08-02T15:46:28.301Z">
+<meta property="og:updated_time" content="2016-08-26T14:52:09.345Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="程序性能优化方法">
 <meta name="twitter:description" content="程序性能优化 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。
@@ -379,7 +379,7 @@
 </li>
 </ul>
 </blockquote>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>&lt;&lt;深入理解操作系统&gt;&gt;<br>&lt;&lt;大牛分享&gt;&gt;</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>&lt;&lt;深入理解操作系统&gt;&gt;<br>&lt;&lt;大牛分享&gt;&gt;</p>
 
       
     </div>
@@ -577,7 +577,7 @@ window._bd_share_config=
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#程序性能优化"><span class="nav-number">1.</span> <span class="nav-text">程序性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#是否可优化"><span class="nav-number">1.1.</span> <span class="nav-text">是否可优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用的优化方法"><span class="nav-number">1.2.</span> <span class="nav-text">常用的优化方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-在循环中减少函数调用"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.在循环中减少函数调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-消除不必要的存储器引用"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.消除不必要的存储器引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-循环展开"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.循环展开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-提高并行性"><span class="nav-number">1.2.4.</span> <span class="nav-text">4.提高并行性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-重新结合变换"><span class="nav-number">1.2.5.</span> <span class="nav-text">5.重新结合变换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阿姆达尔定律"><span class="nav-number">1.3.</span> <span class="nav-text">阿姆达尔定律</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-C-中的优化"><span class="nav-number">1.4.</span> <span class="nav-text">C/C++中的优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.5.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#程序性能优化"><span class="nav-number">1.</span> <span class="nav-text">程序性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#是否可优化"><span class="nav-number">1.1.</span> <span class="nav-text">是否可优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用的优化方法"><span class="nav-number">1.2.</span> <span class="nav-text">常用的优化方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-在循环中减少函数调用"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.在循环中减少函数调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-消除不必要的存储器引用"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.消除不必要的存储器引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-循环展开"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.循环展开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-提高并行性"><span class="nav-number">1.2.4.</span> <span class="nav-text">4.提高并行性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-重新结合变换"><span class="nav-number">1.2.5.</span> <span class="nav-text">5.重新结合变换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阿姆达尔定律"><span class="nav-number">1.3.</span> <span class="nav-text">阿姆达尔定律</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-C-中的优化"><span class="nav-number">1.4.</span> <span class="nav-text">C/C++中的优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">1.5.</span> <span class="nav-text">参考文献</span></a></li></ol></li></ol></div>
             
           </div>
         </section>

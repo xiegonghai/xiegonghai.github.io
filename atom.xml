@@ -194,7 +194,7 @@
     <link href="http://yoursite.com/2016/07/18/%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
     <id>http://yoursite.com/2016/07/18/程序性能优化/</id>
     <published>2016-07-18T12:20:59.000Z</published>
-    <updated>2016-08-02T15:46:28.301Z</updated>
+    <updated>2016-08-26T14:52:09.345Z</updated>
     
     <content type="html">&lt;h1 id=&quot;程序性能优化&quot;&gt;&lt;a href=&quot;#程序性能优化&quot; class=&quot;headerlink&quot; title=&quot;程序性能优化&quot;&gt;&lt;/a&gt;程序性能优化&lt;/h1&gt;&lt;p&gt; 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。&lt;/p&gt;
 &lt;h2 id=&quot;是否可优化&quot;&gt;&lt;a href=&quot;#是否可优化&quot; class=&quot;headerlink&quot; title=&quot;是否可优化&quot;&gt;&lt;/a&gt;是否可优化&lt;/h2&gt;&lt;p&gt;思考&lt;br&gt;&lt;figure class=&quot;highlight c++&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;swap&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; *xp, &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; *yp)&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*xp = *xp + *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*yp = *xp - *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*xp = *xp - *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -245,7 +245,7 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&quot;参考&quot;&gt;&lt;a href=&quot;#参考&quot; class=&quot;headerlink&quot; title=&quot;参考&quot;&gt;&lt;/a&gt;参考&lt;/h2&gt;&lt;p&gt;&amp;lt;&amp;lt;深入理解操作系统&amp;gt;&amp;gt;&lt;br&gt;&amp;lt;&amp;lt;大牛分享&amp;gt;&amp;gt;&lt;/p&gt;
+&lt;h2 id=&quot;参考文献&quot;&gt;&lt;a href=&quot;#参考文献&quot; class=&quot;headerlink&quot; title=&quot;参考文献&quot;&gt;&lt;/a&gt;参考文献&lt;/h2&gt;&lt;p&gt;&amp;lt;&amp;lt;深入理解操作系统&amp;gt;&amp;gt;&lt;br&gt;&amp;lt;&amp;lt;大牛分享&amp;gt;&amp;gt;&lt;/p&gt;
 </content>
     
     <summary type="html">
@@ -320,7 +320,7 @@
     <link href="http://yoursite.com/2016/07/11/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E6%80%BB%E7%BB%93/"/>
     <id>http://yoursite.com/2016/07/11/网络爬虫总结/</id>
     <published>2016-07-11T02:01:59.000Z</published>
-    <updated>2016-08-08T16:37:43.328Z</updated>
+    <updated>2016-08-26T14:52:36.670Z</updated>
     
     <content type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;在校期间由于到时I数据需求以及自己偶尔倒腾，写过一段时间爬虫，爬过csdn博客,天涯论坛,sina博客,sina微公益，学校就业系统数据(当时基本把全院就业数据爬下来了，包括每个人的身份证家庭住址联系方式就业去向等信息)等等,也爬过主流网站的信息当时想着做了一个粗糙的小型搜索引擎.在实习阶段写过一段时间爬虫系统，此时就主要用的scrapy框架了，爬取了7个主流手游网站游戏资讯论坛的信息.一直没有空去总结下,趁着有空总结下基本技巧&lt;/p&gt;
 &lt;h2 id=&quot;关于爬取的三个方面&quot;&gt;&lt;a href=&quot;#关于爬取的三个方面&quot; class=&quot;headerlink&quot; title=&quot;关于爬取的三个方面&quot;&gt;&lt;/a&gt;关于爬取的三个方面&lt;/h2&gt;&lt;h3 id=&quot;网络爬虫归根结底是如何拿到服务器数据&quot;&gt;&lt;a href=&quot;#网络爬虫归根结底是如何拿到服务器数据&quot; class=&quot;headerlink&quot; title=&quot;网络爬虫归根结底是如何拿到服务器数据&quot;&gt;&lt;/a&gt;网络爬虫归根结底是如何拿到服务器数据&lt;/h3&gt;&lt;p&gt;在你分析完目标站点的需要的数据之后,思考如何爬取过程自动化，一般站点的数据组织方式都是有规律，比如csdn会有一个所有博客的一个汇总存档页，如果你需要爬取所有的页面博客，你需要分析第1页到第n页的页面连接url规律,然后依次请求每页数据，得到每个页的几十个博客url，下层进行每个url的深入爬取。&lt;/p&gt;
