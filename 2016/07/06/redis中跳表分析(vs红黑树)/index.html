@@ -89,7 +89,7 @@
 <meta name="description" content="前言 用过sorted set的话，都知道sorted set是redis非常首欢迎的数据结构，Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。有序集合的成员是唯一的,但分数(score)却可以重复。 而sorted set的底层实现便是skiplist,">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis中跳表实现(vs红黑树)">
-<meta property="og:url" content="http://yoursite.com/2016/07/29/redis中跳表分析(vs红黑树)/index.html">
+<meta property="og:url" content="http://yoursite.com/2016/07/06/redis中跳表分析(vs红黑树)/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
 <meta property="og:description" content="前言 用过sorted set的话，都知道sorted set是redis非常首欢迎的数据结构，Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。有序集合的成员是唯一的,但分数(score)却可以重复。 而sorted set的底层实现便是skiplist,">
 <meta property="og:image" content="http://yoursite.com/img/skiplist1.jpg">
@@ -97,7 +97,7 @@
 <meta property="og:image" content="http://yoursite.com/img/skiplist3.jpg">
 <meta property="og:image" content="http://yoursite.com/img/skiplist4.jpg">
 <meta property="og:image" content="http://yoursite.com/img/skiplist.jpg">
-<meta property="og:updated_time" content="2016-08-15T00:06:51.107Z">
+<meta property="og:updated_time" content="2016-08-28T13:43:10.263Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis中跳表实现(vs红黑树)">
 <meta name="twitter:description" content="前言 用过sorted set的话，都知道sorted set是redis非常首欢迎的数据结构，Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。有序集合的成员是唯一的,但分数(score)却可以重复。 而sorted set的底层实现便是skiplist,">
@@ -122,7 +122,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/07/29/redis中跳表分析(vs红黑树)/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/07/06/redis中跳表分析(vs红黑树)/"/>
 
   <title> redis中跳表实现(vs红黑树) | Xiegonghai's Blog </title>
 </head>
@@ -276,8 +276,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-29T17:38:59+08:00" content="2016-07-29">
-              2016-07-29
+            <time itemprop="dateCreated" datetime="2016-07-06T17:38:59+08:00" content="2016-07-06">
+              2016-07-06
             </time>
           </span>
 
@@ -306,8 +306,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/29/redis中跳表分析(vs红黑树)/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/redis中跳表分析(vs红黑树)/" itemprop="commentsCount"></span>
+                <a href="/2016/07/06/redis中跳表分析(vs红黑树)/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/06/redis中跳表分析(vs红黑树)/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -373,13 +373,17 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/07/18/程序性能优化/" rel="next" title="程序性能优化方法">
-                <i class="fa fa-chevron-left"></i> 程序性能优化方法
+              <a href="/2016/07/05/IO复用之-Select poll 和epoll/" rel="next" title="linux I/O复用之-select epoll">
+                <i class="fa fa-chevron-left"></i> linux I/O复用之-select epoll
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/11/网络爬虫总结/" rel="prev" title="爬虫总结">
+                爬虫总结 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -415,8 +419,8 @@ window._bd_share_config=
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/29/redis中跳表分析(vs红黑树)/"
-           data-title="redis中跳表实现(vs红黑树)" data-url="http://yoursite.com/2016/07/29/redis中跳表分析(vs红黑树)/">
+      <div class="ds-thread" data-thread-key="2016/07/06/redis中跳表分析(vs红黑树)/"
+           data-title="redis中跳表实现(vs红黑树)" data-url="http://yoursite.com/2016/07/06/redis中跳表分析(vs红黑树)/">
       </div>
     
   </div>
