@@ -260,145 +260,6 @@
             
               
                 
-                <a class="post-title-link" href="/2016/07/31/redis持久化之AOF&RDB/" itemprop="url">
-                  redis持久化之RDB与AOF
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-31T13:38:59+08:00" content="2016-07-31">
-              2016-07-31
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Redis学习/" itemprop="url" rel="index">
-                    <span itemprop="name">Redis学习</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/31/redis持久化之AOF&RDB/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/31/redis持久化之AOF&RDB/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们知道redis是内存数据库，如果不将数据库转态(当前服务器非空数据库以及键值对)保存在内存中,就得保存在磁盘里，否则一旦服务器退出，服务器中的数据库转态也会消失<br>为了解决这个问题，redis采用了两种持久化方式，一种为RDB，一种为AOF</p>
-<h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><p>rdb方式就是手动或者配置定期化将数据库以及键值对保存到一个RDB文件中，称之为RDB持久化，这里需要了解的是:</p>
-<div align="center"><br><img src="/img/rdb.jpg"><br></div>
-
-<h3 id="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"><a href="#RDB如何是如何创建的，执行SAVE或者BGSAVE的流程" class="headerlink" title="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"></a>RDB如何是如何创建的，执行SAVE或者BGSAVE的流程</h3><p>BGSAVE主要的实现是利用fork()创建一个子进程，保存工作由子进程执行，所以子进程在创建子进程的过程中，Redis服务器仍然可以响应客户端请求而不会阻塞，但是在BGSAVE的过程中，拒绝BGSAVE,SAVE执行，BGREWRITEAOF延迟执行，主要为了避免竞争。<br>子进程：fork()-&gt;rdbsave(…)-&gt;_exit()||exit()<br>父进程：记录fork与子进程相关信息，输出日志，然后马上返回状态</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">rdbSaveBackground</span><span class="params">(<span class="keyword">char</span> *filename)</span> </span>&#123;</div><div class="line">    <span class="keyword">pid_t</span> childpid;</div><div class="line">    <span class="keyword">long</span> <span class="keyword">long</span> start;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (server.rdb_child_pid != <span class="number">-1</span>) <span class="keyword">return</span> C_ERR;</div><div class="line"></div><div class="line">    server.dirty_before_bgsave = server.dirty;</div><div class="line">    server.lastbgsave_try = time(<span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    start = ustime();</div><div class="line">    <span class="keyword">if</span> ((childpid = fork()) == <span class="number">0</span>) &#123; </div><div class="line">        <span class="keyword">int</span> retval;</div><div class="line"></div><div class="line">        <span class="comment">/* Child */</span></div><div class="line">        closeListeningSockets(<span class="number">0</span>);</div><div class="line">        redisSetProcTitle(<span class="string">"redis-rdb-bgsave"</span>);</div><div class="line">        retval = rdbSave(filename);</div><div class="line">        <span class="keyword">if</span> (retval == C_OK) &#123;</div><div class="line">            <span class="keyword">size_t</span> private_dirty = zmalloc_get_private_dirty();</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (private_dirty) &#123;</div><div class="line">                serverLog(LL_NOTICE,</div><div class="line">                    <span class="string">"RDB: %zu MB of memory used by copy-on-write"</span>,</div><div class="line">                    private_dirty/(<span class="number">1024</span>*<span class="number">1024</span>));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        exitFromChild((retval == C_OK) ? <span class="number">0</span> : <span class="number">1</span>);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">/* Parent */</span></div><div class="line">        server.stat_fork_time = ustime()-start;</div><div class="line">        server.stat_fork_rate = (<span class="keyword">double</span>) zmalloc_used_memory() * <span class="number">1000000</span> / server.stat_fork_time / (<span class="number">1024</span>*<span class="number">1024</span>*<span class="number">1024</span>); <span class="comment">/* GB per second. */</span></div><div class="line">        latencyAddSampleIfNeeded(<span class="string">"fork"</span>,server.stat_fork_time/<span class="number">1000</span>);</div><div class="line">        <span class="keyword">if</span> (childpid == <span class="number">-1</span>) &#123;</div><div class="line">            server.lastbgsave_status = C_ERR;</div><div class="line">            serverLog(LL_WARNING,<span class="string">"Can't save in background: fork: %s"</span>,</div><div class="line">                strerror(errno));</div><div class="line">            <span class="keyword">return</span> C_ERR;</div><div class="line">        &#125;</div><div class="line">        serverLog(LL_NOTICE,<span class="string">"Background saving started by pid %d"</span>,childpid);</div><div class="line">        server.rdb_save_time_start = time(<span class="literal">NULL</span>);</div><div class="line">        server.rdb_child_pid = childpid;</div><div class="line">        server.rdb_child_type = RDB_CHILD_TYPE_DISK;</div><div class="line">        updateDictResizePolicy();</div><div class="line">        <span class="keyword">return</span> C_OK;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> C_OK; <span class="comment">/* unreached */</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/* After an RDB dump or AOF rewrite we exit from children using _exit() instead of</span></div><div class="line"> * exit(), because the latter may interact with the same file objects used by</div><div class="line"> * the parent process. However if we are testing the coverage normal exit() is</div><div class="line"> * used in order to obtain the right coverage information. */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">exitFromChild</span><span class="params">(<span class="keyword">int</span> retcode)</span> </span>&#123;</div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> COVERAGE_TEST</span></div><div class="line">    <span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">    <span class="number">_</span><span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="如何定期保存"><a href="#如何定期保存" class="headerlink" title="如何定期保存"></a>如何定期保存</h3><p>服务器除了记录saveparam这样的结构体数组来保存用户自定义的多个保存条件<br>(在多少秒之内进行了多少次修改),还另外记录了dirty，即每一次执行一个数据库修改命令，程序对dirty计数加一，lastsave是上一次执行保存的时间，redis的服务器周期性函数servercron默认每隔100ms检查save选项所设置的保存条件是否满足</p>
-<p>``` C<br>struct redisServer{<br>    /<em> RDB persistence </em>/<br>    long long dirty;                /<em> Changes to DB from the last save </em>/<br>    pid_t rdb_child_pid;            /<em> PID of RDB saving child </em>/<br>    struct saveparam <em>saveparams;   /</em> Save points array for RDB <em>/<br>    time_t lastsave;                /</em> Unix time of last successful save */</p>
-<p>}</p>
-<h3 id="RDB文件结构设计"><a href="#RDB文件结构设计" class="headerlink" title="RDB文件结构设计"></a>RDB文件结构设计</h3><p>RDB文件是一个经过压缩的二进制文件，由多个部分组成</p>
-<div align="center"><br><img src="/img/rdbfile.jpg"><br></div>
-
-<div align="center"><br><img src="/img/rdbfile1.jpg"><br></div>
-
-<div align="center"><br><img src="/img/rdbfile2.jpg"><br></div><br>## AOF<br>RDB是通过保存数据库的键值对来记录数据库转态，而AOF(APPEND ONLY FILE)持久化则是通过保存redis服务器所执行的写命令来记录数据库转态的<br><div align="center"><br><img src="/img/aof.jpg"><br></div>
-
-<h3 id="实现要点"><a href="#实现要点" class="headerlink" title="实现要点"></a>实现要点</h3><p>未完待续</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
-<p>《redis设计与实现》<br> redis github源码</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/2016/07/29/redis中跳表分析(vs红黑树)/" itemprop="url">
                   redis中跳表实现(vs红黑树)
                 </a>
@@ -487,299 +348,6 @@
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
 <p>《redis设计与实现》<br><a href="http://blog.csdn.net/daniel_ustc/article/details/20218489?utm_source=tuicool&amp;utm_medium=referral" target="_blank" rel="external">http://blog.csdn.net/daniel_ustc/article/details/20218489?utm_source=tuicool&amp;utm_medium=referral</a><br><a href="http://www.drdobbs.com/parallel/choose-concurrency-friendly-data-structu/208801371?pgno=3" target="_blank" rel="external">http://www.drdobbs.com/parallel/choose-concurrency-friendly-data-structu/208801371?pgno=3</a></p>
 </blockquote>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/07/23/IO复用之-Select poll 和epoll/" itemprop="url">
-                  linux I/O复用之-select epoll
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-23T01:01:59+08:00" content="2016-07-23">
-              2016-07-23
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
-                    <span itemprop="name">C++与linux网络编程</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/23/IO复用之-Select poll 和epoll/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/23/IO复用之-Select poll 和epoll/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="I-O复用应用场景"><a href="#I-O复用应用场景" class="headerlink" title="I/O复用应用场景"></a>I/O复用应用场景</h2><blockquote>
-<p>当客户同时处理多个描述符(交互式输入和网络套接字)<br>TCP服务器同时处理监听套接字和已连接套接字<br>既要处理TCP又要处理UDP<br>处理多个服务或者多个协议</p>
-</blockquote>
-<h2 id="五种I-O模型"><a href="#五种I-O模型" class="headerlink" title="五种I/O模型"></a>五种I/O模型</h2><p><strong>阻塞式I/O</strong></p>
-<div align="center"><br><img src="/img/io1.jpg" alt="^_^||"><br></div>
-
-<p><strong>阻塞式I/O</strong></p>
-<div align="center"><br><img src="/img/io2.jpg" alt="^_^||"><br></div><br><strong>I/O复用</strong><br><div align="center"><br><img src="/img/io3.jpg" alt="^_^||"><br></div><br><strong>信号驱动式I/O</strong><br><div align="center"><br><img src="/img/io4.jpg" alt="^_^||"><br></div><br><strong>异步I/O</strong><br><div align="center"><br><img src="/img/io5.jpg" alt="^_^||"><br></div>
-
-<h3 id="五种I-O模型总结"><a href="#五种I-O模型总结" class="headerlink" title="五种I/O模型总结"></a>五种I/O模型总结</h3><div align="center"><br><img src="/img/io-summary.jpg" alt="^_^||"><br></div>
-
-<h2 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h2><p>select的第一个参数为fdset集合中最大描述符值加1，select对应于内核中的sys_select调用，sys_select首先将第二三四个参数指向的fd_set拷贝到内核，然后对每个被SET的描述符进行poll，并记录在临时结果中(fdset)，如果有事件发生，select会将临时结果写到用户空间并返回，当轮询一遍后没有任何事件发生，如果指定了超时时间，则select会睡眠到超时，睡眠结束后再进行下一次轮询，并将临时结果写到用户空间，然后返回。select返回后，需要逐一检查关注的描述符是否被SET（事件是否发生）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds, <span class="keyword">struct</span> timeval* timeout)</span></span>;</div></pre></td></tr></table></figure></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">参数                  描述</div><div class="line">nfds             sets的文件描述符的最大值</div><div class="line">readfds          fd_set type 类型，只读的描述符集 </div><div class="line">writefds         fd_set type 类型，只写的描述符集 </div><div class="line">errorfds         fd_set type 类型，错误的描述符集 </div><div class="line">timeout          超时等待时间</div></pre></td></tr></table></figure>
-<p>修改fd_set类型的参数，用到以下操作<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> fd_set</div><div class="line">&#123;</div><div class="line">    u_int fd_count;</div><div class="line">    <span class="keyword">int</span> fd_array[FD_SETSIZE];</div><div class="line">&#125;</div><div class="line"><span class="comment">//fd_array可SIZE*8个socket</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">FD_ISSET</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>;</div><div class="line"><span class="comment">//返回值：若fd在描述符集中则返回非0值，否则返回0</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_CLR</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>; <span class="comment">//fd指描述符</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_SET</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_ZERO</span><span class="params">(fd_set *fdset)</span></span>;</div></pre></td></tr></table></figure></p>
-<p>整体运行过程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> sock;</div><div class="line">FILE *fp;</div><div class="line"><span class="keyword">struct</span> fd_set fds;</div><div class="line"><span class="keyword">struct</span> timeval timeout=&#123;<span class="number">3</span>,<span class="number">0</span>&#125;; <span class="comment">//select等待3秒，3秒轮询，要非阻塞就置0</span></div><div class="line"><span class="keyword">char</span> buffer[<span class="number">256</span>]=&#123;<span class="number">0</span>&#125;; <span class="comment">//256字节的接收缓冲区</span></div><div class="line"><span class="comment">//假定已经建立UDP连接，具体过程不写，简单，当然TCP也同理，主机ip和port都已经给定，要写的文件已经打开</span></div><div class="line">sock=socket(...);</div><div class="line">bind(...);</div><div class="line">fp=fopen(...);</div><div class="line"><span class="keyword">while</span>(<span class="number">1</span>)</div><div class="line">&#123;</div><div class="line">    FD_ZERO(&amp;amp;fds); <span class="comment">//每次循环都要清空集合，否则不能检测描述符变化</span></div><div class="line">    FD_SET(sock,&amp;amp;fds); <span class="comment">//添加描述符</span></div><div class="line">    FD_SET(fp,&amp;amp;fds); <span class="comment">//同上</span></div><div class="line">    maxfdp=sock&amp;gt;fp?sock+<span class="number">1</span>:fp+<span class="number">1</span>; <span class="comment">//描述符最大值加1</span></div><div class="line">    <span class="comment">// for(int i =0 ;i &amp;lt; maxfds; i++) if(FD_ISSET()) &#123; &#125;</span></div><div class="line">    <span class="keyword">switch</span>(select(maxfdp,&amp;amp;fds,&amp;amp;fds,<span class="literal">NULL</span>,&amp;amp;timeout)) <span class="comment">//select使用</span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="number">-1</span>: <span class="built_in">exit</span>(<span class="number">-1</span>);<span class="keyword">break</span>; <span class="comment">//select错误，退出程序</span></div><div class="line">        <span class="keyword">case</span> <span class="number">0</span>:<span class="keyword">break</span>; <span class="comment">//再次轮询</span></div><div class="line">        <span class="keyword">default</span>:</div><div class="line">            <span class="keyword">if</span>(FD_ISSET(sock,&amp;amp;fds)) <span class="comment">//测试sock是否可读，即是否网络上有数据</span></div><div class="line">            &#123;</div><div class="line">                recvfrom(sock,buffer,<span class="number">256</span>,.....);<span class="comment">//接受网络数据</span></div><div class="line">                <span class="keyword">if</span>(FD_ISSET(fp,&amp;amp;fds)) <span class="comment">//测试文件是否可写</span></div><div class="line">                fwrite(fp,buffer...);<span class="comment">//写入文件</span></div><div class="line"> ......</div><div class="line">            &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h2><p>poll函数类似于 select，可用于任何类型的文件描述符，与 select 不同，poll不是为每个状态（可读性、可写性和异常状态）构造一个描述符集，而是构造一个pollfd 结构数组向内核传递需要关注的事件，故没有描述符个数的限制，每个数组元素指定一个描述符编号以及对其所关心的状态，pollfd中的events字段和revents字段分别用于标示关注的事件和发生的事件。</p>
-<p>poll的实现机制与select类似，其对应内核中的sys_poll，只不过poll向内核传递pollfd数组，然后对pollfd中的每个描述符进行poll，poll返回后，需要对pollfd中的每个元素检查其revents值，来判断事件是否发生。</p>
-<p>返回值：</p>
-<p>-1：有错误产生<br>0：超时时间到，而且没有描述符有状态变化<br>大于0：有状态变化的描述符个数<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span><span class="params">(<span class="keyword">struct</span> pollfd fdarray[],<span class="keyword">nfds_t</span> nfds,<span class="keyword">int</span> timeout)</span></span>;</div><div class="line"><span class="keyword">struct</span> pollfd&#123;</div><div class="line">    <span class="keyword">int</span> fd; <span class="comment">//需要检查的文件描述符</span></div><div class="line">    <span class="keyword">short</span> events; <span class="comment">//等待的需要测试事件</span></div><div class="line">    <span class="keyword">short</span> revents; <span class="comment">//实际发生了的事件，也就是返回结果</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>应将每个数组元素的events成员设置为下图所示的值。通过这些值告诉内核我们对该描述符关心的是什么。返回时，内核设置revents成员，以说明对于该描述符已经发生了什么事件。（注意，poll没有更改events成员，这与select不同，select修改其参数以指示哪一个描述符已准备好了。）</p>
-<p>timeout == -1 永远等待。当所指定的描述符中的一个已准备好，或捕捉到一个信号时则返回。如果捕捉到一个信号，则poll返回-1，errno设置为EINTR timeout == 0 不等待 timeout &gt; 0 等待timeout毫秒，如果已超时但是还没有一个描述符准备好，则返回值是0。</p>
-<p>运行流程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> pollfd fds[IN_FILES];</div><div class="line"><span class="keyword">char</span> buf[MAX_BUFFER_SIZE];</div><div class="line"><span class="keyword">int</span> i,res,real_read, maxfd;</div><div class="line">fds[<span class="number">0</span>].fd = <span class="number">0</span>;</div><div class="line"><span class="keyword">if</span>((fds[<span class="number">1</span>].fd=open(&amp;quot;data1&amp;quot;,O_RDONLY|O_NONBLOCK)) &amp;lt; <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,&amp;quot;open data1 error:%s&amp;quot;,strerror(errno));</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span>((fds[<span class="number">2</span>].fd=open(&amp;quot;data2&amp;quot;,O_RDONLY|O_NONBLOCK)) &amp;lt; <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,&amp;quot;open data2 error:%s&amp;quot;,strerror(errno));</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &amp;lt; IN_FILES; i++)</div><div class="line">&#123;</div><div class="line">    fds[i].events = POLLIN;</div><div class="line">&#125;</div><div class="line"><span class="keyword">while</span>(fds[<span class="number">0</span>].events || fds[<span class="number">1</span>].events || fds[<span class="number">2</span>].events)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (poll(fds, IN_FILES, TIME_DELAY) &amp;lt;= <span class="number">0</span>)</div><div class="line">    &#123;</div><div class="line">        <span class="built_in">printf</span>(&amp;quot;Poll error\n&amp;quot;);</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i&amp;lt; IN_FILES; i++)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">if</span> (fds[i].revents)</div><div class="line">        &#123;</div><div class="line">            <span class="built_in">memset</span>(buf, <span class="number">0</span>, MAX_BUFFER_SIZE);</div><div class="line">            real_read = read(fds[i].fd, buf, MAX_BUFFER_SIZE);</div><div class="line">            <span class="keyword">if</span> (real_read &amp;lt; <span class="number">0</span>)</div><div class="line">            &#123;</div><div class="line">                <span class="keyword">if</span> (errno != EAGAIN)</div><div class="line">                &#123;</div><div class="line">                    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (!real_read)</div><div class="line">            &#123;</div><div class="line">                close(fds[i].fd);</div><div class="line">                fds[i].events = <span class="number">0</span>;</div><div class="line">            ......</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><p>epoll通过epoll_create创建一个用于epoll轮询的描述符，通过epoll_ctl添加/修改/删除事件，通过epoll_wait 检查事件，epoll_wait 的第二个参数用于存放结果。</p>
-<p>epoll与select、poll不同，首先，其不用每次调用都向内核拷贝事件描述信息，在第一次调用后，事件信息就会与对应的epoll描述符关联起来。另外epoll不是通过轮询，而是通过在等待的描述符上注册回调函数，当事件发生时，回调函数负责把发生的事件存储在就绪事件链表中，最后写到用户空间。</p>
-<p>epoll返回后，该参数指向的缓冲区中即为发生的事件，对缓冲区中每个元素进行处理即可，而不需要像poll、select那样进行轮询检查。</p>
-<p>系统调用：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大。</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</div><div class="line"><span class="comment">/*</span></div><div class="line">epoll的事件注册函数，它与select()是在监听事件时告诉内核要监听什么类型的事件不同，而是在这里先注册要监听的事件类型。第一个参数是epoll_create()的返回值，第二个参数表示动作，用三个宏来表示：</div><div class="line">EPOLL_CTL_ADD：注册新的fd到epfd中；</div><div class="line">EPOLL_CTL_MOD：修改已经注册的fd的监听事件；</div><div class="line">EPOLL_CTL_DEL：从epfd中删除一个fd；</div><div class="line">第三个参数是需要监听的fd，第四个参数是告诉内核需要监听什么事。</div><div class="line">*/</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, <span class="keyword">struct</span> epoll_event *event)</span></span>;</div><div class="line"><span class="keyword">struct</span> epoll_event结构如下：</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> epoll_data &#123;</div><div class="line">    <span class="keyword">void</span> *ptr;</div><div class="line">    <span class="keyword">int</span> fd;</div><div class="line">    <span class="keyword">__uint32_t</span> u32;</div><div class="line">    <span class="keyword">__uint64_t</span> u64;</div><div class="line">&#125; <span class="keyword">epoll_data_t</span>;</div><div class="line"><span class="keyword">struct</span> epoll_event</div><div class="line">&#123;</div><div class="line">    <span class="keyword">__uint32_t</span> events; <span class="comment">//Epoll events</span></div><div class="line">    <span class="keyword">epoll_data_t</span> data; <span class="comment">//User data variable</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>events可以是以下几个宏的集合：<br>EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；<br>EPOLLOUT：表示对应的文件描述符可以写；<br>EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；<br>EPOLLERR：表示对应的文件描述符发生错误；<br>EPOLLHUP：表示对应的文件描述符被挂断；<br>EPOLLET： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。<br>EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里<br>运行流程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (n = <span class="number">0</span>; n &amp;lt; nfds; ++n) &#123;</div><div class="line">    <span class="keyword">if</span> (events[n].data.fd == listener) &#123; <span class="comment">// 如果是主socket的事件的话，则表示</span></div><div class="line">    <span class="comment">// 有新连接进入了，进行新连接的处理。</span></div><div class="line">    client = accept(listener, (<span class="keyword">struct</span> sockaddr *) &amp;amp;local, &amp;amp;addrlen);</div><div class="line">    <span class="keyword">if</span> (client &amp;lt; <span class="number">0</span>)&#123;</div><div class="line">    perror(&amp;quot;accept&amp;quot;);</div><div class="line">    <span class="keyword">continue</span>;</div><div class="line">&#125;</div><div class="line">setnonblocking(client); <span class="comment">// 将新连接置于非阻塞模式</span></div><div class="line">ev.events = EPOLLIN | EPOLLET; <span class="comment">// 并且将新连接也加入EPOLL的监听队列。</span></div><div class="line"><span class="comment">// 注意，这里的参数EPOLLIN | EPOLLET并没有设置对写socket的监听，</span></div><div class="line"><span class="comment">// 如果有写操作的话，这个时候epoll是不会返回事件的，如果要对写操作</span></div><div class="line"><span class="comment">// 也监听的话，应该是EPOLLIN | EPOLLOUT | EPOLLET</span></div><div class="line">ev.data.fd = client;</div><div class="line"><span class="keyword">if</span> (epoll_ctl(kdpfd, EPOLL_CTL_ADD, client, &amp;amp;ev) &amp;lt; <span class="number">0</span>) &#123;</div><div class="line">    <span class="comment">// 设置好event之后，将这个新的event通过epoll_ctl加入到epoll的监听队列里面，</span></div><div class="line">    <span class="comment">// 这里用EPOLL_CTL_ADD来加一个新的epoll事件，通过EPOLL_CTL_DEL来减少一个</span></div><div class="line">    <span class="comment">// epoll事件，通过EPOLL_CTL_MOD来改变一个事件的监听方式。</span></div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, &amp;quot;epoll <span class="built_in">set</span> insertion error: fd=%d0, client);</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">&#125;</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (event[n].events &amp;amp; EPOLLIN) &#123; <span class="comment">// 如果是已经连接的用户，并且收到数据，</span></div><div class="line">    <span class="comment">// 那么进行读入</span></div><div class="line">    <span class="keyword">int</span> sockfd_r;</div><div class="line">    <span class="keyword">if</span> ((sockfd_r = event[n].data.fd) &amp;lt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">continue</span>;</div><div class="line">    read(sockfd_r, buffer, MAXSIZE);</div><div class="line">    <span class="comment">// 修改sockfd_r上要处理的事件为EPOLLOUT</span></div><div class="line">    ev.data.fd = sockfd_r;</div><div class="line">    ev.events = EPOLLOUT | EPOLLET;</div><div class="line">    epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd_r, &amp;amp;ev)</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (event[n].events &amp;amp; EPOLLOUT) &#123; <span class="comment">// 如果有数据发送</span></div><div class="line">    <span class="keyword">int</span> sockfd_w = events[n].data.fd;</div><div class="line">    write(sockfd_w, buffer, <span class="keyword">sizeof</span>(buffer));</div><div class="line">    <span class="comment">// 修改sockfd_w上要处理的事件为EPOLLIN</span></div><div class="line">    ev.data.fd = sockfd_w;</div><div class="line">    ev.events = EPOLLIN | EPOLLET;</div><div class="line">    epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd_r, &amp;amp;ev)</div><div class="line">&#125;</div><div class="line">    do_use_fd(events[n].data.fd);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>《UNIX环境高级编程》<br>《UNIX网络编程I卷》<br> <a href="http://armsword.com/2014/03/07/linux-io-multiplexing/" target="_blank" rel="external">http://armsword.com/2014/03/07/linux-io-multiplexing/</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/07/20/并发编程-多进程-IO复用-多线程/" itemprop="url">
-                  并发编程之-多进程-I/O复用-多线程
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-20T10:01:59+08:00" content="2016-07-20">
-              2016-07-20
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
-                    <span itemprop="name">C++与linux网络编程</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/20/并发编程-多进程-IO复用-多线程/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/20/并发编程-多进程-IO复用-多线程/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：</p>
-<h2 id="多进程echo服务器"><a href="#多进程echo服务器" class="headerlink" title="多进程echo服务器"></a>多进程echo服务器</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="comment">//事件处理函数</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigchld_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">while</span> (waitpid(<span class="number">-1</span>, <span class="number">0</span>, WNOHANG) &gt; <span class="number">0</span>)</div><div class="line">    ;</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h3><ol>
-<li>服务器端打开一个socket<br>whil0e循环主体：</li>
-<li>接受来自客户端的连接,返回一个已连接套接字符</li>
-<li>fork初始化一个子进程,子进程提供服务</li>
-<li>父进程关闭连接描述符<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, connfd, port;</div><div class="line">    <span class="keyword">socklen_t</span> clientlen=<span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line">    <span class="comment">// 根据信号编号调用事件处理函数</span></div><div class="line">    Signal(SIGCHLD, sigchld_handler);<span class="comment">//用于回收子进程资源-避免僵尸进程</span></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        connfd = Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen);</div><div class="line">        <span class="keyword">if</span> (Fork() == <span class="number">0</span>) &#123; </div><div class="line">            Close(listenfd); <span class="comment">/* 子进程关闭监听描述符 */</span></div><div class="line">            echo(connfd);    <span class="comment">/* echo服务 */</span> </div><div class="line">            Close(connfd);   <span class="comment">/* 子进程关闭连接描述符 */</span> </div><div class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);         <span class="comment">/* 子进程退出 */</span></div><div class="line">        &#125;</div><div class="line">        Close(connfd); <span class="comment">/* 父进程关闭连接描述符-很重要! */</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="I-O复用echo服务器"><a href="#I-O复用echo服务器" class="headerlink" title="I/O复用echo服务器"></a>I/O复用echo服务器</h2><p>select函数处理类型为fd_set的描述符集合，逻辑上把描述符集合看出换一个大小为n的位向量，select有两个输入，一个是读集合的描述符集合和该集合的基数。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"csapp.h"</span></span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123; <span class="comment">/* 连接描述符池*/</span> </div><div class="line">    <span class="keyword">int</span> maxfd;        <span class="comment">/* 读集合的最大描述符 */</span>   </div><div class="line">    fd_set read_set;  <span class="comment">/* 所有活动描述符集合*/</span></div><div class="line">    fd_set ready_set; <span class="comment">/* 准备好读的描述符子集  */</span></div><div class="line">    <span class="keyword">int</span> nready;       <span class="comment">/* 从select中准备好读的描述符数量 */</span>   </div><div class="line">    <span class="keyword">int</span> maxi;         <span class="comment">/* highwater index into client arra */</span></div><div class="line">    <span class="keyword">int</span> clientfd[FD_SETSIZE];    <span class="comment">/* 活动描述符集 */</span></div><div class="line">    <span class="keyword">rio_t</span> clientrio[FD_SETSIZE]; <span class="comment">/* 活动读缓冲区集合 */</span></div><div class="line">&#125; pool; </div><div class="line"><span class="comment">//初始化连接池</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">init_pool</span><span class="params">(<span class="keyword">int</span> listenfd, pool *p)</span></span>;</div><div class="line"><span class="comment">//往pool添加客户端连接符</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">add_client</span><span class="params">(<span class="keyword">int</span> connfd, pool *p)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">check_clients</span><span class="params">(pool *p)</span></span>;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">int</span> byte_cnt = <span class="number">0</span>; <span class="comment">/* 计算从服务器接收的总字节*/</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, connfd, port; </div><div class="line">    <span class="keyword">socklen_t</span> clientlen = <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line">    <span class="keyword">static</span> pool pool; </div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line"></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    init_pool(listenfd, &amp;pool); <span class="comment">//初始化连接描述符池</span></div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">    <span class="comment">/* 使用select等待监听描述符上的连接请求或来自标准输入上的命令 */</span></div><div class="line">    pool.ready_set = pool.read_set;</div><div class="line">    pool.nready = Select(pool.maxfd+<span class="number">1</span>, &amp;pool.ready_set, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* 当监听描述符准备好时，添加一个新的客户端已连接描述符到连接池 */</span></div><div class="line">    <span class="keyword">if</span> (FD_ISSET(listenfd, &amp;pool.ready_set)) &#123; </div><div class="line">        connfd = Accept(listenfd, (SA *)&amp;clientaddr, &amp;clientlen); </div><div class="line">        add_client(connfd, &amp;pool); </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">/* 从每个准备好的已连接描述符回送一行文本内容 */</span> </div><div class="line">    check_clients(&amp;pool); </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="多线程echo服务器"><a href="#多线程echo服务器" class="headerlink" title="多线程echo服务器"></a>多线程echo服务器</h2><p>###重要的几点</p>
-<blockquote>
-<ul>
-<li>while循环中为何要动态分配一个整型来存放已连接描述符?</li>
-<li>thread中Pthread_detach？</li>
-</ul>
-</blockquote>
-<p>1.如果使用引用，由于线程竞争将导致意外结果，试想如果在下一次连接到来，thread例程函数中当前描述符变成下一次连接描述符<br>2.我们知道线程默认情况下被创建成可结合的，为了避免存储器泄漏(其资源如栈等)，每个结合线程要么被其他线程显式的收回，要么使用thread_detach被分离，待其终止由系统自动释放其资源，这样对于web程序而言是好的，因为web服务器每收到一个web浏览器的连接请求都创建一个对等线程，每个连接由一个单独的线程处理，没必要等也不愿意等到每个对等线程终止</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"csapp.h"</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread</span><span class="params">(<span class="keyword">void</span> *vargp)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, *connfdp, port;</div><div class="line">    <span class="keyword">socklen_t</span> clientlen=<span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line">    <span class="keyword">pthread_t</span> tid; </div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line"></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        connfdp = Malloc(<span class="keyword">sizeof</span>(<span class="keyword">int</span>)); <span class="comment">//想想为啥不直接在Pthread_create使用引用参数</span></div><div class="line">        *connfdp = Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen); </div><div class="line">        Pthread_create(&amp;tid, <span class="literal">NULL</span>, thread, connfdp);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* 一个线程例程 */</span></div><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread</span><span class="params">(<span class="keyword">void</span> *vargp)</span> </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> connfd = *((<span class="keyword">int</span> *)vargp);</div><div class="line">    Pthread_detach(pthread_self()); <span class="comment">//很重要，线程分离后才能在终止时由系统自动释放</span></div><div class="line">    Free(vargp);                   </div><div class="line">    echo(connfd);</div><div class="line">    Close(connfd);</div><div class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>##方法优劣总结</p>
-<h3 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h3><p>对于在父子进程间共享状态信息，进程有一个很清晰的模型，共享文件表不共享用户地址空间，这是优点又是缺点，一个是独立不会覆盖另一个进程的虚拟存储器，消除了许多令人迷惑的错误，另一方面使得进程间共享转态信息变的困难，共享信息-&gt;得通过IPC实现，开销高</p>
-<h3 id="I-O复用"><a href="#I-O复用" class="headerlink" title="I/O复用"></a>I/O复用</h3><p>I/O复用不等价于并发事件驱动程序，但可以作为其基础，在并发事件驱动中，流是因为某个事件而前进的，逻辑流模型=》转态机，一个转态机由一组状态，输入事件和转移构成。<br><strong>优点</strong>：</p>
-<blockquote>
-<p>给了码农更多对于程序行为的控制，比如编写一个事件驱动的并发服务器，为某些客户端提供他们需要的服务，基于多进程是很困难，（redis的事件处理基于I/O复用）<br>运行在的单一进程上下文中，每个逻辑流都能访问该进程的全部地址空间，使得在流之间共享数据变的容易-便于调试</p>
-</blockquote>
-<p><strong>缺点</strong>:<br>编码复杂，代码量大，随着并发粒度见笑，复杂性-上升迅速</p>
-<h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><p>结合上述两者的特性，在执行模型上既有着类似多进程的多线程内核自动调度，又有着I/O复用流享用的共享整个虚拟地址空间的整个内容<br>线程是运行在进程上下文中的逻辑流，线程由内核自动调度，每个线程有她自己的线程上下文，包括Thread ID,栈，栈指针，程序计数器，通用目的寄存器和条件码，共享进程的整个虚拟地址空间</p>
 
           
         
@@ -998,8 +566,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/07/13/redis基本数据结构设计总结/" itemprop="url">
-                  redis基本数据结构总结
+                <a class="post-title-link" href="/2016/07/16/redis持久化之AOF&RDB/" itemprop="url">
+                  redis持久化之RDB与AOF
                 </a>
               
             
@@ -1012,8 +580,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-13T17:38:59+08:00" content="2016-07-13">
-              2016-07-13
+            <time itemprop="dateCreated" datetime="2016-07-16T13:38:59+08:00" content="2016-07-16">
+              2016-07-16
             </time>
           </span>
 
@@ -1042,8 +610,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/13/redis基本数据结构设计总结/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/13/redis基本数据结构设计总结/" itemprop="commentsCount"></span>
+                <a href="/2016/07/16/redis持久化之AOF&RDB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/16/redis持久化之AOF&RDB/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -1068,39 +636,23 @@
       
         
           
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p> 趁着周末时间又将redis基本数据结构设计有看了一遍,前面看过源码解析都忘的差不多了,真是需要多多总结才能深刻理解与应用,有空再自己试着用C++实现一遍,学习需要一个过程,了解(有个印象)-&gt;深刻理解(能够自己实现)-&gt;运用自如(知晓其优点与不足,根据实际应用选用与改造)</p>
-<h2 id="简单动态字符串"><a href="#简单动态字符串" class="headerlink" title="简单动态字符串"></a>简单动态字符串</h2><div align="center"><br><img src="/img/sds.jpg"><br></div>
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们知道redis是内存数据库，如果不将数据库转态(当前服务器非空数据库以及键值对)保存在内存中,就得保存在磁盘里，否则一旦服务器退出，服务器中的数据库转态也会消失<br>为了解决这个问题，redis采用了两种持久化方式，一种为RDB，一种为AOF</p>
+<h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><p>rdb方式就是手动或者配置定期化将数据库以及键值对保存到一个RDB文件中，称之为RDB持久化，这里需要了解的是:</p>
+<div align="center"><br><img src="/img/rdb.jpg"><br></div>
 
+<h3 id="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"><a href="#RDB如何是如何创建的，执行SAVE或者BGSAVE的流程" class="headerlink" title="RDB如何是如何创建的，执行SAVE或者BGSAVE的流程"></a>RDB如何是如何创建的，执行SAVE或者BGSAVE的流程</h3><p>BGSAVE主要的实现是利用fork()创建一个子进程，保存工作由子进程执行，所以子进程在创建子进程的过程中，Redis服务器仍然可以响应客户端请求而不会阻塞，但是在BGSAVE的过程中，拒绝BGSAVE,SAVE执行，BGREWRITEAOF延迟执行，主要为了避免竞争。<br>子进程：fork()-&gt;rdbsave(…)-&gt;_exit()||exit()<br>父进程：记录fork与子进程相关信息，输出日志，然后马上返回状态</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">rdbSaveBackground</span><span class="params">(<span class="keyword">char</span> *filename)</span> </span>&#123;</div><div class="line">    <span class="keyword">pid_t</span> childpid;</div><div class="line">    <span class="keyword">long</span> <span class="keyword">long</span> start;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (server.rdb_child_pid != <span class="number">-1</span>) <span class="keyword">return</span> C_ERR;</div><div class="line"></div><div class="line">    server.dirty_before_bgsave = server.dirty;</div><div class="line">    server.lastbgsave_try = time(<span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    start = ustime();</div><div class="line">    <span class="keyword">if</span> ((childpid = fork()) == <span class="number">0</span>) &#123; </div><div class="line">        <span class="keyword">int</span> retval;</div><div class="line"></div><div class="line">        <span class="comment">/* Child */</span></div><div class="line">        closeListeningSockets(<span class="number">0</span>);</div><div class="line">        redisSetProcTitle(<span class="string">"redis-rdb-bgsave"</span>);</div><div class="line">        retval = rdbSave(filename);</div><div class="line">        <span class="keyword">if</span> (retval == C_OK) &#123;</div><div class="line">            <span class="keyword">size_t</span> private_dirty = zmalloc_get_private_dirty();</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (private_dirty) &#123;</div><div class="line">                serverLog(LL_NOTICE,</div><div class="line">                    <span class="string">"RDB: %zu MB of memory used by copy-on-write"</span>,</div><div class="line">                    private_dirty/(<span class="number">1024</span>*<span class="number">1024</span>));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        exitFromChild((retval == C_OK) ? <span class="number">0</span> : <span class="number">1</span>);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">/* Parent */</span></div><div class="line">        server.stat_fork_time = ustime()-start;</div><div class="line">        server.stat_fork_rate = (<span class="keyword">double</span>) zmalloc_used_memory() * <span class="number">1000000</span> / server.stat_fork_time / (<span class="number">1024</span>*<span class="number">1024</span>*<span class="number">1024</span>); <span class="comment">/* GB per second. */</span></div><div class="line">        latencyAddSampleIfNeeded(<span class="string">"fork"</span>,server.stat_fork_time/<span class="number">1000</span>);</div><div class="line">        <span class="keyword">if</span> (childpid == <span class="number">-1</span>) &#123;</div><div class="line">            server.lastbgsave_status = C_ERR;</div><div class="line">            serverLog(LL_WARNING,<span class="string">"Can't save in background: fork: %s"</span>,</div><div class="line">                strerror(errno));</div><div class="line">            <span class="keyword">return</span> C_ERR;</div><div class="line">        &#125;</div><div class="line">        serverLog(LL_NOTICE,<span class="string">"Background saving started by pid %d"</span>,childpid);</div><div class="line">        server.rdb_save_time_start = time(<span class="literal">NULL</span>);</div><div class="line">        server.rdb_child_pid = childpid;</div><div class="line">        server.rdb_child_type = RDB_CHILD_TYPE_DISK;</div><div class="line">        updateDictResizePolicy();</div><div class="line">        <span class="keyword">return</span> C_OK;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> C_OK; <span class="comment">/* unreached */</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/* After an RDB dump or AOF rewrite we exit from children using _exit() instead of</span></div><div class="line"> * exit(), because the latter may interact with the same file objects used by</div><div class="line"> * the parent process. However if we are testing the coverage normal exit() is</div><div class="line"> * used in order to obtain the right coverage information. */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">exitFromChild</span><span class="params">(<span class="keyword">int</span> retcode)</span> </span>&#123;</div><div class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> COVERAGE_TEST</span></div><div class="line">    <span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">    <span class="number">_</span><span class="built_in">exit</span>(retcode);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="如何定期保存"><a href="#如何定期保存" class="headerlink" title="如何定期保存"></a>如何定期保存</h3><p>服务器除了记录saveparam这样的结构体数组来保存用户自定义的多个保存条件<br>(在多少秒之内进行了多少次修改),还另外记录了dirty，即每一次执行一个数据库修改命令，程序对dirty计数加一，lastsave是上一次执行保存的时间，redis的服务器周期性函数servercron默认每隔100ms检查save选项所设置的保存条件是否满足</p>
+<p>``` C<br>struct redisServer{<br>    /<em> RDB persistence </em>/<br>    long long dirty;                /<em> Changes to DB from the last save </em>/<br>    pid_t rdb_child_pid;            /<em> PID of RDB saving child </em>/<br>    struct saveparam <em>saveparams;   /</em> Save points array for RDB <em>/<br>    time_t lastsave;                /</em> Unix time of last successful save */</p>
+<p>}</p>
+<h3 id="RDB文件结构设计"><a href="#RDB文件结构设计" class="headerlink" title="RDB文件结构设计"></a>RDB文件结构设计</h3><p>RDB文件是一个经过压缩的二进制文件，由多个部分组成</p>
+<div align="center"><br><img src="/img/rdbfile.jpg"><br></div>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">char</span> *sds;</div><div class="line"></div><div class="line"><span class="comment">/* Note: sdshdr5 is never used, we just access the flags byte directly.</span></div><div class="line"> * However is here to document the layout of type 5 SDS strings. */</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr5 &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, and 5 msb of string length */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr8 &#123;</div><div class="line">    <span class="keyword">uint8_t</span> len; <span class="comment">/* used */</span></div><div class="line">    <span class="keyword">uint8_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr16 &#123;</div><div class="line">    <span class="keyword">uint16_t</span> len; <span class="comment">/* used */</span></div><div class="line">    <span class="keyword">uint16_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr32 &#123;</div><div class="line">    <span class="keyword">uint32_t</span> len; <span class="comment">/* used */</span></div><div class="line">    <span class="keyword">uint32_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr64 &#123;</div><div class="line">    <span class="keyword">uint64_t</span> len; <span class="comment">/* used */</span></div><div class="line">    <span class="keyword">uint64_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<h3 id="关于-attribute-packed-的含义"><a href="#关于-attribute-packed-的含义" class="headerlink" title="关于 attribute ((packed)) 的含义"></a>关于 <strong>attribute</strong> ((<strong>packed</strong>)) 的含义</h3><p> <strong>attribute</strong> ((packed)) 的作用就是告诉编译器，取消结构在编译过程中的优化对齐，按照实际占用字节数进行对齐，是GCC特有的语法。这个功能是跟操作系统没关系，跟编译器有关，gcc编译器不是紧凑模式的。在windows下用vc的编译器也不是紧凑的，用tc的编译器就是紧凑的。例如：<br>在TC下：struct my{ char ch; int a;} sizeof(int)=2;sizeof(my)=3;（紧凑模式）<br>在GCC下：struct my{ char ch; int a;} sizeof(int)=4;sizeof(my)=8;（非紧凑模式）<br>在GCC下：struct my{ char ch; int a;}<strong>attrubte</strong> ((packed)) sizeof(int)=4;sizeof(my)=5</p>
-<p> <strong>attribute</strong> ((packed)) 的作用就是告诉编译器，取消结构在编译过程中的优化对齐，按照实际占用字节数进行对齐，是GCC特有的语法。这个功能是跟操作系统没关系，跟编译器有关，gcc编译器不是紧凑模式的。在windows下用vc的编译器也不是紧凑的，用tc的编译器就是紧凑的。例如：<br>在TC下：struct my{ char ch; int a;} sizeof(int)=2;sizeof(my)=3;（紧凑模式）<br>在GCC下：struct my{ char ch; int a;} sizeof(int)=4;sizeof(my)=8;（非紧凑模式）<br>在GCC下：struct my{ char ch; int a;}<strong>attrubte</strong> ((packed)) sizeof(int)=4;sizeof(my)=5</p>
-<h3 id="字符串设计的优点"><a href="#字符串设计的优点" class="headerlink" title="字符串设计的优点"></a>字符串设计的优点</h3><blockquote>
-<p>兼容部分C风格串函数,可以使用strcat，strcasecmp来比较sds-&gt;buf与C风格字符串<br>常数复杂度获得字符串长度<br>杜绝缓存区溢出<br>减少修改字符串长度时所需的内存重分配次数(空间预分配，当需要扩展时，a.同时分配额外的未使用空间，比如使free与len一样 b.大于等于1MB，比如30MB,那么再分配1MB)<br>惰性空间释放,其实只要修改len和free的值即可<br>二进制安全(按len来判定就结尾,不会像C串碰到空格结束)</p>
-</blockquote>
-<h2 id="双端链表"><a href="#双端链表" class="headerlink" title="双端链表"></a>双端链表</h2><p>双端链表比较常见，和我们学过的基础链表没有很大区别</p>
-<div align="center"><br><img src="/img/list.jpg"><br></div>
+<div align="center"><br><img src="/img/rdbfile1.jpg"><br></div>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Node, List, and Iterator are the only data structures used currently. */</span></div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> listNode &#123;</div><div class="line">    <span class="keyword">struct</span> listNode *prev; <span class="comment">//前向指针</span></div><div class="line">    <span class="keyword">struct</span> listNode *next; <span class="comment">//后向指针</span></div><div class="line">    <span class="keyword">void</span> *value;</div><div class="line">&#125; listNode;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> listIter &#123;</div><div class="line">    listNode *next;</div><div class="line">    <span class="keyword">int</span> direction;</div><div class="line">&#125; listIter;</div><div class="line"><span class="comment">//结构体含首尾结构和基本操作函数</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="built_in">list</span> &#123;</div><div class="line">    listNode *head;</div><div class="line">    listNode *tail;</div><div class="line">    <span class="keyword">void</span> *(*dup)(<span class="keyword">void</span> *ptr);</div><div class="line">    <span class="keyword">void</span> (*<span class="built_in">free</span>)(<span class="keyword">void</span> *ptr);</div><div class="line">    <span class="keyword">int</span> (*match)(<span class="keyword">void</span> *ptr, <span class="keyword">void</span> *key);</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> len;</div><div class="line">&#125; <span class="built_in">list</span>;</div></pre></td></tr></table></figure>
-<h3 id="redis实现的链表特性"><a href="#redis实现的链表特性" class="headerlink" title="redis实现的链表特性"></a>redis实现的链表特性</h3><blockquote>
-<p>带有prev和next指针，获取前置和后置节点的复杂度都是O(1)<br>无环,表头的prev和表尾的next指向空<br>带表头指针和表尾指针，获取时间复杂度为O(1)<br>带链表长度计数器<br>多态,链表节点使用void*指针来保存节点值,所以链表可以通过dup，free,match保存不同类型的值</p>
-</blockquote>
-<h2 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h2><div align="center"><br><img src="/img/intset.jpg"><br></div>
+<div align="center"><br><img src="/img/rdbfile2.jpg"><br></div><br>## AOF<br>RDB是通过保存数据库的键值对来记录数据库转态，而AOF(APPEND ONLY FILE)持久化则是通过保存redis服务器所执行的写命令来记录数据库转态的<br><div align="center"><br><img src="/img/aof.jpg"><br></div>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> intset&#123;</div><div class="line">    <span class="comment">//编码方式</span></div><div class="line">    <span class="keyword">uint32_t</span> encoding;</div><div class="line">    <span class="keyword">uint32_t</span> length;</div><div class="line">    <span class="keyword">int8_t</span> contents[];</div><div class="line">&#125; intset;</div></pre></td></tr></table></figure>
-<p>当encoding为INTSET_ENC_INT16时候,contents为int16_t类型的数组<br>当encoding为INTSET_ENC_INT32时候,contents为int32_t类型的数组<br>当encoding为INTSET_ENC_INT64时候,contents为int64_t类型的数组</p>
-<p>不支持降级操作</p>
-<blockquote>
-<p>整数集合是集合键的底层实现之一<br>整数集合的底层实现为数组，这个数组以有序,无重复的方式保存集合元素，在有需要时候，程序会根据新添加元素的类型，改变这个数组的类型<br>升级操作为整数集合带来了操作上的灵活性，并且尽可能的节约了内存<br>整数集合只支持升级操作，不支持降级操作</p>
-</blockquote>
-<h2 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h2><p>当一个哈希键只包含少量健值对时，并且每个键值对的键和值要么是小整数值，要么就是长度较短的字符串，那么redis将压缩列表作为哈希健的底层实现</p>
-<div align="center"><br><img src="/img/ziplist.jpg"><br></div><br>压缩列表节点的构成<br><div align="center"><br><img src="/img/ziplistnode.jpg"><br></div>
-
-<h3 id="特点总结"><a href="#特点总结" class="headerlink" title="特点总结"></a>特点总结</h3><blockquote>
-<p>压缩列表是一种为节约内存而开发的顺序型数据结构<br>压缩列表被用作列表键和哈希键的底层实现之一<br>压缩列表可以包含多个节点，每个节点可以保存一个字节数组或者整数值<br>添加新节点到压缩列表，或者从压缩列表中删除节点，可能会引发连锁更新操作，但这种操作出现的几率不高</p>
-</blockquote>
-<h2 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h2><p>参看另一篇博文<br><a href="https://xiegonghai.github.io/2016/04/09/redis%E4%B8%ADdict%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E5%B8%B8%E7%94%A8%E7%9A%84%E5%93%88%E5%B8%8C%E6%96%B9%E6%B3%95/" target="_blank" rel="external">https://xiegonghai.github.io/2016/04/09/redis%E4%B8%ADdict%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E5%B8%B8%E7%94%A8%E7%9A%84%E5%93%88%E5%B8%8C%E6%96%B9%E6%B3%95/</a></p>
-<h2 id="skiplist基本实现"><a href="#skiplist基本实现" class="headerlink" title="skiplist基本实现"></a>skiplist基本实现</h2><p>参看另一篇我的另一篇博文<br><a href="https://xiegonghai.github.io/2016/07/29/redis%E4%B8%AD%E8%B7%B3%E8%A1%A8%E5%88%86%E6%9E%90(vs%E7%BA%A2%E9%BB%91%E6%A0%91)/" target="_blank" rel="external">https://xiegonghai.github.io/2016/07/29/redis%E4%B8%AD%E8%B7%B3%E8%A1%A8%E5%88%86%E6%9E%90(vs%E7%BA%A2%E9%BB%91%E6%A0%91)/</a></p>
+<h3 id="实现要点"><a href="#实现要点" class="headerlink" title="实现要点"></a>实现要点</h3><p>未完待续</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
 <p>《redis设计与实现》<br> redis github源码</p>
 </blockquote>
@@ -1293,8 +845,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/06/18/网络编程基础(二)/" itemprop="url">
-                  linux网络socket编程(二)
+                <a class="post-title-link" href="/2016/07/05/IO复用之-Select poll 和epoll/" itemprop="url">
+                  linux I/O复用之-select epoll
                 </a>
               
             
@@ -1307,8 +859,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-18T01:01:59+08:00" content="2016-06-18">
-              2016-06-18
+            <time itemprop="dateCreated" datetime="2016-07-05T01:01:59+08:00" content="2016-07-05">
+              2016-07-05
             </time>
           </span>
 
@@ -1337,8 +889,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/18/网络编程基础(二)/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/18/网络编程基础(二)/" itemprop="commentsCount"></span>
+                <a href="/2016/07/05/IO复用之-Select poll 和epoll/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/05/IO复用之-Select poll 和epoll/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -1363,31 +915,34 @@
       
         
           
-            <h1 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h1><h2 id="TCP特性"><a href="#TCP特性" class="headerlink" title="TCP特性"></a>TCP特性</h2><p>1.在做任何处理之前，首先要建立连接。<br>2.提供数据通信可靠保障。TCP向另一端发送数据时，它要求对方返回一个确认。<br>3.TCP的全双工工作<br>4.TCP为发送数据的每一个字节都关联了一个序列号。如果数据不是按照指定的顺序到来，TCP会在自己的重组缓冲区中重组、去重数据，再传递给应用程序。<br>5.TCP提供流量控制。在双方进行交互时，会彼此通知自己目前接收缓冲区最多可以接收的数据量（通告窗口），以此确保发送方发送的数据不会溢出接收缓冲区</p>
-<h2 id="三次握手四次挥手细节"><a href="#三次握手四次挥手细节" class="headerlink" title="三次握手四次挥手细节"></a>三次握手四次挥手细节</h2><p><div align="center"><br><img src="/img/tcp3.jpg" alt="CSDN图标"><br></div></p>
-<h2 id="tcp三次握手"><a href="#tcp三次握手" class="headerlink" title="tcp三次握手"></a>tcp三次握手</h2><p>1.服务器通过socket, bind, listen来准备接<br>受外来的连接<br>2.客户端调用connect连接服务器。这时，客户TCP发送一个SYN包，告诉服务器它将要发送数据的初始序列号。<br>3.服务器确认客户的SYN发送ACK包，同时自己也发送一个AYN包。<br>4.客户端确认服务器的SYN</p>
-<p>###需要说明：<br>每个SYN包都可以含有若干个TCP选项，例如：</p>
-<ol>
-<li>MMS。通知对方他能够接受的每个TCP分节最大的数据量。<br>2.窗口大小。通知对方自己最大的窗口大小</li>
-</ol>
-<h2 id="tcp四次挥手"><a href="#tcp四次挥手" class="headerlink" title="tcp四次挥手"></a>tcp四次挥手</h2><p>•某一端调用close，主动关闭连接。向对方发送FIN包。<br>• 接收到FIN包的另一端将文件结束符传递给接收方的应用程序。<br>• 一段时间后，接收到文件结束符的应用程序调用close关闭自己的套接口，同时发送一个FIN包。<br>• 接收到FIN包的原发送方发送ACK对它进行确认</p>
-<h2 id="TCP状态转换图"><a href="#TCP状态转换图" class="headerlink" title="TCP状态转换图"></a>TCP状态转换图</h2><h2 id="理解整个图才能理解网络编程的各个转态转换流程"><a href="#理解整个图才能理解网络编程的各个转态转换流程" class="headerlink" title="理解整个图才能理解网络编程的各个转态转换流程"></a>理解整个图才能理解网络编程的各个转态转换流程</h2><p><div align="center"><br><img src="/img/tcp-trans.jpg" alt="CSDN图标"><br></div><br>整个图类似于一个状态机，给定转态和输入事件，从当前转态转换到另一个转态，<br>理解整个流程，在网络编程过程结合netstat才能充分理解所有套接字通信过程</p>
-<h2 id="注意问题"><a href="#注意问题" class="headerlink" title="注意问题"></a>注意问题</h2><p>需要注意的问题：<br>• 关于图中time_wait状态该状态持续的时间2MSL（测试本机的MSL）<br>• 存在理由<br>维持全双工的工作过程<br>准许老的重复分节在网络中消逝<br>• word总图，tcpdump</p>
-<h2 id="套接口的缓冲机制"><a href="#套接口的缓冲机制" class="headerlink" title="套接口的缓冲机制"></a>套接口的缓冲机制</h2><p>IPv4数据报最大大小是65535字节。<br>• 最大传输单元MTU（与硬件相关）。<br>• 如果IP数据包超过MTU，将被分片，各片断到达目的地前不会被重组。<br>• IPv4定义了最小重组缓冲区大小。<br>• TCP的MMS通告的目的就是告诉对方重组缓冲区大小的实际值，从而避免分片</p>
-<p>需要注意的问题：<br>• 如果套接口发送缓冲区容不下应用程序的所有数据，并且应用进程是阻塞的，应用进程将被挂起，直到所有的数据都拷贝到套接口缓冲区。<br>• 写一个TCP套接口的write成功返回，仅是表示可以重新使用应用进程的缓冲区，并不能<br>代表对方TCP或对方进程已经收到数据。<br>• 只有收到对方应答后，才删除自己的套接口缓冲区的内容</p>
-<h2 id="三个数据位"><a href="#三个数据位" class="headerlink" title="三个数据位"></a>三个数据位</h2><h3 id="RST（reset）位"><a href="#RST（reset）位" class="headerlink" title="RST（reset）位"></a>RST（reset）位</h3><p>表示请求重置连接。当TCP协议接收到<br>一个不能处理的数据段时，向对方TCP<br>协议发送这种数据段，表示这个数据段<br>所标识的连接出现了某种错误，请求<br>TCP协议将这个连接清除</p>
-<p>导致TCP协议发送RST数据段愿因：<br>1.SYN数据段指定的目的端口处没有接收进程在等待。<br>2.TCP协议想放弃一个已经存在的连接。<br>3.TCP接收到一个数据段，但是这个数据段所标识的连接不存在。<br>• 接收到RST数据段的TCP协议立即将这条连接非正常地断开，并向应用程序报告错误</p>
-<h3 id="FIN（finish）位"><a href="#FIN（finish）位" class="headerlink" title="FIN（finish）位"></a>FIN（finish）位</h3><p>给读操作一个文件结束符。</p>
-<h3 id="SYN（synchronize）位"><a href="#SYN（synchronize）位" class="headerlink" title="SYN（synchronize）位"></a>SYN（synchronize）位</h3><p>请求连接。在这个数据段中，TCP协议将它选择的初始序列号通知对方，并且与对方协议协<br>商最大数据段大小</p>
-<h2 id="两个信号"><a href="#两个信号" class="headerlink" title="两个信号"></a>两个信号</h2><h3 id="SIGCHLD"><a href="#SIGCHLD" class="headerlink" title="SIGCHLD"></a>SIGCHLD</h3><p>产生的原因是子进程结束，系统向其父进程发送SIGCHLD信号。在服务程序中<br>经常用到。<br>处理方法：wait</p>
-<h3 id="SIGPIPE"><a href="#SIGPIPE" class="headerlink" title="SIGPIPE"></a>SIGPIPE</h3><p>当一个进程相接收了RST的套接口进行写操作时，内核给该进程发送一个<br>SIGPIPE信号。此信号缺省行为是终止进程。<br>处理方法：ignore<br>• 这两个信号的副作用</p>
-<p><strong>connect可能出现的错误</strong><br>• 如果客户机TCP协议没有接收到对它的SYN数据段的确认，函数返回错误类型为：<br>ETIMEOUT。<br>• 如果远程TCP协议返回一个RST数据段，函数立即返回错误类型为：ECONNREFUSED。<br>• 如果客户机的SYN数据段导致某个路由器产生“ 目的地不可到达”类型的ICMP消息，函数以错误返回，错误类型为EHOSTUNREACH或ENETUNREACH</p>
-<p><strong>listen函数注意的问题</strong><br>intlisten(ints, intbacklog);<br>• 参数backlog的作用：<br>指定某个监听套接字的完成连接队列（各个版本的UNIX定义不同）的最大长度，表示这个<br>套接字能够接收的最大数目的未接收连接。如果当一个客户机的SYN数据段到达时，征听<br>套接字的完成队列已经满了，那么TCP协议将忽略这个SYN数据段</p>
-<p><strong>accept函数注意的问题</strong><br>当函数accept阻塞等待已经建立的连接时，如果进程捕获到信号，函数将以错误返回，错误类型为EINTR。对于这种错误，一般重新调用函数accept来接收连接。</p>
-<p><strong>close函数注意的问题</strong><br>调用close之后，进程将不再能够访问这个套接字，但TCP协议将继续使用这个<br>套接字，将尚未发送的数据传递到对方，然后发送FIN数据段，执行关闭操作，一直等到这个TCP连接完全关闭之后，TCP协议才删除该套接字</p>
-<p><strong>read和write函数注意的问题</strong><br>• read：<br>接收到FIN包：read函数返回0，并且以后所有在这个套接字上的读操作均返回0。<br>接收到RST包：read将以错误返回，错误类型为ECONNERESET。并且以后所有在这个套接字上的读操作均返回错误。错误返回时返回值小于0。</p>
-<p> • write：<br>1.套接字发送缓冲区有足够拷贝所有用户数据的空间时，函数write将数据拷贝到这个缓冲<br>区中，并返回写入的数量大小。<br>2.如果可用空间小于write参数len指定的大小时，函数write将阻塞不返回，等待缓冲区有<br>足够的空间。<br>3.当TCP协议接收到RST数据包，函数write将以错误返回，错误类型为EINTR。以后可以<br>继续在这个套接字上写数据</p>
-<p><strong>select函数注意的问题</strong><br>• 可以等待内核中多个事件的任何一个发生，并在发生时唤醒进程。<br>• 最简单的用途是一个比sleep更精准的定时器。<br>• 需要注意的是select有最大描述字的限制，在linux中定义在<sys select.h=""><bits types.h="">中，修改需要重新编译内核，但是可能会存在问题</bits></sys></p>
+            <h2 id="I-O复用应用场景"><a href="#I-O复用应用场景" class="headerlink" title="I/O复用应用场景"></a>I/O复用应用场景</h2><blockquote>
+<p>当客户同时处理多个描述符(交互式输入和网络套接字)<br>TCP服务器同时处理监听套接字和已连接套接字<br>既要处理TCP又要处理UDP<br>处理多个服务或者多个协议</p>
+</blockquote>
+<h2 id="五种I-O模型"><a href="#五种I-O模型" class="headerlink" title="五种I/O模型"></a>五种I/O模型</h2><p><strong>阻塞式I/O</strong></p>
+<div align="center"><br><img src="/img/io1.jpg" alt="^_^||"><br></div>
+
+<p><strong>阻塞式I/O</strong></p>
+<div align="center"><br><img src="/img/io2.jpg" alt="^_^||"><br></div><br><strong>I/O复用</strong><br><div align="center"><br><img src="/img/io3.jpg" alt="^_^||"><br></div><br><strong>信号驱动式I/O</strong><br><div align="center"><br><img src="/img/io4.jpg" alt="^_^||"><br></div><br><strong>异步I/O</strong><br><div align="center"><br><img src="/img/io5.jpg" alt="^_^||"><br></div>
+
+<h3 id="五种I-O模型总结"><a href="#五种I-O模型总结" class="headerlink" title="五种I/O模型总结"></a>五种I/O模型总结</h3><div align="center"><br><img src="/img/io-summary.jpg" alt="^_^||"><br></div>
+
+<h2 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h2><p>select的第一个参数为fdset集合中最大描述符值加1，select对应于内核中的sys_select调用，sys_select首先将第二三四个参数指向的fd_set拷贝到内核，然后对每个被SET的描述符进行poll，并记录在临时结果中(fdset)，如果有事件发生，select会将临时结果写到用户空间并返回，当轮询一遍后没有任何事件发生，如果指定了超时时间，则select会睡眠到超时，睡眠结束后再进行下一次轮询，并将临时结果写到用户空间，然后返回。select返回后，需要逐一检查关注的描述符是否被SET（事件是否发生）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds, <span class="keyword">struct</span> timeval* timeout)</span></span>;</div></pre></td></tr></table></figure></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">参数                  描述</div><div class="line">nfds             sets的文件描述符的最大值</div><div class="line">readfds          fd_set type 类型，只读的描述符集 </div><div class="line">writefds         fd_set type 类型，只写的描述符集 </div><div class="line">errorfds         fd_set type 类型，错误的描述符集 </div><div class="line">timeout          超时等待时间</div></pre></td></tr></table></figure>
+<p>修改fd_set类型的参数，用到以下操作<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> fd_set</div><div class="line">&#123;</div><div class="line">    u_int fd_count;</div><div class="line">    <span class="keyword">int</span> fd_array[FD_SETSIZE];</div><div class="line">&#125;</div><div class="line"><span class="comment">//fd_array可SIZE*8个socket</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">FD_ISSET</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>;</div><div class="line"><span class="comment">//返回值：若fd在描述符集中则返回非0值，否则返回0</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_CLR</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>; <span class="comment">//fd指描述符</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_SET</span><span class="params">(<span class="keyword">int</span> fd,fd_set *fdset)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">FD_ZERO</span><span class="params">(fd_set *fdset)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>整体运行过程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> sock;</div><div class="line">FILE *fp;</div><div class="line"><span class="keyword">struct</span> fd_set fds;</div><div class="line"><span class="keyword">struct</span> timeval timeout=&#123;<span class="number">3</span>,<span class="number">0</span>&#125;; <span class="comment">//select等待3秒，3秒轮询，要非阻塞就置0</span></div><div class="line"><span class="keyword">char</span> buffer[<span class="number">256</span>]=&#123;<span class="number">0</span>&#125;; <span class="comment">//256字节的接收缓冲区</span></div><div class="line"><span class="comment">//假定已经建立UDP连接，具体过程不写，简单，当然TCP也同理，主机ip和port都已经给定，要写的文件已经打开</span></div><div class="line">sock=socket(...);</div><div class="line">bind(...);</div><div class="line">fp=fopen(...);</div><div class="line"><span class="keyword">while</span>(<span class="number">1</span>)</div><div class="line">&#123;</div><div class="line">    FD_ZERO(&amp;amp;fds); <span class="comment">//每次循环都要清空集合，否则不能检测描述符变化</span></div><div class="line">    FD_SET(sock,&amp;amp;fds); <span class="comment">//添加描述符</span></div><div class="line">    FD_SET(fp,&amp;amp;fds); <span class="comment">//同上</span></div><div class="line">    maxfdp=sock&amp;gt;fp?sock+<span class="number">1</span>:fp+<span class="number">1</span>; <span class="comment">//描述符最大值加1</span></div><div class="line">    <span class="comment">// for(int i =0 ;i &amp;lt; maxfds; i++) if(FD_ISSET()) &#123; &#125;</span></div><div class="line">    <span class="keyword">switch</span>(select(maxfdp,&amp;amp;fds,&amp;amp;fds,<span class="literal">NULL</span>,&amp;amp;timeout)) <span class="comment">//select使用</span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">case</span> <span class="number">-1</span>: <span class="built_in">exit</span>(<span class="number">-1</span>);<span class="keyword">break</span>; <span class="comment">//select错误，退出程序</span></div><div class="line">        <span class="keyword">case</span> <span class="number">0</span>:<span class="keyword">break</span>; <span class="comment">//再次轮询</span></div><div class="line">        <span class="keyword">default</span>:</div><div class="line">            <span class="keyword">if</span>(FD_ISSET(sock,&amp;amp;fds)) <span class="comment">//测试sock是否可读，即是否网络上有数据</span></div><div class="line">            &#123;</div><div class="line">                recvfrom(sock,buffer,<span class="number">256</span>,.....);<span class="comment">//接受网络数据</span></div><div class="line">                <span class="keyword">if</span>(FD_ISSET(fp,&amp;amp;fds)) <span class="comment">//测试文件是否可写</span></div><div class="line">                fwrite(fp,buffer...);<span class="comment">//写入文件</span></div><div class="line"> ......</div><div class="line">            &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h2><p>poll函数类似于 select，可用于任何类型的文件描述符，与 select 不同，poll不是为每个状态（可读性、可写性和异常状态）构造一个描述符集，而是构造一个pollfd 结构数组向内核传递需要关注的事件，故没有描述符个数的限制，每个数组元素指定一个描述符编号以及对其所关心的状态，pollfd中的events字段和revents字段分别用于标示关注的事件和发生的事件。</p>
+<p>poll的实现机制与select类似，其对应内核中的sys_poll，只不过poll向内核传递pollfd数组，然后对pollfd中的每个描述符进行poll，poll返回后，需要对pollfd中的每个元素检查其revents值，来判断事件是否发生。</p>
+<p>返回值：</p>
+<p>-1：有错误产生<br>0：超时时间到，而且没有描述符有状态变化<br>大于0：有状态变化的描述符个数<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span><span class="params">(<span class="keyword">struct</span> pollfd fdarray[],<span class="keyword">nfds_t</span> nfds,<span class="keyword">int</span> timeout)</span></span>;</div><div class="line"><span class="keyword">struct</span> pollfd&#123;</div><div class="line">    <span class="keyword">int</span> fd; <span class="comment">//需要检查的文件描述符</span></div><div class="line">    <span class="keyword">short</span> events; <span class="comment">//等待的需要测试事件</span></div><div class="line">    <span class="keyword">short</span> revents; <span class="comment">//实际发生了的事件，也就是返回结果</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>应将每个数组元素的events成员设置为下图所示的值。通过这些值告诉内核我们对该描述符关心的是什么。返回时，内核设置revents成员，以说明对于该描述符已经发生了什么事件。（注意，poll没有更改events成员，这与select不同，select修改其参数以指示哪一个描述符已准备好了。）</p>
+<p>timeout == -1 永远等待。当所指定的描述符中的一个已准备好，或捕捉到一个信号时则返回。如果捕捉到一个信号，则poll返回-1，errno设置为EINTR timeout == 0 不等待 timeout &gt; 0 等待timeout毫秒，如果已超时但是还没有一个描述符准备好，则返回值是0。</p>
+<p>运行流程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> pollfd fds[IN_FILES];</div><div class="line"><span class="keyword">char</span> buf[MAX_BUFFER_SIZE];</div><div class="line"><span class="keyword">int</span> i,res,real_read, maxfd;</div><div class="line">fds[<span class="number">0</span>].fd = <span class="number">0</span>;</div><div class="line"><span class="keyword">if</span>((fds[<span class="number">1</span>].fd=open(&amp;quot;data1&amp;quot;,O_RDONLY|O_NONBLOCK)) &amp;lt; <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,&amp;quot;open data1 error:%s&amp;quot;,strerror(errno));</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span>((fds[<span class="number">2</span>].fd=open(&amp;quot;data2&amp;quot;,O_RDONLY|O_NONBLOCK)) &amp;lt; <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>,&amp;quot;open data2 error:%s&amp;quot;,strerror(errno));</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &amp;lt; IN_FILES; i++)</div><div class="line">&#123;</div><div class="line">    fds[i].events = POLLIN;</div><div class="line">&#125;</div><div class="line"><span class="keyword">while</span>(fds[<span class="number">0</span>].events || fds[<span class="number">1</span>].events || fds[<span class="number">2</span>].events)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (poll(fds, IN_FILES, TIME_DELAY) &amp;lt;= <span class="number">0</span>)</div><div class="line">    &#123;</div><div class="line">        <span class="built_in">printf</span>(&amp;quot;Poll error\n&amp;quot;);</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i&amp;lt; IN_FILES; i++)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">if</span> (fds[i].revents)</div><div class="line">        &#123;</div><div class="line">            <span class="built_in">memset</span>(buf, <span class="number">0</span>, MAX_BUFFER_SIZE);</div><div class="line">            real_read = read(fds[i].fd, buf, MAX_BUFFER_SIZE);</div><div class="line">            <span class="keyword">if</span> (real_read &amp;lt; <span class="number">0</span>)</div><div class="line">            &#123;</div><div class="line">                <span class="keyword">if</span> (errno != EAGAIN)</div><div class="line">                &#123;</div><div class="line">                    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (!real_read)</div><div class="line">            &#123;</div><div class="line">                close(fds[i].fd);</div><div class="line">                fds[i].events = <span class="number">0</span>;</div><div class="line">            ......</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><p>epoll通过epoll_create创建一个用于epoll轮询的描述符，通过epoll_ctl添加/修改/删除事件，通过epoll_wait 检查事件，epoll_wait 的第二个参数用于存放结果。</p>
+<p>epoll与select、poll不同，首先，其不用每次调用都向内核拷贝事件描述信息，在第一次调用后，事件信息就会与对应的epoll描述符关联起来。另外epoll不是通过轮询，而是通过在等待的描述符上注册回调函数，当事件发生时，回调函数负责把发生的事件存储在就绪事件链表中，最后写到用户空间。</p>
+<p>epoll返回后，该参数指向的缓冲区中即为发生的事件，对缓冲区中每个元素进行处理即可，而不需要像poll、select那样进行轮询检查。</p>
+<p>系统调用：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大。</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</div><div class="line"><span class="comment">/*</span></div><div class="line">epoll的事件注册函数，它与select()是在监听事件时告诉内核要监听什么类型的事件不同，而是在这里先注册要监听的事件类型。第一个参数是epoll_create()的返回值，第二个参数表示动作，用三个宏来表示：</div><div class="line">EPOLL_CTL_ADD：注册新的fd到epfd中；</div><div class="line">EPOLL_CTL_MOD：修改已经注册的fd的监听事件；</div><div class="line">EPOLL_CTL_DEL：从epfd中删除一个fd；</div><div class="line">第三个参数是需要监听的fd，第四个参数是告诉内核需要监听什么事。</div><div class="line">*/</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, <span class="keyword">struct</span> epoll_event *event)</span></span>;</div><div class="line"><span class="keyword">struct</span> epoll_event结构如下：</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> epoll_data &#123;</div><div class="line">    <span class="keyword">void</span> *ptr;</div><div class="line">    <span class="keyword">int</span> fd;</div><div class="line">    <span class="keyword">__uint32_t</span> u32;</div><div class="line">    <span class="keyword">__uint64_t</span> u64;</div><div class="line">&#125; <span class="keyword">epoll_data_t</span>;</div><div class="line"><span class="keyword">struct</span> epoll_event</div><div class="line">&#123;</div><div class="line">    <span class="keyword">__uint32_t</span> events; <span class="comment">//Epoll events</span></div><div class="line">    <span class="keyword">epoll_data_t</span> data; <span class="comment">//User data variable</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>events可以是以下几个宏的集合：<br>EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；<br>EPOLLOUT：表示对应的文件描述符可以写；<br>EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；<br>EPOLLERR：表示对应的文件描述符发生错误；<br>EPOLLHUP：表示对应的文件描述符被挂断；<br>EPOLLET： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。<br>EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里<br>运行流程<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (n = <span class="number">0</span>; n &amp;lt; nfds; ++n) &#123;</div><div class="line">    <span class="keyword">if</span> (events[n].data.fd == listener) &#123; <span class="comment">// 如果是主socket的事件的话，则表示</span></div><div class="line">    <span class="comment">// 有新连接进入了，进行新连接的处理。</span></div><div class="line">    client = accept(listener, (<span class="keyword">struct</span> sockaddr *) &amp;amp;local, &amp;amp;addrlen);</div><div class="line">    <span class="keyword">if</span> (client &amp;lt; <span class="number">0</span>)&#123;</div><div class="line">    perror(&amp;quot;accept&amp;quot;);</div><div class="line">    <span class="keyword">continue</span>;</div><div class="line">&#125;</div><div class="line">setnonblocking(client); <span class="comment">// 将新连接置于非阻塞模式</span></div><div class="line">ev.events = EPOLLIN | EPOLLET; <span class="comment">// 并且将新连接也加入EPOLL的监听队列。</span></div><div class="line"><span class="comment">// 注意，这里的参数EPOLLIN | EPOLLET并没有设置对写socket的监听，</span></div><div class="line"><span class="comment">// 如果有写操作的话，这个时候epoll是不会返回事件的，如果要对写操作</span></div><div class="line"><span class="comment">// 也监听的话，应该是EPOLLIN | EPOLLOUT | EPOLLET</span></div><div class="line">ev.data.fd = client;</div><div class="line"><span class="keyword">if</span> (epoll_ctl(kdpfd, EPOLL_CTL_ADD, client, &amp;amp;ev) &amp;lt; <span class="number">0</span>) &#123;</div><div class="line">    <span class="comment">// 设置好event之后，将这个新的event通过epoll_ctl加入到epoll的监听队列里面，</span></div><div class="line">    <span class="comment">// 这里用EPOLL_CTL_ADD来加一个新的epoll事件，通过EPOLL_CTL_DEL来减少一个</span></div><div class="line">    <span class="comment">// epoll事件，通过EPOLL_CTL_MOD来改变一个事件的监听方式。</span></div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, &amp;quot;epoll <span class="built_in">set</span> insertion error: fd=%d0, client);</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">&#125;</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (event[n].events &amp;amp; EPOLLIN) &#123; <span class="comment">// 如果是已经连接的用户，并且收到数据，</span></div><div class="line">    <span class="comment">// 那么进行读入</span></div><div class="line">    <span class="keyword">int</span> sockfd_r;</div><div class="line">    <span class="keyword">if</span> ((sockfd_r = event[n].data.fd) &amp;lt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">continue</span>;</div><div class="line">    read(sockfd_r, buffer, MAXSIZE);</div><div class="line">    <span class="comment">// 修改sockfd_r上要处理的事件为EPOLLOUT</span></div><div class="line">    ev.data.fd = sockfd_r;</div><div class="line">    ev.events = EPOLLOUT | EPOLLET;</div><div class="line">    epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd_r, &amp;amp;ev)</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (event[n].events &amp;amp; EPOLLOUT) &#123; <span class="comment">// 如果有数据发送</span></div><div class="line">    <span class="keyword">int</span> sockfd_w = events[n].data.fd;</div><div class="line">    write(sockfd_w, buffer, <span class="keyword">sizeof</span>(buffer));</div><div class="line">    <span class="comment">// 修改sockfd_w上要处理的事件为EPOLLIN</span></div><div class="line">    ev.data.fd = sockfd_w;</div><div class="line">    ev.events = EPOLLIN | EPOLLET;</div><div class="line">    epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd_r, &amp;amp;ev)</div><div class="line">&#125;</div><div class="line">    do_use_fd(events[n].data.fd);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>《UNIX环境高级编程》<br>《UNIX网络编程I卷》<br> <a href="http://armsword.com/2014/03/07/linux-io-multiplexing/" target="_blank" rel="external">http://armsword.com/2014/03/07/linux-io-multiplexing/</a></p>
 
           
         
@@ -1437,8 +992,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/06/15/网络编程基础(一)/" itemprop="url">
-                  linux网络socket编程(一)
+                <a class="post-title-link" href="/2016/07/03/并发编程-多进程-IO复用-多线程/" itemprop="url">
+                  并发编程之-多进程-I/O复用-多线程
                 </a>
               
             
@@ -1451,8 +1006,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-15T01:01:59+08:00" content="2016-06-15">
-              2016-06-15
+            <time itemprop="dateCreated" datetime="2016-07-03T10:01:59+08:00" content="2016-07-03">
+              2016-07-03
             </time>
           </span>
 
@@ -1481,8 +1036,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/15/网络编程基础(一)/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/15/网络编程基础(一)/" itemprop="commentsCount"></span>
+                <a href="/2016/07/03/并发编程-多进程-IO复用-多线程/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/03/并发编程-多进程-IO复用-多线程/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -1507,24 +1062,187 @@
       
         
           
-            <h1 id="网络编程常见数据结构定义"><a href="#网络编程常见数据结构定义" class="headerlink" title="网络编程常见数据结构定义"></a>网络编程常见数据结构定义</h1><h2 id="IP地址定义-32位无符号整数"><a href="#IP地址定义-32位无符号整数" class="headerlink" title="IP地址定义-32位无符号整数"></a>IP地址定义-32位无符号整数</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> in_addr &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> s_addr;<span class="comment">/*网络字节序，大端*/</span></div><div class="line">&#125;</div><div class="line">为何将一个变量放在结构体？-历史遗留问题，因广泛采用留下来了</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/in.h&gt;</span></span></div><div class="line"><span class="comment">//主机字节序转换为网络字节序</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">htonl</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> hostlong)</span></span>;</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> <span class="title">htons</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> hostshort)</span></span>;</div><div class="line"><span class="comment">//网络字节序转换为主机字节序</span></div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">ntohl</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> netlong)</span></span>;</div><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">int</span> <span class="title">htohs</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> netshort)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_aton</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *p,<span class="keyword">struct</span> in_addr *inp)</span></span>;</div><div class="line"><span class="function"><span class="keyword">char</span> *<span class="title">inet_ntoa</span><span class="params">(<span class="keyword">struct</span> in_addr in)</span></span>;</div></pre></td></tr></table></figure>
-<h2 id="DNS主机条目"><a href="#DNS主机条目" class="headerlink" title="DNS主机条目"></a>DNS主机条目</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//DNS主机条目</span></div><div class="line"><span class="keyword">struct</span> hostent&#123;</div><div class="line">    <span class="keyword">char</span> *h_name; <span class="comment">//域名</span></div><div class="line">    <span class="keyword">char</span> **h_aliases; <span class="comment">//空结束的字符串数组-域名</span></div><div class="line">    <span class="keyword">int</span> h_addrtype; <span class="comment">//主机地址类型</span></div><div class="line">    <span class="keyword">int</span> h_length; <span class="comment">//地址长度</span></div><div class="line">    <span class="keyword">char</span> **h_addr_list;<span class="comment">//非空地址结构数组-ip地址</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="套接字接口"><a href="#套接字接口" class="headerlink" title="套接字接口"></a><strong>套接字接口</strong></h2><p><div align="center"><br><img src="/img/socket.jpg" alt="CSDN图标"><br></div><br><strong>一般套接字地址结构</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sa_family;</div><div class="line">    <span class="keyword">char</span> sa_data[<span class="number">14</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p><strong>因特网形式的地址结构*</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr_in &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sin_family;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> sin_port; <span class="comment">//16位端口号0-65536</span></div><div class="line">    <span class="keyword">struct</span> in_addr sin_addr; <span class="comment">//结构体32位ip地址</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> sin_zero[<span class="number">8</span>];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>与服务器建立连接，返回一个套接字描述符<br>主要调用socket,connect这两个函数<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* $begin open_clientfd */</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">open_clientfd</span><span class="params">(<span class="keyword">char</span> *hostname, <span class="keyword">int</span> port)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> clientfd;</div><div class="line">    <span class="keyword">struct</span> hostent *hp;</div><div class="line">    <span class="keyword">struct</span> sockaddr_in serveraddr;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((clientfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>)) &lt; <span class="number">0</span>) </div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">/* check errno for cause of error */</span></div><div class="line"></div><div class="line">    <span class="comment">/* 初始化ip地址和端口号*/</span></div><div class="line">    <span class="keyword">if</span> ((hp = gethostbyname(hostname)) == <span class="literal">NULL</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-2</span>; <span class="comment">/* check h_errno for cause of error */</span></div><div class="line">    bzero((<span class="keyword">char</span> *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</div><div class="line">    serveraddr.sin_family = AF_INET;</div><div class="line">    bcopy((<span class="keyword">char</span> *)hp-&gt;h_addr_list[<span class="number">0</span>], </div><div class="line">      (<span class="keyword">char</span> *)&amp;serveraddr.sin_addr.s_addr, hp-&gt;h_length);</div><div class="line">    serveraddr.sin_port = htons(port);</div><div class="line"></div><div class="line">    <span class="comment">/* 和服务器建立连接*/</span></div><div class="line">    <span class="keyword">if</span> (connect(clientfd, (SA *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    <span class="keyword">return</span> clientfd;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>/<em> $end open_clientfd </em>/<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">### 服务器端</div><div class="line">主要调用bind,listen,accept三个函数来与用户建立连接</div><div class="line">#### bind</div><div class="line">``` C</div><div class="line">int bind(int sockfd,struct sockaddr *my_addr,int addrlen);</div></pre></td></tr></table></figure></p>
-<p>成功返回0,出错返回-1<br><strong>告诉内核将my_addr中的服务器套接字地址与套接字描述符sockfd联系起来,参数addrlen＝sizeof(sockaddr_in)</strong></p>
-<h4 id="listen"><a href="#listen" class="headerlink" title="listen"></a>listen</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">listen</span><span class="params">(<span class="keyword">int</span> sockfd,<span class="keyword">int</span> backlog)</span></span>;<span class="comment">//成功返回0，出错返回-1</span></div></pre></td></tr></table></figure>
-<p><strong>将sockfd从一个主动套接字转化为一个监听套接字-可以接受来自客户端的连接请求</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* $begin open_listenfd */</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">open_listenfd</span><span class="params">(<span class="keyword">int</span> port)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, optval=<span class="number">1</span>;</div><div class="line">    <span class="keyword">struct</span> sockaddr_in serveraddr;</div><div class="line">  </div><div class="line">    <span class="comment">/* 创建套接字描述符 */</span></div><div class="line">    <span class="keyword">if</span> ((listenfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"> </div><div class="line">    <span class="comment">/* Eliminates "Address already in use" error from bind. */</span></div><div class="line">    <span class="keyword">if</span> (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, </div><div class="line">           (<span class="keyword">const</span> <span class="keyword">void</span> *)&amp;optval , <span class="keyword">sizeof</span>(<span class="keyword">int</span>)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Listenfd will be an endpoint for all requests to port</span></div><div class="line">       on any IP address for this host */</div><div class="line">    bzero((<span class="keyword">char</span> *) &amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</div><div class="line">    serveraddr.sin_family = AF_INET; </div><div class="line">    serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); </div><div class="line">    serveraddr.sin_port = htons((<span class="keyword">unsigned</span> <span class="keyword">short</span>)port); </div><div class="line">    <span class="keyword">if</span> (bind(listenfd, (SA *)&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr)) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Make it a listening socket ready to accept connection requests */</span></div><div class="line">    <span class="keyword">if</span> (listen(listenfd, LISTENQ) &lt; <span class="number">0</span>)</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    <span class="keyword">return</span> listenfd;</div><div class="line">&#125;</div><div class="line"><span class="comment">/* $end open_listenfd */</span></div></pre></td></tr></table></figure>
-<h4 id="accept函数"><a href="#accept函数" class="headerlink" title="accept函数"></a>accept函数</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">accept</span><span class="params">(<span class="keyword">int</span> listenfd,<span class="keyword">struct</span> sockaddr *addr,<span class="keyword">int</span> *addrlen)</span></span>;<span class="comment">//</span></div></pre></td></tr></table></figure>
-<p>成功返回非负已连接描述符，出错返回-1<br><strong>等待来自客户端的连接请求到达侦听描述符listenfd，然后在addr中填写客户端的套接字地址，返回一个已连接描述符</strong></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h3 id="为何要有监听描述符合已连接描述符区别"><a href="#为何要有监听描述符合已连接描述符区别" class="headerlink" title="为何要有监听描述符合已连接描述符区别"></a>为何要有监听描述符合已连接描述符区别</h3><p><strong>主要为了建立并发服务器,它能够同时处理许多客户端连接,例如每一个连接请求到达<br>监听描述符时,可以派生一个新的进程通过已连接描述符与客户端通信</strong></p>
-<h3 id="客户端主要流程"><a href="#客户端主要流程" class="headerlink" title="客户端主要流程"></a>客户端主要流程</h3><blockquote>
-<p>socket-&gt;connect<br>调用socket创建套接字描述符,调用connect和服务器ip+iport进行连接,<br>阻塞在connect</p>
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自从入职百度以来，一直很忙，工作时间一直没有时间写博客，趁着周末又把深入理解操作系统重要章节看了一遍，对了部分知识有了更加深刻的理解，书真是要常读常新，久置易忘。下面分析总结下这三种常见并发编程方式：</p>
+<h2 id="多进程echo服务器"><a href="#多进程echo服务器" class="headerlink" title="多进程echo服务器"></a>多进程echo服务器</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="comment">//事件处理函数</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">sigchld_handler</span><span class="params">(<span class="keyword">int</span> sig)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">while</span> (waitpid(<span class="number">-1</span>, <span class="number">0</span>, WNOHANG) &gt; <span class="number">0</span>)</div><div class="line">    ;</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="主流程"><a href="#主流程" class="headerlink" title="主流程"></a>主流程</h3><ol>
+<li>服务器端打开一个socket<br>whil0e循环主体：</li>
+<li>接受来自客户端的连接,返回一个已连接套接字符</li>
+<li>fork初始化一个子进程,子进程提供服务</li>
+<li>父进程关闭连接描述符<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, connfd, port;</div><div class="line">    <span class="keyword">socklen_t</span> clientlen=<span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line">    <span class="comment">// 根据信号编号调用事件处理函数</span></div><div class="line">    Signal(SIGCHLD, sigchld_handler);<span class="comment">//用于回收子进程资源-避免僵尸进程</span></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        connfd = Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen);</div><div class="line">        <span class="keyword">if</span> (Fork() == <span class="number">0</span>) &#123; </div><div class="line">            Close(listenfd); <span class="comment">/* 子进程关闭监听描述符 */</span></div><div class="line">            echo(connfd);    <span class="comment">/* echo服务 */</span> </div><div class="line">            Close(connfd);   <span class="comment">/* 子进程关闭连接描述符 */</span> </div><div class="line">            <span class="built_in">exit</span>(<span class="number">0</span>);         <span class="comment">/* 子进程退出 */</span></div><div class="line">        &#125;</div><div class="line">        Close(connfd); <span class="comment">/* 父进程关闭连接描述符-很重要! */</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="I-O复用echo服务器"><a href="#I-O复用echo服务器" class="headerlink" title="I/O复用echo服务器"></a>I/O复用echo服务器</h2><p>select函数处理类型为fd_set的描述符集合，逻辑上把描述符集合看出换一个大小为n的位向量，select有两个输入，一个是读集合的描述符集合和该集合的基数。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"csapp.h"</span></span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123; <span class="comment">/* 连接描述符池*/</span> </div><div class="line">    <span class="keyword">int</span> maxfd;        <span class="comment">/* 读集合的最大描述符 */</span>   </div><div class="line">    fd_set read_set;  <span class="comment">/* 所有活动描述符集合*/</span></div><div class="line">    fd_set ready_set; <span class="comment">/* 准备好读的描述符子集  */</span></div><div class="line">    <span class="keyword">int</span> nready;       <span class="comment">/* 从select中准备好读的描述符数量 */</span>   </div><div class="line">    <span class="keyword">int</span> maxi;         <span class="comment">/* highwater index into client arra */</span></div><div class="line">    <span class="keyword">int</span> clientfd[FD_SETSIZE];    <span class="comment">/* 活动描述符集 */</span></div><div class="line">    <span class="keyword">rio_t</span> clientrio[FD_SETSIZE]; <span class="comment">/* 活动读缓冲区集合 */</span></div><div class="line">&#125; pool; </div><div class="line"><span class="comment">//初始化连接池</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">init_pool</span><span class="params">(<span class="keyword">int</span> listenfd, pool *p)</span></span>;</div><div class="line"><span class="comment">//往pool添加客户端连接符</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">add_client</span><span class="params">(<span class="keyword">int</span> connfd, pool *p)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">check_clients</span><span class="params">(pool *p)</span></span>;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">int</span> byte_cnt = <span class="number">0</span>; <span class="comment">/* 计算从服务器接收的总字节*/</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, connfd, port; </div><div class="line">    <span class="keyword">socklen_t</span> clientlen = <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line">    <span class="keyword">static</span> pool pool; </div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line"></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    init_pool(listenfd, &amp;pool); <span class="comment">//初始化连接描述符池</span></div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">    <span class="comment">/* 使用select等待监听描述符上的连接请求或来自标准输入上的命令 */</span></div><div class="line">    pool.ready_set = pool.read_set;</div><div class="line">    pool.nready = Select(pool.maxfd+<span class="number">1</span>, &amp;pool.ready_set, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* 当监听描述符准备好时，添加一个新的客户端已连接描述符到连接池 */</span></div><div class="line">    <span class="keyword">if</span> (FD_ISSET(listenfd, &amp;pool.ready_set)) &#123; </div><div class="line">        connfd = Accept(listenfd, (SA *)&amp;clientaddr, &amp;clientlen); </div><div class="line">        add_client(connfd, &amp;pool); </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">/* 从每个准备好的已连接描述符回送一行文本内容 */</span> </div><div class="line">    check_clients(&amp;pool); </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="多线程echo服务器"><a href="#多线程echo服务器" class="headerlink" title="多线程echo服务器"></a>多线程echo服务器</h2><p>###重要的几点</p>
+<blockquote>
+<ul>
+<li>while循环中为何要动态分配一个整型来存放已连接描述符?</li>
+<li>thread中Pthread_detach？</li>
+</ul>
 </blockquote>
-<h3 id="服务器主要流程"><a href="#服务器主要流程" class="headerlink" title="服务器主要流程"></a>服务器主要流程</h3><blockquote>
-<p>socket-&gt;bind-&gt;listen-&gt;(多个accept)<br>调用socket创建套接字描述符,调用bind将ip+port与套接字描述符绑定调用listen告诉内核socket是被服务器而非客户端使用,将一个主要套接字转换为监听套接字</p>
+<p>1.如果使用引用，由于线程竞争将导致意外结果，试想如果在下一次连接到来，thread例程函数中当前描述符变成下一次连接描述符<br>2.我们知道线程默认情况下被创建成可结合的，为了避免存储器泄漏(其资源如栈等)，每个结合线程要么被其他线程显式的收回，要么使用thread_detach被分离，待其终止由系统自动释放其资源，这样对于web程序而言是好的，因为web服务器每收到一个web浏览器的连接请求都创建一个对等线程，每个连接由一个单独的线程处理，没必要等也不愿意等到每个对等线程终止</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"csapp.h"</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">int</span> connfd)</span></span>;</div><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread</span><span class="params">(<span class="keyword">void</span> *vargp)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> listenfd, *connfdp, port;</div><div class="line">    <span class="keyword">socklen_t</span> clientlen=<span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_in);</div><div class="line">    <span class="keyword">struct</span> sockaddr_in clientaddr;</div><div class="line">    <span class="keyword">pthread_t</span> tid; </div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"usage: %s &lt;port&gt;\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    port = atoi(argv[<span class="number">1</span>]);</div><div class="line"></div><div class="line">    listenfd = Open_listenfd(port);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        connfdp = Malloc(<span class="keyword">sizeof</span>(<span class="keyword">int</span>)); <span class="comment">//想想为啥不直接在Pthread_create使用引用参数</span></div><div class="line">        *connfdp = Accept(listenfd, (SA *) &amp;clientaddr, &amp;clientlen); </div><div class="line">        Pthread_create(&amp;tid, <span class="literal">NULL</span>, thread, connfdp);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* 一个线程例程 */</span></div><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread</span><span class="params">(<span class="keyword">void</span> *vargp)</span> </span></div><div class="line">&#123;  </div><div class="line">    <span class="keyword">int</span> connfd = *((<span class="keyword">int</span> *)vargp);</div><div class="line">    Pthread_detach(pthread_self()); <span class="comment">//很重要，线程分离后才能在终止时由系统自动释放</span></div><div class="line">    Free(vargp);                   </div><div class="line">    echo(connfd);</div><div class="line">    Close(connfd);</div><div class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>##方法优劣总结</p>
+<h3 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h3><p>对于在父子进程间共享状态信息，进程有一个很清晰的模型，共享文件表不共享用户地址空间，这是优点又是缺点，一个是独立不会覆盖另一个进程的虚拟存储器，消除了许多令人迷惑的错误，另一方面使得进程间共享转态信息变的困难，共享信息-&gt;得通过IPC实现，开销高</p>
+<h3 id="I-O复用"><a href="#I-O复用" class="headerlink" title="I/O复用"></a>I/O复用</h3><p>I/O复用不等价于并发事件驱动程序，但可以作为其基础，在并发事件驱动中，流是因为某个事件而前进的，逻辑流模型=》转态机，一个转态机由一组状态，输入事件和转移构成。<br><strong>优点</strong>：</p>
+<blockquote>
+<p>给了码农更多对于程序行为的控制，比如编写一个事件驱动的并发服务器，为某些客户端提供他们需要的服务，基于多进程是很困难，（redis的事件处理基于I/O复用）<br>运行在的单一进程上下文中，每个逻辑流都能访问该进程的全部地址空间，使得在流之间共享数据变的容易-便于调试</p>
+</blockquote>
+<p><strong>缺点</strong>:<br>编码复杂，代码量大，随着并发粒度见笑，复杂性-上升迅速</p>
+<h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><p>结合上述两者的特性，在执行模型上既有着类似多进程的多线程内核自动调度，又有着I/O复用流享用的共享整个虚拟地址空间的整个内容<br>线程是运行在进程上下文中的逻辑流，线程由内核自动调度，每个线程有她自己的线程上下文，包括Thread ID,栈，栈指针，程序计数器，通用目的寄存器和条件码，共享进程的整个虚拟地址空间</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/13/redis基本数据结构设计总结/" itemprop="url">
+                  redis基本数据结构总结
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-13T17:38:59+08:00" content="2016-06-13">
+              2016-06-13
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Redis学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis学习</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/13/redis基本数据结构设计总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/13/redis基本数据结构设计总结/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p> 趁着周末时间又将redis基本数据结构设计有看了一遍,前面看过源码解析都忘的差不多了,真是需要多多总结才能深刻理解与应用,有空再自己试着用C++实现一遍,学习需要一个过程,了解(有个印象)-&gt;深刻理解(能够自己实现)-&gt;运用自如(知晓其优点与不足,根据实际应用选用与改造)</p>
+<h2 id="简单动态字符串"><a href="#简单动态字符串" class="headerlink" title="简单动态字符串"></a>简单动态字符串</h2><div align="center"><br><img src="/img/sds.jpg"><br></div>
+
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">char</span> *sds;</div><div class="line"></div><div class="line"><span class="comment">/* Note: sdshdr5 is never used, we just access the flags byte directly.</span></div><div class="line"> * However is here to document the layout of type 5 SDS strings. */</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr5 &#123;</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, and 5 msb of string length */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr8 &#123;</div><div class="line">    <span class="keyword">uint8_t</span> len; <span class="comment">/* used */</span></div><div class="line">    <span class="keyword">uint8_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr16 &#123;</div><div class="line">    <span class="keyword">uint16_t</span> len; <span class="comment">/* used */</span></div><div class="line">    <span class="keyword">uint16_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr32 &#123;</div><div class="line">    <span class="keyword">uint32_t</span> len; <span class="comment">/* used */</span></div><div class="line">    <span class="keyword">uint32_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div><div class="line"><span class="keyword">struct</span> <span class="number">__</span>attribute__ ((<span class="number">__</span>packed__)) sdshdr64 &#123;</div><div class="line">    <span class="keyword">uint64_t</span> len; <span class="comment">/* used */</span></div><div class="line">    <span class="keyword">uint64_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h3 id="关于-attribute-packed-的含义"><a href="#关于-attribute-packed-的含义" class="headerlink" title="关于 attribute ((packed)) 的含义"></a>关于 <strong>attribute</strong> ((<strong>packed</strong>)) 的含义</h3><p> <strong>attribute</strong> ((packed)) 的作用就是告诉编译器，取消结构在编译过程中的优化对齐，按照实际占用字节数进行对齐，是GCC特有的语法。这个功能是跟操作系统没关系，跟编译器有关，gcc编译器不是紧凑模式的。在windows下用vc的编译器也不是紧凑的，用tc的编译器就是紧凑的。例如：<br>在TC下：struct my{ char ch; int a;} sizeof(int)=2;sizeof(my)=3;（紧凑模式）<br>在GCC下：struct my{ char ch; int a;} sizeof(int)=4;sizeof(my)=8;（非紧凑模式）<br>在GCC下：struct my{ char ch; int a;}<strong>attrubte</strong> ((packed)) sizeof(int)=4;sizeof(my)=5</p>
+<p> <strong>attribute</strong> ((packed)) 的作用就是告诉编译器，取消结构在编译过程中的优化对齐，按照实际占用字节数进行对齐，是GCC特有的语法。这个功能是跟操作系统没关系，跟编译器有关，gcc编译器不是紧凑模式的。在windows下用vc的编译器也不是紧凑的，用tc的编译器就是紧凑的。例如：<br>在TC下：struct my{ char ch; int a;} sizeof(int)=2;sizeof(my)=3;（紧凑模式）<br>在GCC下：struct my{ char ch; int a;} sizeof(int)=4;sizeof(my)=8;（非紧凑模式）<br>在GCC下：struct my{ char ch; int a;}<strong>attrubte</strong> ((packed)) sizeof(int)=4;sizeof(my)=5</p>
+<h3 id="字符串设计的优点"><a href="#字符串设计的优点" class="headerlink" title="字符串设计的优点"></a>字符串设计的优点</h3><blockquote>
+<p>兼容部分C风格串函数,可以使用strcat，strcasecmp来比较sds-&gt;buf与C风格字符串<br>常数复杂度获得字符串长度<br>杜绝缓存区溢出<br>减少修改字符串长度时所需的内存重分配次数(空间预分配，当需要扩展时，a.同时分配额外的未使用空间，比如使free与len一样 b.大于等于1MB，比如30MB,那么再分配1MB)<br>惰性空间释放,其实只要修改len和free的值即可<br>二进制安全(按len来判定就结尾,不会像C串碰到空格结束)</p>
+</blockquote>
+<h2 id="双端链表"><a href="#双端链表" class="headerlink" title="双端链表"></a>双端链表</h2><p>双端链表比较常见，和我们学过的基础链表没有很大区别</p>
+<div align="center"><br><img src="/img/list.jpg"><br></div>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Node, List, and Iterator are the only data structures used currently. */</span></div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> listNode &#123;</div><div class="line">    <span class="keyword">struct</span> listNode *prev; <span class="comment">//前向指针</span></div><div class="line">    <span class="keyword">struct</span> listNode *next; <span class="comment">//后向指针</span></div><div class="line">    <span class="keyword">void</span> *value;</div><div class="line">&#125; listNode;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> listIter &#123;</div><div class="line">    listNode *next;</div><div class="line">    <span class="keyword">int</span> direction;</div><div class="line">&#125; listIter;</div><div class="line"><span class="comment">//结构体含首尾结构和基本操作函数</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="built_in">list</span> &#123;</div><div class="line">    listNode *head;</div><div class="line">    listNode *tail;</div><div class="line">    <span class="keyword">void</span> *(*dup)(<span class="keyword">void</span> *ptr);</div><div class="line">    <span class="keyword">void</span> (*<span class="built_in">free</span>)(<span class="keyword">void</span> *ptr);</div><div class="line">    <span class="keyword">int</span> (*match)(<span class="keyword">void</span> *ptr, <span class="keyword">void</span> *key);</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> len;</div><div class="line">&#125; <span class="built_in">list</span>;</div></pre></td></tr></table></figure>
+<h3 id="redis实现的链表特性"><a href="#redis实现的链表特性" class="headerlink" title="redis实现的链表特性"></a>redis实现的链表特性</h3><blockquote>
+<p>带有prev和next指针，获取前置和后置节点的复杂度都是O(1)<br>无环,表头的prev和表尾的next指向空<br>带表头指针和表尾指针，获取时间复杂度为O(1)<br>带链表长度计数器<br>多态,链表节点使用void*指针来保存节点值,所以链表可以通过dup，free,match保存不同类型的值</p>
+</blockquote>
+<h2 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h2><div align="center"><br><img src="/img/intset.jpg"><br></div>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> intset&#123;</div><div class="line">    <span class="comment">//编码方式</span></div><div class="line">    <span class="keyword">uint32_t</span> encoding;</div><div class="line">    <span class="keyword">uint32_t</span> length;</div><div class="line">    <span class="keyword">int8_t</span> contents[];</div><div class="line">&#125; intset;</div></pre></td></tr></table></figure>
+<p>当encoding为INTSET_ENC_INT16时候,contents为int16_t类型的数组<br>当encoding为INTSET_ENC_INT32时候,contents为int32_t类型的数组<br>当encoding为INTSET_ENC_INT64时候,contents为int64_t类型的数组</p>
+<p>不支持降级操作</p>
+<blockquote>
+<p>整数集合是集合键的底层实现之一<br>整数集合的底层实现为数组，这个数组以有序,无重复的方式保存集合元素，在有需要时候，程序会根据新添加元素的类型，改变这个数组的类型<br>升级操作为整数集合带来了操作上的灵活性，并且尽可能的节约了内存<br>整数集合只支持升级操作，不支持降级操作</p>
+</blockquote>
+<h2 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h2><p>当一个哈希键只包含少量健值对时，并且每个键值对的键和值要么是小整数值，要么就是长度较短的字符串，那么redis将压缩列表作为哈希健的底层实现</p>
+<div align="center"><br><img src="/img/ziplist.jpg"><br></div><br>压缩列表节点的构成<br><div align="center"><br><img src="/img/ziplistnode.jpg"><br></div>
+
+<h3 id="特点总结"><a href="#特点总结" class="headerlink" title="特点总结"></a>特点总结</h3><blockquote>
+<p>压缩列表是一种为节约内存而开发的顺序型数据结构<br>压缩列表被用作列表键和哈希键的底层实现之一<br>压缩列表可以包含多个节点，每个节点可以保存一个字节数组或者整数值<br>添加新节点到压缩列表，或者从压缩列表中删除节点，可能会引发连锁更新操作，但这种操作出现的几率不高</p>
+</blockquote>
+<h2 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h2><p>参看另一篇博文<br><a href="https://xiegonghai.github.io/2016/04/09/redis%E4%B8%ADdict%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E5%B8%B8%E7%94%A8%E7%9A%84%E5%93%88%E5%B8%8C%E6%96%B9%E6%B3%95/" target="_blank" rel="external">https://xiegonghai.github.io/2016/04/09/redis%E4%B8%ADdict%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E5%B8%B8%E7%94%A8%E7%9A%84%E5%93%88%E5%B8%8C%E6%96%B9%E6%B3%95/</a></p>
+<h2 id="skiplist基本实现"><a href="#skiplist基本实现" class="headerlink" title="skiplist基本实现"></a>skiplist基本实现</h2><p>参看另一篇我的另一篇博文<br><a href="https://xiegonghai.github.io/2016/07/29/redis%E4%B8%AD%E8%B7%B3%E8%A1%A8%E5%88%86%E6%9E%90(vs%E7%BA%A2%E9%BB%91%E6%A0%91)/" target="_blank" rel="external">https://xiegonghai.github.io/2016/07/29/redis%E4%B8%AD%E8%B7%B3%E8%A1%A8%E5%88%86%E6%9E%90(vs%E7%BA%A2%E9%BB%91%E6%A0%91)/</a></p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
+<p>《redis设计与实现》<br> redis github源码</p>
 </blockquote>
 
           
@@ -1681,6 +1399,283 @@
 
 
     
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/11/一个小C++程序内存泄漏检测/" itemprop="url">
+                  C++内存泄漏以及检测
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-11T01:01:59+08:00" content="2016-06-11">
+              2016-06-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/11/一个小C++程序内存泄漏检测/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/11/一个小C++程序内存泄漏检测/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>c++一般采用malloc/free或new/delete来动态分配和释放内存<br>二者有何不同？malloc/free是C/C++语言的标准库函数，new/delete是C++的运算符<br>malloc/free以及new/delete一般是配对出现，如果malloc后没有free，或者new后没有delete都将造成内存泄漏</p>
+<p>##一个小例子来说明内存泄漏<br>例子1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">#include&lt;iostream&gt;</div><div class="line">using namespace std;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    int *p = new int[100];</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
+<div align="center"><br><img src="/img/leak1.jpg" alt="^_^||"><br></div>
+
+
+<p>例2 我们正确的进行释放<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#include&lt;iostream&gt;</div><div class="line">using namespace std;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    int *p = new int[100];</div><div class="line">    delete []p;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
+<div align="center"><br><img src="/img/leak2.jpg" alt="^_^||"><br></div>
+
+
+<p>例3 我们用delete p来代替delete []p;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#include&lt;iostream&gt;</div><div class="line">using namespace std;</div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    int *p = new int[100];</div><div class="line">    delete p;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
+<div align="center"><br><img src="/img/leak3.jpg" alt="^_^||"><br></div>
+
+<p>从valgrind上我们可以看到，delete p和delete []p都没有造成内存泄漏，进行了全部内存的释放<br>但对与delete p用法valgrind明显的抛出了free/delete不匹配的提醒<br>其实按照正常逻辑推理，应该delete p只是释放了首地址元素的内存，应该会造成内存泄漏，而事实上<br>两种方式并未造成内存泄漏，这里尚有些疑问。</p>
+<h2 id="malloc-free-与-new-free-的比较"><a href="#malloc-free-与-new-free-的比较" class="headerlink" title="malloc/free 与 new/free 的比较"></a>malloc/free 与 new/free 的比较</h2><h3 id="各自用法"><a href="#各自用法" class="headerlink" title="各自用法"></a>各自用法</h3><p>函数malloc 的原型如下：<br>void <em> malloc(size_t size);<br>用malloc 申请一块长度为length 的整数类型的内存，程序如下：<br>int </em>p = (int <em>) malloc(sizeof(int) </em> length);<br>我们应当把注意力集中在两个要素上：“类型转换”和“sizeof”<br>1、malloc 返回值的类型是void <em>，所以在调用malloc 时要显式地进行类型转换，将void </em> 转换成所需要的指针类型。<br>2、 malloc 函数本身并不识别要申请的内存是什么类型，它只关心内存的总字节数。</p>
+<p>函数free 的原型如下：<br>void free( void * memblock );<br>为什么free 函数不象malloc 函数那样复杂呢？这是因为指针p 的类型以及它所指的内存的容量事先都是知道的，语句free(p)能正确地释放内存。如果p 是NULL 指针，那么free对p 无论操作多少次都不会出问题。如果p 不是NULL 指针，那么free 对p连续操作两次就会导致程序运行错误。</p>
+<p>运算符new 使用起来要比函数malloc 简单得多，例如：<br>int <em>p1 = (int </em>)malloc(sizeof(int) <em> length);<br>int </em>p2 = new int[length];<br>这是因为new内置了sizeof、类型转换和类型安全检查功能。对于非内部数据类型的对象而言，new 在创建动态对象的同时完成了初始化工作。如果对象有多个构造函数，那么new 的语句也可以有多种形式。<br>如果用new 创建对象数组，那么只能使用对象的无参数构造函数。例如<br>Obj <em>objects = new Obj[100];       // 创建100 个动态对象<br>不能写成<br>(x)Obj </em>objects = new Obj<a href="1">100</a>;        // 创建100 个动态对象的同时赋初值1<br>在用delete 释放对象数组时，留意不要丢了符号‘[]’。例如<br>delete []objects; // 正确的用法<br>delete objects; // 错误的用法</p>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><blockquote>
+<p>1.new自动计算需要分配的空间，而malloc需要手工计算字节数<br>2、new是类型安全的，而malloc不是，比如：<br>                 int<em> p = new float[2]; // 编译时指出错误<br>                 int</em> p = malloc(2*sizeof(float)); // 编译时无法指出错误<br>3.new operator 由两步构成，分别是 operator new 和 construct,operator new对应于malloc，但operator new可以重载，可以自定义内存分配策略，甚至不做内存分配，甚至分配到非内存设备上。而malloc无能为力<br>4.new将调用constructor，而malloc不能；delete将调用destructor，而free不能<br>5.malloc/free要库文件支持，new/delete则不要。 </p>
+</blockquote>
+<p><strong>malloc/free是C/C++语言的标准库函数，new/delete是C++的运算符。<br>对于用户自定义的对象而言，用maloc/free无法满足动态管理对象的要求。对象在创建的同时要自动执行构造函数，对象在消亡之前要自动执行析构函数。由于malloc/free是库函数而不是运算符，不在编译器控制权限之内，不能够把执行构造函数和析构函数的任务强加于malloc/free。因此C++需要一个能完成动态内存分配和初始化工作的运算符new，以及一个能完成清理与释放内存工作的运算符delete</strong></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>valgrind的使用<br><a href="http://blog.csdn.net/justdoithai/article/details/52347676" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/52347676</a><br><a href="http://blog.csdn.net/hackbuteer1/article/details/6789164" target="_blank" rel="external">http://blog.csdn.net/hackbuteer1/article/details/6789164</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/10/字典树实现/" itemprop="url">
+                  字典树实现
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-10T21:41:56+08:00" content="2016-06-10">
+              2016-06-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Data structure and Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/10/字典树实现/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/10/字典树实现/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>Trie树，又称字典树，单词查找树或者前缀树，是一种用于快速检索的多叉树结构，如英文字母的字典树是一个26叉树，数字的字典树是一个10叉树。</p>
+<h3 id="Trie树的基本性质可以归纳为："><a href="#Trie树的基本性质可以归纳为：" class="headerlink" title="Trie树的基本性质可以归纳为："></a>Trie树的基本性质可以归纳为：</h3><p>（1）根节点不包含字符，除根节点意外每个节点只包含一个字符。</p>
+<p>（2）从根节点到某一个节点，路径上经过的字符连接起来，为该节点对应的字符串。</p>
+<p>（3）每个节点的所有子节点包含的字符串不相同。</p>
+<h3 id="Trie树复杂度分析"><a href="#Trie树复杂度分析" class="headerlink" title="Trie树复杂度分析"></a>Trie树复杂度分析</h3><p>（1） 插入、查找的时间复杂度均为O(N)，其中N为字符串长度。</p>
+<p>（2） 空间复杂度是26^n级别的，非常庞大（可采用双数组实现改善）。</p>
+<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><p>Trie是一种非常简单高效的数据结构，但有大量的应用实例<br>1） 字符串检索<br>事先将已知的一些字符串（字典）的有关信息保存到trie树里，查找另外一些未知字符串是否出现过或者出现频率</p>
+<p>举例：<br>@  给出N 个单词组成的熟词表，以及一篇全用小写英文书写的文章，请你按最早出现的顺序写出所有不在熟词表中的生词</p>
+<p>@  给出一个词典，其中的单词为不良单词。单词均为小写字母。再给出一段文本，文本的每一行也由小写字母构成。判断文本中是否含有任何不良单词。例如，若rob是不良单词，那么文本problem含有不良单词</p>
+<p>2）字符串最长公共前缀</p>
+<p>Trie树利用多个字符串的公共前缀来节省存储空间，反之，当我们把大量字符串存储到一棵trie树上时，我们可以快速得到某些字符串的公共前缀</p>
+<p>@ 给出N 个小写英文字母串，以及Q 个询问，即询问某两个串的最长公共前缀的长度是多少？</p>
+<p>解决方案：首先对所有的串建立其对应的字母树。此时发现，对于两个串的最长公共前缀的长度即它们所在结点的公共祖先个数，于是，问题就转化为了离线（Offline）的最近公共祖先（Least Common Ancestor，简称LCA）问题</p>
+<p>3）排序</p>
+<p>Trie树是一棵多叉树，只要先序遍历整棵树，输出相应的字符串便是按字典序排序的结果</p>
+<h2 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxBranchNum = <span class="number">26</span>;<span class="comment">//如果区分大小写，可以扩展到52</span></div><div class="line"></div><div class="line"><span class="comment">/*定义trie树结点*/</span></div><div class="line"><span class="keyword">class</span> TrieNode</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">     <span class="keyword">char</span>* word; <span class="comment">//节点表示的单词</span></div><div class="line">     <span class="keyword">int</span> count;  <span class="comment">//单词出现的次数</span></div><div class="line">     TrieNode* nextBranch[MaxBranchNum];<span class="comment">//指向26个字符节点的指针</span></div><div class="line"><span class="keyword">public</span>:</div><div class="line">     TrieNode() : word(<span class="literal">NULL</span>),count(<span class="number">0</span>)</div><div class="line">     &#123;</div><div class="line">          <span class="built_in">memset</span>(nextBranch,<span class="literal">NULL</span>,<span class="keyword">sizeof</span>(TrieNode*) * MaxBranchNum);</div><div class="line">     &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">/*定义类Trie*/</span></div><div class="line"><span class="keyword">class</span> Trie</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">     Trie();</div><div class="line">     ~Trie();</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Insert</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//插入字符串str</span></div><div class="line">     <span class="function"><span class="keyword">bool</span> <span class="title">Search</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str,<span class="keyword">int</span>&amp; count)</span></span>;<span class="comment">//查找字符串str，并返回出现的次数</span></div><div class="line">     <span class="function"><span class="keyword">bool</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//删除字符串str</span></div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">PrintALL</span><span class="params">()</span></span>;<span class="comment">//打印trie树中所有的结点</span></div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">PrintPre</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//打印以str为前缀的单词</span></div><div class="line"><span class="keyword">private</span>:</div><div class="line">     TrieNode* pRoot;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Destory</span><span class="params">(TrieNode* pRoot)</span></span>;</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">(TrieNode* pRoot)</span></span>;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">Trie::Trie()</div><div class="line">&#123;</div><div class="line">     pRoot = <span class="keyword">new</span> TrieNode();<span class="comment">//注意字典树的根不存放字符</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">Trie::~Trie()</div><div class="line">&#123;</div><div class="line">     Destory(pRoot);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*插入一个单词*/</span></div><div class="line"><span class="keyword">void</span> Trie::Insert(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(<span class="literal">NULL</span> != str);</div><div class="line">     <span class="keyword">int</span> index;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;str[i];i++)</div><div class="line">     &#123;</div><div class="line">          index = str[i] - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          <span class="keyword">if</span> (<span class="literal">NULL</span> == pLoc-&gt;nextBranch[index])<span class="comment">//该单词的前缀不存在，要生成该结点</span></div><div class="line">          &#123;</div><div class="line">               pLoc-&gt;nextBranch[index] = <span class="keyword">new</span> TrieNode();</div><div class="line">          &#125;</div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pLoc-&gt;word)<span class="comment">//单词已经出现过</span></div><div class="line">     &#123;</div><div class="line">          pLoc-&gt;count++;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">else</span>    <span class="comment">//单词没有出现过，应该插入单词</span></div><div class="line">     &#123;</div><div class="line">          pLoc-&gt;count++;</div><div class="line">          pLoc-&gt;word = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="built_in">strlen</span>(str) + <span class="number">1</span>];</div><div class="line">          assert(<span class="literal">NULL</span> != pLoc-&gt;word);</div><div class="line">          <span class="built_in">strcpy</span>(pLoc-&gt;word,str);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*查找一个单词，如果存在该单词，则返回其出现次数*/</span></div><div class="line"><span class="keyword">bool</span> Trie::Search(<span class="keyword">const</span> <span class="keyword">char</span>* str,<span class="keyword">int</span>&amp; count)</div><div class="line">&#123;</div><div class="line">     assert(str != <span class="literal">NULL</span>);</div><div class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc &amp;&amp; pLoc-&gt;word)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          count = pLoc-&gt;count;</div><div class="line">          <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> Trie::Remove(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(<span class="literal">NULL</span> != str);</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc &amp;&amp; pLoc-&gt; word)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          <span class="keyword">delete</span>[] pLoc-&gt;word;</div><div class="line">          pLoc-&gt;word = <span class="literal">NULL</span>;</div><div class="line">          <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Trie::PrintALL()</div><div class="line">&#123;</div><div class="line">     Print(pRoot);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Trie::PrintPre(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(str != <span class="literal">NULL</span>);</div><div class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          Print(pLoc);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*按照字典顺序输出以pRoot为根的所有的单词*/</span></div><div class="line"><span class="keyword">void</span> Trie::Print(TrieNode* pRoot)</div><div class="line">&#123;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> == pRoot)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//输出单词</span></div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pRoot-&gt;word)</div><div class="line">     &#123;</div><div class="line">          <span class="built_in">cout</span>&lt;&lt;pRoot-&gt;word&lt;&lt;<span class="string">" "</span>&lt;&lt;pRoot-&gt;count&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//递归处理分支</span></div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; MaxBranchNum;i++)</div><div class="line">     &#123;</div><div class="line">          Print(pRoot-&gt;nextBranch[i]);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*销毁trie树*/</span></div><div class="line"><span class="keyword">void</span> Trie::Destory(TrieNode* pRoot)</div><div class="line">&#123;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> == pRoot)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; MaxBranchNum;i++)</div><div class="line">     &#123;</div><div class="line">          Destory(pRoot-&gt;nextBranch[i]);</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//销毁单词占得空间</span></div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pRoot-&gt;word)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">delete</span> []pRoot-&gt;word;</div><div class="line">          pRoot-&gt;word = <span class="literal">NULL</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">delete</span> pRoot;<span class="comment">//销毁结点</span></div><div class="line">     pRoot = <span class="literal">NULL</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">     Trie t;</div><div class="line">     <span class="built_in">string</span> str;</div><div class="line">     <span class="comment">//int count = -1;</span></div><div class="line">     <span class="keyword">int</span> n,m,count;</div><div class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)</div><div class="line">    &#123;</div><div class="line">         <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;++i)</div><div class="line">          &#123;</div><div class="line">               <span class="built_in">cin</span>&gt;&gt;str;</div><div class="line">               t.Insert(str.c_str());</div><div class="line">          &#125;</div><div class="line">          <span class="built_in">cin</span>&gt;&gt;m;</div><div class="line">          <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;++i)</div><div class="line">          &#123;</div><div class="line">               <span class="built_in">cin</span>&gt;&gt;str;</div><div class="line">               <span class="keyword">bool</span> isFind = t.Search(str.c_str(),count);</div><div class="line">               <span class="built_in">cout</span>&lt;&lt;<span class="string">"isfind:"</span>&lt;&lt;isFind&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">               <span class="keyword">if</span>(isFind)<span class="built_in">cout</span>&lt;&lt;count&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">               <span class="keyword">else</span> <span class="built_in">cout</span>&lt;&lt;<span class="number">0</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">          &#125;</div><div class="line">    &#125;</div><div class="line">     system(<span class="string">"pause"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
   </section>
 
   
@@ -1726,7 +1721,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-count">22</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

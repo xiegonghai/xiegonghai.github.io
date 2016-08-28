@@ -93,7 +93,7 @@ RDBrdb方式就是手动或者配置定期化将数据库以及键值对保存�
 RDB如何是如何创建的，执行S">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis持久化之RDB与AOF">
-<meta property="og:url" content="http://yoursite.com/2016/07/31/redis持久化之AOF&RDB/index.html">
+<meta property="og:url" content="http://yoursite.com/2016/07/16/redis持久化之AOF&RDB/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
 <meta property="og:description" content="前言我们知道redis是内存数据库，如果不将数据库转态(当前服务器非空数据库以及键值对)保存在内存中,就得保存在磁盘里，否则一旦服务器退出，服务器中的数据库转态也会消失为了解决这个问题，redis采用了两种持久化方式，一种为RDB，一种为AOF
 RDBrdb方式就是手动或者配置定期化将数据库以及键值对保存到一个RDB文件中，称之为RDB持久化，这里需要了解的是:
@@ -105,7 +105,7 @@ RDB如何是如何创建的，执行S">
 <meta property="og:image" content="http://yoursite.com/img/rdbfile1.jpg">
 <meta property="og:image" content="http://yoursite.com/img/rdbfile2.jpg">
 <meta property="og:image" content="http://yoursite.com/img/aof.jpg">
-<meta property="og:updated_time" content="2016-08-15T01:15:40.113Z">
+<meta property="og:updated_time" content="2016-08-28T13:37:00.802Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis持久化之RDB与AOF">
 <meta name="twitter:description" content="前言我们知道redis是内存数据库，如果不将数据库转态(当前服务器非空数据库以及键值对)保存在内存中,就得保存在磁盘里，否则一旦服务器退出，服务器中的数据库转态也会消失为了解决这个问题，redis采用了两种持久化方式，一种为RDB，一种为AOF
@@ -134,7 +134,7 @@ RDB如何是如何创建的，执行S">
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/07/31/redis持久化之AOF&RDB/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/07/16/redis持久化之AOF&RDB/"/>
 
   <title> redis持久化之RDB与AOF | Xiegonghai's Blog </title>
 </head>
@@ -288,8 +288,8 @@ RDB如何是如何创建的，执行S">
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-31T13:38:59+08:00" content="2016-07-31">
-              2016-07-31
+            <time itemprop="dateCreated" datetime="2016-07-16T13:38:59+08:00" content="2016-07-16">
+              2016-07-16
             </time>
           </span>
 
@@ -318,8 +318,8 @@ RDB如何是如何创建的，执行S">
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/31/redis持久化之AOF&RDB/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/31/redis持久化之AOF&RDB/" itemprop="commentsCount"></span>
+                <a href="/2016/07/16/redis持久化之AOF&RDB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/16/redis持久化之AOF&RDB/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -387,13 +387,17 @@ RDB如何是如何创建的，执行S">
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/07/29/redis中跳表分析(vs红黑树)/" rel="next" title="redis中跳表实现(vs红黑树)">
-                <i class="fa fa-chevron-left"></i> redis中跳表实现(vs红黑树)
+              <a href="/2016/07/11/网络爬虫总结/" rel="next" title="爬虫总结">
+                <i class="fa fa-chevron-left"></i> 爬虫总结
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/18/程序性能优化/" rel="prev" title="程序性能优化方法">
+                程序性能优化方法 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -429,8 +433,8 @@ window._bd_share_config=
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/31/redis持久化之AOF&RDB/"
-           data-title="redis持久化之RDB与AOF" data-url="http://yoursite.com/2016/07/31/redis持久化之AOF&RDB/">
+      <div class="ds-thread" data-thread-key="2016/07/16/redis持久化之AOF&RDB/"
+           data-title="redis持久化之RDB与AOF" data-url="http://yoursite.com/2016/07/16/redis持久化之AOF&RDB/">
       </div>
     
   </div>
@@ -475,7 +479,7 @@ window._bd_share_config=
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-count">22</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
