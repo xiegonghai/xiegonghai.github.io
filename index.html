@@ -260,175 +260,6 @@
             
               
                 
-                <a class="post-title-link" href="/2016/07/18/程序性能优化/" itemprop="url">
-                  程序性能优化方法
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-18T20:20:59+08:00" content="2016-07-18">
-              2016-07-18
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/性能优化/" itemprop="url" rel="index">
-                    <span itemprop="name">性能优化</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/18/程序性能优化/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/18/程序性能优化/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="程序性能优化"><a href="#程序性能优化" class="headerlink" title="程序性能优化"></a>程序性能优化</h1><p> 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。</p>
-<h2 id="是否可优化"><a href="#是否可优化" class="headerlink" title="是否可优化"></a>是否可优化</h2><p>思考<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span></span>&#123;</div><div class="line">	*xp = *xp + *yp;</div><div class="line">	*yp = *xp - *yp;</div><div class="line">	*xp = *xp - *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>可否替换为<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span></span>&#123;</div><div class="line">    *xp = *xp + *yp;</div><div class="line">    *yp = *xp - *yp;</div><div class="line">    *xp = *xp - *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>又如<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">	*xp += *yp;</div><div class="line">    *xp += *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle1</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">*xp = <span class="number">2</span>* (*yp);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>实际上上面连个看起来是传进来了不同的参数，但是当参数相同的话，结果是不一样的，优化是错的<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span></span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> f() + f() + f();&#125;</div></pre></td></tr></table></figure></p>
-<p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> <span class="number">3</span>*f();&#125;</div></pre></td></tr></table></figure></p>
-<p>这种情况下，当f调用了全局变量就会产生副作用，返回值也可能会不一样</p>
-<h2 id="常用的优化方法"><a href="#常用的优化方法" class="headerlink" title="常用的优化方法"></a>常用的优化方法</h2><h3 id="1-在循环中减少函数调用"><a href="#1-在循环中减少函数调用" class="headerlink" title="1.在循环中减少函数调用"></a><strong>1.在循环中减少函数调用</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Implementation of library function strlen */</span></div><div class="line"> <span class="comment">/* Compute length of string */</span></div><div class="line"><span class="keyword">size_t</span> <span class="built_in">strlen</span>(<span class="keyword">const</span> <span class="keyword">char</span> *s)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> length = <span class="number">0</span>;</div><div class="line">	<span class="keyword">while</span> (*s != ’\<span class="number">0</span>’) &#123;</div><div class="line">		s++;</div><div class="line">		length++;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> length;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lower1</span><span class="params">(<span class="keyword">char</span> *s)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(s); i++)&#123;</div><div class="line">		<span class="keyword">if</span> (s[i] &gt;= ’A’ &amp;&amp; s[i] &lt;= ’Z’)</div><div class="line">		s[i] -= (’A’ - ’a’);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 将strlen(s)从循环中外提</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lower1</span><span class="params">(<span class="keyword">char</span> *s)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> len = <span class="built_in">strlen</span>(s); <span class="comment">//循环中调用外提</span></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++)&#123;</div><div class="line">		<span class="keyword">if</span> (s[i] &gt;= ’A’ &amp;&amp; s[i] &lt;= ’Z’)</div><div class="line">		s[i] -= (’A’ - ’a’);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="2-消除不必要的存储器引用"><a href="#2-消除不必要的存储器引用" class="headerlink" title="2.消除不必要的存储器引用"></a><strong>2.消除不必要的存储器引用</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span></span></div><div class="line"> &#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> length = vec_length(v); </div><div class="line">	*dest = IDENT; </div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">		<span class="keyword">data_t</span> val;</div><div class="line">		get_vec_element(v, i, &amp;val);</div><div class="line">		*dest = *dest OPER val;  </div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在每次循环中减少中间过程读写<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Accumulate result in local variable */</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine4</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> length = vec_length(v);</div><div class="line">	<span class="keyword">data_t</span> *data = get_vec_start(v); <span class="comment">//</span></div><div class="line">	<span class="keyword">data_t</span> x = IDENT;</div><div class="line">	*dest = IDENT;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">		x = x OPER data[i]; <span class="comment">//循环内相除存储器引用</span></div><div class="line">	&#125;</div><div class="line">	*dest = x;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h3 id="3-循环展开"><a href="#3-循环展开" class="headerlink" title="3.循环展开"></a><strong>3.循环展开</strong></h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">vsum1</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</div><div class="line">    c[i] = a[i] + b[i];</div><div class="line"> &#125;</div><div class="line">循环展开为</div><div class="line">``` C++</div><div class="line"><span class="comment">/* Sum vector of n elements (n must be even) */</span></div><div class="line"> <span class="function"><span class="keyword">void</span> <span class="title">vsum2</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line"> &#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i+=<span class="number">2</span>) &#123;</div><div class="line">         <span class="comment">/* Compute two elements per iteration */</span></div><div class="line">        c[i] = a[i] + b[i];</div><div class="line">        c[i+<span class="number">1</span>] = a[i+<span class="number">1</span>] + b[i+<span class="number">1</span>];</div><div class="line">    &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
-<h3 id="4-提高并行性"><a href="#4-提高并行性" class="headerlink" title="4.提高并行性"></a><strong>4.提高并行性</strong></h3><p>使用多个临时变量，只在必要的时候将多个临时变量合并</p>
-<h3 id="5-重新结合变换"><a href="#5-重新结合变换" class="headerlink" title="5.重新结合变换"></a><strong>5.重新结合变换</strong></h3><p>acc = (acc OP data[i]) OP data[i+1];<br>每次迭代都要求前一次迭代必须结束才能开始，因为第一个操作就要求读取acc的值．<br>acc = acc OP (data[i] OP data[i+1]);<br>修改后，下一次迭代的开始可以先于当前迭代的结束，因为下一次迭代可以先计算data[i] OP data[i+1]这个操作．</p>
-<h2 id="阿姆达尔定律"><a href="#阿姆达尔定律" class="headerlink" title="阿姆达尔定律"></a>阿姆达尔定律</h2><p>阿姆达尔定律是计算机系统设计的重要定量原理之一，于1967年由IBM360系列机的主要设计者阿姆达尔首先提出。该定律是指：系统中对某一部件采用更快执行方式所能获得的系统性能改进程度，取决于这种执行方式被使用的频率，或所占总执行时间的比例。阿姆达尔定律实际上定义了采取增强（加速）某部分功能处理的措施后可获得的性能改进或执行时间的加速比。简单来说是通过更快的处理器来获得加速是由慢的系统组件所限制。<br>阿姆达尔曾致力于并行处理系统的研究。对于固定负载情况下描述并行处理效果的加速比s，阿姆达尔经过深入研究给出了如下公式：<br>$$S=1/(1-a+a/n)$$<br>其中，a为并行计算部分所占比例，n为并行处理结点个数。这样，当1-a=0时，(即没有串行，只有并行)最大加速比s=n；当a=0时（即只有串行，没有并行），最小加速比s=1；当n→∞时，极限加速比s→ 1/（1-a），这也就是加速比的上限。例如，若串行代码占整个代码的25%，则并行处理的总体性能不可能超过4。这一公式已被学术界所接受，并被称做“阿姆达尔定律”，也称为“安达尔定理”(Amdahl law)。</p>
-<h2 id="C-C-中的优化"><a href="#C-C-中的优化" class="headerlink" title="C/C++中的优化"></a>C/C++中的优化</h2><blockquote>
-<ul>
-<li><strong>如字符串初始化使用 str[‘\0’] (避免使用memeset)</strong></li>
-<li><strong>char buffer[1024] = {100} 会调用memset, 可以改为:</strong><br>char buffer[1024];<br>buffer[0] = 100</li>
-<li><strong>选择正确的数据结构，正确选择stl的容器</strong><ul>
-<li>数据量大时可以使用std::str1 或boost中 unordered_set/map 替代<br>map/set, 前者基于hash实现, 后者基于rb tree实现</li>
-<li>std::list 求长度 O(n)</li>
-<li>STL 的容器用完或者使用前记得reset, 否则会膨胀, 类似内存泄漏<br>reset 并没真正释放内存, 可能只是修改了长度和指针位置</li>
-<li>尽量使用std::sort, 而不是自写排序</li>
-<li>使用reverse 避免不必要的内存重分配</li>
-<li>去重和查找尽量用hashmap 而不是 vector + find</li>
-</ul>
-</li>
-<li><strong>避免重复申请内存</strong><ul>
-<li>用可重复初始化对象, 代替每次都new</li>
-<li>重复多次申请小块内存, 可以自己实现简单的buffer管理器</li>
-<li>使用tcmalloc ?</li>
-</ul>
-</li>
-<li><strong>多线程</strong><ul>
-<li>多线程的调度, 让 IO 和 CPU计算 相互重叠，降低<br>latency</li>
-<li>能提高绝对性能, 但是平均性能提升明显</li>
-</ul>
-</li>
-<li><strong>openmp让循环中可以并行的部分得到并行处理</strong><ul>
-<li>o 打开编译选项 -fopenmp</li>
-</ul>
-</li>
-<li><strong>按字节固定初始有时可使用memeset,比for循环快很多</strong><ul>
-<li>测试过1亿字符串统一赋值，用memeset比for循环赋值快10倍</li>
-</ul>
-</li>
-</ul>
-</blockquote>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>&lt;&lt;深入理解操作系统&gt;&gt;<br>&lt;&lt;大牛分享&gt;&gt;</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/2016/07/16/redis持久化之AOF&RDB/" itemprop="url">
                   redis持久化之RDB与AOF
                 </a>
@@ -519,146 +350,6 @@
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><blockquote>
 <p>《redis设计与实现》<br> redis github源码</p>
 </blockquote>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/07/11/网络爬虫总结/" itemprop="url">
-                  爬虫总结
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-11T10:01:59+08:00" content="2016-07-11">
-              2016-07-11
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
-                    <span itemprop="name">C++与linux网络编程</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/11/网络爬虫总结/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/11/网络爬虫总结/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在校期间由于到时I数据需求以及自己偶尔倒腾，写过一段时间爬虫，爬过csdn博客,天涯论坛,sina博客,sina微公益，学校就业系统数据(当时基本把全院就业数据爬下来了，包括每个人的身份证家庭住址联系方式就业去向等信息)等等,也爬过主流网站的信息当时想着做了一个粗糙的小型搜索引擎.在实习阶段写过一段时间爬虫系统，此时就主要用的scrapy框架了，爬取了7个主流手游网站游戏资讯论坛的信息.一直没有空去总结下,趁着有空总结下基本技巧</p>
-<h2 id="关于爬取的三个方面"><a href="#关于爬取的三个方面" class="headerlink" title="关于爬取的三个方面"></a>关于爬取的三个方面</h2><h3 id="网络爬虫归根结底是如何拿到服务器数据"><a href="#网络爬虫归根结底是如何拿到服务器数据" class="headerlink" title="网络爬虫归根结底是如何拿到服务器数据"></a>网络爬虫归根结底是如何拿到服务器数据</h3><p>在你分析完目标站点的需要的数据之后,思考如何爬取过程自动化，一般站点的数据组织方式都是有规律，比如csdn会有一个所有博客的一个汇总存档页，如果你需要爬取所有的页面博客，你需要分析第1页到第n页的页面连接url规律,然后依次请求每页数据，得到每个页的几十个博客url，下层进行每个url的深入爬取。</p>
-<h3 id="如果你写过爬虫-你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列-总结下遇到的问题以及别人总结的一些问题"><a href="#如果你写过爬虫-你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列-总结下遇到的问题以及别人总结的一些问题" class="headerlink" title="如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题"></a>如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题</h3><blockquote>
-<p>数据是ajax请求的数据，请求方式不反应在链接上<br>数据在请求过程受到服务器频次限制,ip被封|频次限制<br>数据需要登录才能抓取数据<br>数据是js解析后才能拿到<br>部分网站不管你头部具体内容是什么，总是得到gzip后的内容<br>服务器加上了防盗链的限制<br>服务器加了限制，只让常见浏览器访问<br>url请求时加了编码信息<br>https以及http爬取<br>验证码问题<br>url如何判重<br>数据编码问题以及请求参数编码</p>
-</blockquote>
-<h3 id="大型搜索引擎爬取问题"><a href="#大型搜索引擎爬取问题" class="headerlink" title="大型搜索引擎爬取问题"></a>大型搜索引擎爬取问题</h3><blockquote>
-<p>在真实的大型爬虫系统中(比如百度),如何保证保证覆盖率，更新率，实效性，有效性<br>标准：全、快、准、新<br>覆盖率：链接是否已发现，网页是否已抓取<br>更新率：网页发生变化或失效后是否最大限度地发现并更新<br>时效性：新网页（时效性较高的网页）产生或网页发生变化后，是否及时发现、抓取、更新。<br>有效性：可以分为抓取有效性和存储有效性。<br>1）抓取有效性：是指抓取流量中有多少是抓取了有价值的东西，对CHK来说就是得到了新的链接，对GET抓回来了能建库的网页就是有效的。<br>2）存储有效性：是指主要是指节省link库和网页库的空间。如果存储了大量低质量的那有效性就不高。</p>
-</blockquote>
-<h3 id="上面的问题的一些解决方法"><a href="#上面的问题的一些解决方法" class="headerlink" title="上面的问题的一些解决方法"></a>上面的问题的一些解决方法</h3><p><strong> 数据是ajax请求的数据，请求方式不反应在链接上</strong><br>打开浏览器解析，分析ajax的真实请求url的规律，分析请求参数，分析结果json<br>按照实际url和参数请求<br><strong> 数据在请求过程受到服务器频次限制,ip被封|频次限制 </strong><br>使用代理IP服务器,scrapy有一个专门IP代理池<br>再一个可以使用sleep限制程序降低爬取频次<br>技术做的特别好的，封的厉害的需要获取开发者权限,token之类的</p>
-<p><strong> 数据需要登录才能抓取数据 </strong><br>使用import urllib.request<br>并用用字典封装post键值对作为open方法的参数，包括用户名密码等必要参数</p>
-<p><strong> 数据是js解析后才能拿到 </strong><br>使用selenium、phantomjs等模拟浏览器引擎构建一个真实的浏览器执行JS<br>百度也是有专门的解析器sunflower的，Sunflower采用firefox浏览器的mozilla内核，本质上就是把firefox的必要部分组装起来，得到一个同浏览器比较相似的抓取器，能够得到页面在浏览器实际展现时候的完整数据。它能够像浏览器一样处理html页面，包括js，css，xmlrequest</p>
-<p><strong> 部分网站不管你头部具体内容是什么，总是得到gzip后的内容</strong><br>使用import gzip相应方法解压,重点要知道是有得到压缩数据情况</p>
-<p><strong> 服务器加上了防盗链的限制 </strong><br>某些站点有反盗链设置，其实就是检查你发送请求的header里面，referer站点是不是他自己，我们只要把headers的referer改成该网站即可<br><strong> 服务器加了限制，只让常见浏览器访问</strong><br>请求时加上浏览器头部，伪装成浏览器<br><strong> url请求时加了编码信息 </strong><br>使用urllib.quote(‘’)</p>
-<p><strong> https以及http爬取 </strong><br>https是加密传输，其实用scrapy爬取并没什么不一样</p>
-<p><strong> 验证码问题　</strong><br>图像识别？训练好相应图片验证码模型，不过有些事要计算或者推理的，比较难</p>
-<p><strong> url如何判重 </strong><br>判重需要节省内存，一般使用布隆过滤器，在数学之美中有提到过</p>
-<p><strong> 大型搜索引擎爬取问题 </strong><br>入职百度以来看了爬虫相关文档,发现设计考虑问题还是非常多的，有空再总结下<br>相关重要问题，不涉及具体实现</p>
-<h3 id="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库"><a href="#拿到数据之后剩余的问题就是如何解析拿到想要的数据入库" class="headerlink" title="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库."></a>拿到数据之后剩余的问题就是如何解析拿到想要的数据入库.</h3><p>这里主要分为两块:<br><strong>首页如何提取html页面想要的信息</strong></p>
-<p>解析html可以使用BeautifulSoup和xpath,有很多解析tag的方法,比起正则使用起来方便容易很多,常用的findall,find,find_next,find_parent,get_text()等等，这里不详细描述<br>参看官方文档,<a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank" rel="external">https://www.crummy.com/software/BeautifulSoup/bs4/doc/</a><br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</div></pre></td></tr></table></figure></p>
-<p>当然也可以自己实现,百度就是自己C实现了解析的基础库</p>
-<p><strong>怎么存储</strong><br>数据量小可以直接按表格形式存入excel<br>推荐两个python包<br>import xlwt3<br>from xlrd import open_workbook<br>数据量大,使用mysql数据库或者本地文件</p>
 
           
         
@@ -1089,6 +780,315 @@
 </blockquote>
 <p><strong>缺点</strong>:<br>编码复杂，代码量大，随着并发粒度见笑，复杂性-上升迅速</p>
 <h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><p>结合上述两者的特性，在执行模型上既有着类似多进程的多线程内核自动调度，又有着I/O复用流享用的共享整个虚拟地址空间的整个内容<br>线程是运行在进程上下文中的逻辑流，线程由内核自动调度，每个线程有她自己的线程上下文，包括Thread ID,栈，栈指针，程序计数器，通用目的寄存器和条件码，共享进程的整个虚拟地址空间</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/29/程序性能优化/" itemprop="url">
+                  程序性能优化方法
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-29T20:20:59+08:00" content="2016-06-29">
+              2016-06-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/性能优化/" itemprop="url" rel="index">
+                    <span itemprop="name">性能优化</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/29/程序性能优化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/29/程序性能优化/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="程序性能优化"><a href="#程序性能优化" class="headerlink" title="程序性能优化"></a>程序性能优化</h1><p> 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。</p>
+<h2 id="是否可优化"><a href="#是否可优化" class="headerlink" title="是否可优化"></a>是否可优化</h2><p>思考<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span></span>&#123;</div><div class="line">	*xp = *xp + *yp;</div><div class="line">	*yp = *xp - *yp;</div><div class="line">	*xp = *xp - *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span></span>&#123;</div><div class="line">    *xp = *xp + *yp;</div><div class="line">    *yp = *xp - *yp;</div><div class="line">    *xp = *xp - *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>又如<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">	*xp += *yp;</div><div class="line">    *xp += *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle1</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">*xp = <span class="number">2</span>* (*yp);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>实际上上面连个看起来是传进来了不同的参数，但是当参数相同的话，结果是不一样的，优化是错的<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span></span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> f() + f() + f();&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> <span class="number">3</span>*f();&#125;</div></pre></td></tr></table></figure></p>
+<p>这种情况下，当f调用了全局变量就会产生副作用，返回值也可能会不一样</p>
+<h2 id="常用的优化方法"><a href="#常用的优化方法" class="headerlink" title="常用的优化方法"></a>常用的优化方法</h2><h3 id="1-在循环中减少函数调用"><a href="#1-在循环中减少函数调用" class="headerlink" title="1.在循环中减少函数调用"></a><strong>1.在循环中减少函数调用</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Implementation of library function strlen */</span></div><div class="line"> <span class="comment">/* Compute length of string */</span></div><div class="line"><span class="keyword">size_t</span> <span class="built_in">strlen</span>(<span class="keyword">const</span> <span class="keyword">char</span> *s)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> length = <span class="number">0</span>;</div><div class="line">	<span class="keyword">while</span> (*s != ’\<span class="number">0</span>’) &#123;</div><div class="line">		s++;</div><div class="line">		length++;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> length;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lower1</span><span class="params">(<span class="keyword">char</span> *s)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(s); i++)&#123;</div><div class="line">		<span class="keyword">if</span> (s[i] &gt;= ’A’ &amp;&amp; s[i] &lt;= ’Z’)</div><div class="line">		s[i] -= (’A’ - ’a’);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 将strlen(s)从循环中外提</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lower1</span><span class="params">(<span class="keyword">char</span> *s)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> len = <span class="built_in">strlen</span>(s); <span class="comment">//循环中调用外提</span></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++)&#123;</div><div class="line">		<span class="keyword">if</span> (s[i] &gt;= ’A’ &amp;&amp; s[i] &lt;= ’Z’)</div><div class="line">		s[i] -= (’A’ - ’a’);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-消除不必要的存储器引用"><a href="#2-消除不必要的存储器引用" class="headerlink" title="2.消除不必要的存储器引用"></a><strong>2.消除不必要的存储器引用</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span></span></div><div class="line"> &#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> length = vec_length(v); </div><div class="line">	*dest = IDENT; </div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">		<span class="keyword">data_t</span> val;</div><div class="line">		get_vec_element(v, i, &amp;val);</div><div class="line">		*dest = *dest OPER val;  </div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在每次循环中减少中间过程读写<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Accumulate result in local variable */</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine4</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> length = vec_length(v);</div><div class="line">	<span class="keyword">data_t</span> *data = get_vec_start(v); <span class="comment">//</span></div><div class="line">	<span class="keyword">data_t</span> x = IDENT;</div><div class="line">	*dest = IDENT;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">		x = x OPER data[i]; <span class="comment">//循环内相除存储器引用</span></div><div class="line">	&#125;</div><div class="line">	*dest = x;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="3-循环展开"><a href="#3-循环展开" class="headerlink" title="3.循环展开"></a><strong>3.循环展开</strong></h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">vsum1</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</div><div class="line">    c[i] = a[i] + b[i];</div><div class="line"> &#125;</div><div class="line">循环展开为</div><div class="line">``` C++</div><div class="line"><span class="comment">/* Sum vector of n elements (n must be even) */</span></div><div class="line"> <span class="function"><span class="keyword">void</span> <span class="title">vsum2</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line"> &#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i+=<span class="number">2</span>) &#123;</div><div class="line">         <span class="comment">/* Compute two elements per iteration */</span></div><div class="line">        c[i] = a[i] + b[i];</div><div class="line">        c[i+<span class="number">1</span>] = a[i+<span class="number">1</span>] + b[i+<span class="number">1</span>];</div><div class="line">    &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<h3 id="4-提高并行性"><a href="#4-提高并行性" class="headerlink" title="4.提高并行性"></a><strong>4.提高并行性</strong></h3><p>使用多个临时变量，只在必要的时候将多个临时变量合并</p>
+<h3 id="5-重新结合变换"><a href="#5-重新结合变换" class="headerlink" title="5.重新结合变换"></a><strong>5.重新结合变换</strong></h3><p>acc = (acc OP data[i]) OP data[i+1];<br>每次迭代都要求前一次迭代必须结束才能开始，因为第一个操作就要求读取acc的值．<br>acc = acc OP (data[i] OP data[i+1]);<br>修改后，下一次迭代的开始可以先于当前迭代的结束，因为下一次迭代可以先计算data[i] OP data[i+1]这个操作．</p>
+<h2 id="阿姆达尔定律"><a href="#阿姆达尔定律" class="headerlink" title="阿姆达尔定律"></a>阿姆达尔定律</h2><p>阿姆达尔定律是计算机系统设计的重要定量原理之一，于1967年由IBM360系列机的主要设计者阿姆达尔首先提出。该定律是指：系统中对某一部件采用更快执行方式所能获得的系统性能改进程度，取决于这种执行方式被使用的频率，或所占总执行时间的比例。阿姆达尔定律实际上定义了采取增强（加速）某部分功能处理的措施后可获得的性能改进或执行时间的加速比。简单来说是通过更快的处理器来获得加速是由慢的系统组件所限制。<br>阿姆达尔曾致力于并行处理系统的研究。对于固定负载情况下描述并行处理效果的加速比s，阿姆达尔经过深入研究给出了如下公式：<br>$$S=1/(1-a+a/n)$$<br>其中，a为并行计算部分所占比例，n为并行处理结点个数。这样，当1-a=0时，(即没有串行，只有并行)最大加速比s=n；当a=0时（即只有串行，没有并行），最小加速比s=1；当n→∞时，极限加速比s→ 1/（1-a），这也就是加速比的上限。例如，若串行代码占整个代码的25%，则并行处理的总体性能不可能超过4。这一公式已被学术界所接受，并被称做“阿姆达尔定律”，也称为“安达尔定理”(Amdahl law)。</p>
+<h2 id="C-C-中的优化"><a href="#C-C-中的优化" class="headerlink" title="C/C++中的优化"></a>C/C++中的优化</h2><blockquote>
+<ul>
+<li><strong>如字符串初始化使用 str[‘\0’] (避免使用memeset)</strong></li>
+<li><strong>char buffer[1024] = {100} 会调用memset, 可以改为:</strong><br>char buffer[1024];<br>buffer[0] = 100</li>
+<li><strong>选择正确的数据结构，正确选择stl的容器</strong><ul>
+<li>数据量大时可以使用std::str1 或boost中 unordered_set/map 替代<br>map/set, 前者基于hash实现, 后者基于rb tree实现</li>
+<li>std::list 求长度 O(n)</li>
+<li>STL 的容器用完或者使用前记得reset, 否则会膨胀, 类似内存泄漏<br>reset 并没真正释放内存, 可能只是修改了长度和指针位置</li>
+<li>尽量使用std::sort, 而不是自写排序</li>
+<li>使用reverse 避免不必要的内存重分配</li>
+<li>去重和查找尽量用hashmap 而不是 vector + find</li>
+</ul>
+</li>
+<li><strong>避免重复申请内存</strong><ul>
+<li>用可重复初始化对象, 代替每次都new</li>
+<li>重复多次申请小块内存, 可以自己实现简单的buffer管理器</li>
+<li>使用tcmalloc ?</li>
+</ul>
+</li>
+<li><strong>多线程</strong><ul>
+<li>多线程的调度, 让 IO 和 CPU计算 相互重叠，降低<br>latency</li>
+<li>能提高绝对性能, 但是平均性能提升明显</li>
+</ul>
+</li>
+<li><strong>openmp让循环中可以并行的部分得到并行处理</strong><ul>
+<li>o 打开编译选项 -fopenmp</li>
+</ul>
+</li>
+<li><strong>按字节固定初始有时可使用memeset,比for循环快很多</strong><ul>
+<li>测试过1亿字符串统一赋值，用memeset比for循环赋值快10倍</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>&lt;&lt;深入理解操作系统&gt;&gt;<br>&lt;&lt;大牛分享&gt;&gt;</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/16/网络爬虫总结/" itemprop="url">
+                  爬虫总结
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-16T10:01:59+08:00" content="2016-06-16">
+              2016-06-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/16/网络爬虫总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/16/网络爬虫总结/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在校期间由于到时I数据需求以及自己偶尔倒腾，写过一段时间爬虫，爬过csdn博客,天涯论坛,sina博客,sina微公益，学校就业系统数据(当时基本把全院就业数据爬下来了，包括每个人的身份证家庭住址联系方式就业去向等信息)等等,也爬过主流网站的信息当时想着做了一个粗糙的小型搜索引擎.在实习阶段写过一段时间爬虫系统，此时就主要用的scrapy框架了，爬取了7个主流手游网站游戏资讯论坛的信息.一直没有空去总结下,趁着有空总结下基本技巧</p>
+<h2 id="关于爬取的三个方面"><a href="#关于爬取的三个方面" class="headerlink" title="关于爬取的三个方面"></a>关于爬取的三个方面</h2><h3 id="网络爬虫归根结底是如何拿到服务器数据"><a href="#网络爬虫归根结底是如何拿到服务器数据" class="headerlink" title="网络爬虫归根结底是如何拿到服务器数据"></a>网络爬虫归根结底是如何拿到服务器数据</h3><p>在你分析完目标站点的需要的数据之后,思考如何爬取过程自动化，一般站点的数据组织方式都是有规律，比如csdn会有一个所有博客的一个汇总存档页，如果你需要爬取所有的页面博客，你需要分析第1页到第n页的页面连接url规律,然后依次请求每页数据，得到每个页的几十个博客url，下层进行每个url的深入爬取。</p>
+<h3 id="如果你写过爬虫-你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列-总结下遇到的问题以及别人总结的一些问题"><a href="#如果你写过爬虫-你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列-总结下遇到的问题以及别人总结的一些问题" class="headerlink" title="如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题"></a>如果你写过爬虫,你会在拿数据的过程会遇到各种各样的问题，这里做一个罗列,总结下遇到的问题以及别人总结的一些问题</h3><blockquote>
+<p>数据是ajax请求的数据，请求方式不反应在链接上<br>数据在请求过程受到服务器频次限制,ip被封|频次限制<br>数据需要登录才能抓取数据<br>数据是js解析后才能拿到<br>部分网站不管你头部具体内容是什么，总是得到gzip后的内容<br>服务器加上了防盗链的限制<br>服务器加了限制，只让常见浏览器访问<br>url请求时加了编码信息<br>https以及http爬取<br>验证码问题<br>url如何判重<br>数据编码问题以及请求参数编码</p>
+</blockquote>
+<h3 id="大型搜索引擎爬取问题"><a href="#大型搜索引擎爬取问题" class="headerlink" title="大型搜索引擎爬取问题"></a>大型搜索引擎爬取问题</h3><blockquote>
+<p>在真实的大型爬虫系统中(比如百度),如何保证保证覆盖率，更新率，实效性，有效性<br>标准：全、快、准、新<br>覆盖率：链接是否已发现，网页是否已抓取<br>更新率：网页发生变化或失效后是否最大限度地发现并更新<br>时效性：新网页（时效性较高的网页）产生或网页发生变化后，是否及时发现、抓取、更新。<br>有效性：可以分为抓取有效性和存储有效性。<br>1）抓取有效性：是指抓取流量中有多少是抓取了有价值的东西，对CHK来说就是得到了新的链接，对GET抓回来了能建库的网页就是有效的。<br>2）存储有效性：是指主要是指节省link库和网页库的空间。如果存储了大量低质量的那有效性就不高。</p>
+</blockquote>
+<h3 id="上面的问题的一些解决方法"><a href="#上面的问题的一些解决方法" class="headerlink" title="上面的问题的一些解决方法"></a>上面的问题的一些解决方法</h3><p><strong> 数据是ajax请求的数据，请求方式不反应在链接上</strong><br>打开浏览器解析，分析ajax的真实请求url的规律，分析请求参数，分析结果json<br>按照实际url和参数请求<br><strong> 数据在请求过程受到服务器频次限制,ip被封|频次限制 </strong><br>使用代理IP服务器,scrapy有一个专门IP代理池<br>再一个可以使用sleep限制程序降低爬取频次<br>技术做的特别好的，封的厉害的需要获取开发者权限,token之类的</p>
+<p><strong> 数据需要登录才能抓取数据 </strong><br>使用import urllib.request<br>并用用字典封装post键值对作为open方法的参数，包括用户名密码等必要参数</p>
+<p><strong> 数据是js解析后才能拿到 </strong><br>使用selenium、phantomjs等模拟浏览器引擎构建一个真实的浏览器执行JS<br>百度也是有专门的解析器sunflower的，Sunflower采用firefox浏览器的mozilla内核，本质上就是把firefox的必要部分组装起来，得到一个同浏览器比较相似的抓取器，能够得到页面在浏览器实际展现时候的完整数据。它能够像浏览器一样处理html页面，包括js，css，xmlrequest</p>
+<p><strong> 部分网站不管你头部具体内容是什么，总是得到gzip后的内容</strong><br>使用import gzip相应方法解压,重点要知道是有得到压缩数据情况</p>
+<p><strong> 服务器加上了防盗链的限制 </strong><br>某些站点有反盗链设置，其实就是检查你发送请求的header里面，referer站点是不是他自己，我们只要把headers的referer改成该网站即可<br><strong> 服务器加了限制，只让常见浏览器访问</strong><br>请求时加上浏览器头部，伪装成浏览器<br><strong> url请求时加了编码信息 </strong><br>使用urllib.quote(‘’)</p>
+<p><strong> https以及http爬取 </strong><br>https是加密传输，其实用scrapy爬取并没什么不一样</p>
+<p><strong> 验证码问题　</strong><br>图像识别？训练好相应图片验证码模型，不过有些事要计算或者推理的，比较难</p>
+<p><strong> url如何判重 </strong><br>判重需要节省内存，一般使用布隆过滤器，在数学之美中有提到过</p>
+<p><strong> 大型搜索引擎爬取问题 </strong><br>入职百度以来看了爬虫相关文档,发现设计考虑问题还是非常多的，有空再总结下<br>相关重要问题，不涉及具体实现</p>
+<h3 id="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库"><a href="#拿到数据之后剩余的问题就是如何解析拿到想要的数据入库" class="headerlink" title="拿到数据之后剩余的问题就是如何解析拿到想要的数据入库."></a>拿到数据之后剩余的问题就是如何解析拿到想要的数据入库.</h3><p>这里主要分为两块:<br><strong>首页如何提取html页面想要的信息</strong></p>
+<p>解析html可以使用BeautifulSoup和xpath,有很多解析tag的方法,比起正则使用起来方便容易很多,常用的findall,find,find_next,find_parent,get_text()等等，这里不详细描述<br>参看官方文档,<a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank" rel="external">https://www.crummy.com/software/BeautifulSoup/bs4/doc/</a><br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</div></pre></td></tr></table></figure></p>
+<p>当然也可以自己实现,百度就是自己C实现了解析的基础库</p>
+<p><strong>怎么存储</strong><br>数据量小可以直接按表格形式存入excel<br>推荐两个python包<br>import xlwt3<br>from xlrd import open_workbook<br>数据量大,使用mysql数据库或者本地文件</p>
 
           
         
