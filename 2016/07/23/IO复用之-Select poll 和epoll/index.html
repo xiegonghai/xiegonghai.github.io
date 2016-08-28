@@ -120,7 +120,7 @@ Selectselect的第一个参数为fdset集合中最大描述符值加1，select�
 <meta property="og:image" content="http://yoursite.com/img/io4.jpg">
 <meta property="og:image" content="http://yoursite.com/img/io5.jpg">
 <meta property="og:image" content="http://yoursite.com/img/io-summary.jpg">
-<meta property="og:updated_time" content="2016-08-11T01:07:29.756Z">
+<meta property="og:updated_time" content="2016-08-28T06:16:53.207Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux I/O复用之-select epoll">
 <meta name="twitter:description" content="I/O复用应用场景
@@ -368,12 +368,12 @@ Selectselect的第一个参数为fdset集合中最大描述符值加1，select�
 <p>当客户同时处理多个描述符(交互式输入和网络套接字)<br>TCP服务器同时处理监听套接字和已连接套接字<br>既要处理TCP又要处理UDP<br>处理多个服务或者多个协议</p>
 </blockquote>
 <h2 id="五种I-O模型"><a href="#五种I-O模型" class="headerlink" title="五种I/O模型"></a>五种I/O模型</h2><p><strong>阻塞式I/O</strong></p>
-<div align="center"><br><img src="img/io1.jpg" alt="CSDN图标"><br></div>
+<div align="center"><br><img src="/img/io1.jpg" alt="^_^||"><br></div>
 
 <p><strong>阻塞式I/O</strong></p>
-<div align="center"><br><img src="img/io2.jpg" alt="CSDN图标"><br></div><br><strong>I/O复用</strong><br><div align="center"><br><img src="img/io3.jpg" alt="CSDN图标"><br></div><br><strong>信号驱动式I/O</strong><br><div align="center"><br><img src="img/io4.jpg" alt="CSDN图标"><br></div><br><strong>异步I/O</strong><br><div align="center"><br><img src="img/io5.jpg" alt="CSDN图标"><br></div>
+<div align="center"><br><img src="/img/io2.jpg" alt="^_^||"><br></div><br><strong>I/O复用</strong><br><div align="center"><br><img src="/img/io3.jpg" alt="^_^||"><br></div><br><strong>信号驱动式I/O</strong><br><div align="center"><br><img src="/img/io4.jpg" alt="^_^||"><br></div><br><strong>异步I/O</strong><br><div align="center"><br><img src="/img/io5.jpg" alt="^_^||"><br></div>
 
-<h3 id="五种I-O模型总结"><a href="#五种I-O模型总结" class="headerlink" title="五种I/O模型总结"></a>五种I/O模型总结</h3><div align="center"><br><img src="img/io-summary.jpg" alt="CSDN图标"><br></div>
+<h3 id="五种I-O模型总结"><a href="#五种I-O模型总结" class="headerlink" title="五种I/O模型总结"></a>五种I/O模型总结</h3><div align="center"><br><img src="img/io-summary.jpg" alt="^_^||"><br></div>
 
 <h2 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h2><p>select的第一个参数为fdset集合中最大描述符值加1，select对应于内核中的sys_select调用，sys_select首先将第二三四个参数指向的fd_set拷贝到内核，然后对每个被SET的描述符进行poll，并记录在临时结果中(fdset)，如果有事件发生，select会将临时结果写到用户空间并返回，当轮询一遍后没有任何事件发生，如果指定了超时时间，则select会睡眠到超时，睡眠结束后再进行下一次轮询，并将临时结果写到用户空间，然后返回。select返回后，需要逐一检查关注的描述符是否被SET（事件是否发生）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds, <span class="keyword">struct</span> timeval* timeout)</span></span>;</div></pre></td></tr></table></figure></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">参数                  描述</div><div class="line">nfds             sets的文件描述符的最大值</div><div class="line">readfds          fd_set type 类型，只读的描述符集 </div><div class="line">writefds         fd_set type 类型，只写的描述符集 </div><div class="line">errorfds         fd_set type 类型，错误的描述符集 </div><div class="line">timeout          超时等待时间</div></pre></td></tr></table></figure>
