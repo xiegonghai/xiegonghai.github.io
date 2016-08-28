@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="Xiegonghai's Blog">
 <meta property="og:description" content="现在大部分程序员开发基本在开发机linux环境，熟悉linux能够大大的提升开发效率，这篇博客就用来持续更新自己常常使用的linux命令吧，持续更新。。。
 进程与网络###非常重要的命令netstat常见参数-a (all)显示所有选项，默认不显示LISTEN相关-t (tcp)仅显示tcp相关选项-u (udp)仅显示udp相关选项-n 拒绝显示别名，能显示数字的全部转化成数字。-l 仅列出有在">
-<meta property="og:updated_time" content="2016-08-28T15:15:28.740Z">
+<meta property="og:updated_time" content="2016-08-28T15:23:54.201Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="我常用的linux命令总结">
 <meta name="twitter:description" content="现在大部分程序员开发基本在开发机linux环境，熟悉linux能够大大的提升开发效率，这篇博客就用来持续更新自己常常使用的linux命令吧，持续更新。。。
@@ -336,7 +336,7 @@
 <p>-A：显示所有程序。<br>-f：显示UID,PPIP,C与STIME栏位。</p>
 <h3 id="lsof定位具体端口号是那个进程在占有-显示器进程名，进程id-协议以及状态"><a href="#lsof定位具体端口号是那个进程在占有-显示器进程名，进程id-协议以及状态" class="headerlink" title="lsof定位具体端口号是那个进程在占有,显示器进程名，进程id,协议以及状态"></a>lsof定位具体端口号是那个进程在占有,显示器进程名，进程id,协议以及状态</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lsof -i:8080</div></pre></td></tr></table></figure>
 <h3 id="kill-强制终止进程号为8080的进程"><a href="#kill-强制终止进程号为8080的进程" class="headerlink" title="kill 强制终止进程号为8080的进程"></a>kill 强制终止进程号为8080的进程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kill -9 8080</div></pre></td></tr></table></figure>
-<h3 id="已知进程名称，杀死所有相关的程序"><a href="#已知进程名称，杀死所有相关的程序" class="headerlink" title="已知进程名称，杀死所有相关的程序"></a>已知进程名称，杀死所有相关的程序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ps -ef | grep press.php | grep -v grep | awk &apos;&#123;print $2&#125;&apos; | xargs kill -9</div><div class="line">``` shell</div><div class="line"></div><div class="line">### pwdx 14190 查看进程id对应进程程序所在目录</div><div class="line">``` shell</div><div class="line">pwdx 14190</div></pre></td></tr></table></figure>
+<h3 id="已知进程名称，杀死所有相关的程序"><a href="#已知进程名称，杀死所有相关的程序" class="headerlink" title="已知进程名称，杀死所有相关的程序"></a>已知进程名称，杀死所有相关的程序</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ps -ef | grep press.php | grep -v grep | awk <span class="string">'&#123;print $2&#125;'</span> | xargs <span class="built_in">kill</span> -9</div><div class="line">``` </div><div class="line"></div><div class="line"><span class="comment">### pwdx 14190 查看进程id对应进程程序所在目录</span></div><div class="line">``` shell</div><div class="line">pwdx 14190</div></pre></td></tr></table></figure>
 <h3 id="proc-14190-查看进程id对应运行中的进程的信息"><a href="#proc-14190-查看进程id对应运行中的进程的信息" class="headerlink" title="/proc/14190 查看进程id对应运行中的进程的信息"></a>/proc/14190 查看进程id对应运行中的进程的信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ls -l /proc/14190</div></pre></td></tr></table></figure>
 <p>有关运行中的进程的信息</p>
 <p>/proc 文件系统可以用于获取运行中的进程的信息。在/proc 中有一些编号的子目录。每个编号的目录对应一个进程id (PID)。这样，每一个运行中的进程/proc 中都有一个用它的PID 命名的目录。这些子目录中包含可以提供有关进程的状态和环境的重要细节信息的文件。让我们试着查找一个运行中的进程。</p>
