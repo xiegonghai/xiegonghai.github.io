@@ -260,6 +260,158 @@
             
               
                 
+                <a class="post-title-link" href="/2016/08/01/常用linux命令-总结/" itemprop="url">
+                  我常用的linux命令总结
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-01T01:01:59+08:00" content="2016-08-01">
+              2016-08-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/01/常用linux命令-总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/01/常用linux命令-总结/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>现在大部分程序员开发基本在开发机linux环境，熟悉linux能够大大的提升开发效率，这篇博客就用来持续更新自己常常使用的linux命令吧，持续更新。。。</p>
+<h2 id="进程与网络"><a href="#进程与网络" class="headerlink" title="进程与网络"></a>进程与网络</h2><p>###非常重要的命令netstat<br>常见参数<br>-a (all)显示所有选项，默认不显示LISTEN相关<br>-t (tcp)仅显示tcp相关选项<br>-u (udp)仅显示udp相关选项<br>-n 拒绝显示别名，能显示数字的全部转化成数字。<br>-l 仅列出有在 Listen (监听) 的服務状态</p>
+<p>-p 显示建立相关链接的程序名<br>-r 显示路由信息，路由表<br>-e 显示扩展信息，例如uid等<br>-s 按各个协议进行统计<br>-c 每隔一个固定时间，执行该netstat命令。</p>
+<p>提示：LISTEN和LISTENING的状态只有用-a或者-l才能看到</p>
+<h3 id="netstat查看redis客户端的tcp连接状态，ip以及端口号等"><a href="#netstat查看redis客户端的tcp连接状态，ip以及端口号等" class="headerlink" title="netstat查看redis客户端的tcp连接状态，ip以及端口号等"></a>netstat查看redis客户端的tcp连接状态，ip以及端口号等</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">netstat -nap | grep redis</div></pre></td></tr></table></figure>
+<h3 id="ps命令通过进程名查看进程PID以及父进程ID-时间等"><a href="#ps命令通过进程名查看进程PID以及父进程ID-时间等" class="headerlink" title="ps命令通过进程名查看进程PID以及父进程ID,时间等"></a>ps命令通过进程名查看进程PID以及父进程ID,时间等</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ps -ef | grep　php-fpm</div></pre></td></tr></table></figure>
+<p>-A：显示所有程序。<br>-f：显示UID,PPIP,C与STIME栏位。</p>
+<h3 id="lsof定位具体端口号是那个进程在占有-显示器进程名，进程id-协议以及状态"><a href="#lsof定位具体端口号是那个进程在占有-显示器进程名，进程id-协议以及状态" class="headerlink" title="lsof定位具体端口号是那个进程在占有,显示器进程名，进程id,协议以及状态"></a>lsof定位具体端口号是那个进程在占有,显示器进程名，进程id,协议以及状态</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lsof -i:8080</div></pre></td></tr></table></figure>
+<h3 id="kill-强制终止进程号为8080的进程"><a href="#kill-强制终止进程号为8080的进程" class="headerlink" title="kill 强制终止进程号为8080的进程"></a>kill 强制终止进程号为8080的进程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">kill -9 8080</div></pre></td></tr></table></figure>
+<h3 id="已知进程名称，杀死所有相关的程序"><a href="#已知进程名称，杀死所有相关的程序" class="headerlink" title="已知进程名称，杀死所有相关的程序"></a>已知进程名称，杀死所有相关的程序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ps -ef | grep press.php | grep -v grep | awk &apos;&#123;print $2&#125;&apos; | xargs kill -9</div><div class="line">``` shell</div><div class="line"></div><div class="line">### pwdx 14190 查看进程id对应进程程序所在目录</div><div class="line">``` shell</div><div class="line">pwdx 14190</div></pre></td></tr></table></figure>
+<h3 id="proc-14190-查看进程id对应运行中的进程的信息"><a href="#proc-14190-查看进程id对应运行中的进程的信息" class="headerlink" title="/proc/14190 查看进程id对应运行中的进程的信息"></a>/proc/14190 查看进程id对应运行中的进程的信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ls -l /proc/14190</div></pre></td></tr></table></figure>
+<p>有关运行中的进程的信息</p>
+<p>/proc 文件系统可以用于获取运行中的进程的信息。在/proc 中有一些编号的子目录。每个编号的目录对应一个进程id (PID)。这样，每一个运行中的进程/proc 中都有一个用它的PID 命名的目录。这些子目录中包含可以提供有关进程的状态和环境的重要细节信息的文件。让我们试着查找一个运行中的进程。</p>
+<h3 id="top-查看系统负载，cpu，内存使用，下面只查单进程状态"><a href="#top-查看系统负载，cpu，内存使用，下面只查单进程状态" class="headerlink" title="top 查看系统负载，cpu，内存使用，下面只查单进程状态"></a>top 查看系统负载，cpu，内存使用，下面只查单进程状态</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">top -Hp 进程号</div></pre></td></tr></table></figure>
+<h3 id="pstree查看进程号对应进程名字"><a href="#pstree查看进程号对应进程名字" class="headerlink" title="pstree查看进程号对应进程名字"></a>pstree查看进程号对应进程名字</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pstree -p 进程号</div></pre></td></tr></table></figure>
+<h3 id="查看路由表"><a href="#查看路由表" class="headerlink" title="查看路由表"></a>查看路由表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">netstat -r</div></pre></td></tr></table></figure>
+<h2 id="文件目录操作"><a href="#文件目录操作" class="headerlink" title="文件目录操作"></a>文件目录操作</h2><p>###常见的rm,touch,mkdir,mv,cp,cd,mv,</p>
+<p>###查找a开头的文件并删除<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">find / -name a* |xargs rm -rf</div></pre></td></tr></table></figure></p>
+<p>###查找所有fis开头的配置文件并将其中配置文件的localhost替换为127.0.0.1（常用于配环境）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">find -name fis* ./  | xargs sed -i &quot;%s/localhost/127.0.0.1/g&quot;</div></pre></td></tr></table></figure></p>
+<p>###将a,b,c移动到d,将非某文件名的文件移动到某目录下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mv a b c d</div><div class="line">mv !(a) dir</div></pre></td></tr></table></figure></p>
+<p>###sed替换文件名中内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">sed &apos;2s/localhost/127.0.0.1/g&apos; 12.txt</div><div class="line">2表示第2行</div><div class="line">s/表示替换</div><div class="line">1,n表示1,n行</div><div class="line">g表示全局替换</div></pre></td></tr></table></figure></p>
+<p>###查找a开头的文件并删除<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">find / -name a* |xargs rm -rf</div></pre></td></tr></table></figure></p>
+<h3 id="head-查看文件的前几行"><a href="#head-查看文件的前几行" class="headerlink" title="head 查看文件的前几行"></a>head 查看文件的前几行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">find 10 1.log</div></pre></td></tr></table></figure>
+<h3 id="tail-查看文件的末几行"><a href="#tail-查看文件的末几行" class="headerlink" title="tail 查看文件的末几行"></a>tail 查看文件的末几行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tail 10 1.log</div></pre></td></tr></table></figure>
+<h3 id="tailf-查看最后匹配的内容，并且一直阻塞等待日志文件的更新，常用于日志的调试查看"><a href="#tailf-查看最后匹配的内容，并且一直阻塞等待日志文件的更新，常用于日志的调试查看" class="headerlink" title="tailf 查看最后匹配的内容，并且一直阻塞等待日志文件的更新，常用于日志的调试查看"></a>tailf 查看最后匹配的内容，并且一直阻塞等待日志文件的更新，常用于日志的调试查看</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tailf 123.log | grep gointhis</div></pre></td></tr></table></figure>
+<h3 id="grep非常快，sunday算法实现做了底层优化，比KMP易理解"><a href="#grep非常快，sunday算法实现做了底层优化，比KMP易理解" class="headerlink" title="grep非常快，sunday算法实现做了底层优化，比KMP易理解"></a>grep非常快，sunday算法实现做了底层优化，比KMP易理解</h3><h3 id="grep在多个文件中查找："><a href="#grep在多个文件中查找：" class="headerlink" title="grep在多个文件中查找：("></a>grep在多个文件中查找：(</h3><pre><code class="shell">grep &quot;match_pattern&quot; file_1 file_2 file_3 ...
+</code></pre>
+<pre><code class="shell">grep &quot;text&quot; -n file_name
+</code></pre>
+<h2 id="系统与负载"><a href="#系统与负载" class="headerlink" title="系统与负载"></a>系统与负载</h2><p>查询系统具有多少个逻辑核：cat /proc/cpuinfo | grep “processor” | wc -l<br>查询系统CPU的物理核数：cat /proc/cpuinfo | grep “cpu cores” | uniq<br>查询系统CPU是否启用超线程：cat /proc/cpuinfo | grep -e “cpu cores”  -e “siblings” | sort | uniq<br>查询系统CPU的个数：cat /proc/cpuinfo | grep “physical id” | sort | uniq | wc -l</p>
+<h2 id="压缩-解压缩"><a href="#压缩-解压缩" class="headerlink" title="压缩-解压缩"></a>压缩-解压缩</h2><p><em>.tar 用 tar –xvf 解压
+</em>.tar.gz和*.tgz 用 tar –xzf 解压</p>
+<h3 id="zip压缩与解压缩"><a href="#zip压缩与解压缩" class="headerlink" title="zip压缩与解压缩"></a>zip压缩与解压缩</h3><p>zip -r filename.zip dir/file<br>unzip filename</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/16/redis持久化之AOF&RDB/" itemprop="url">
                   redis持久化之RDB与AOF
                 </a>
@@ -1521,128 +1673,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/06/09/Leetcode经典题-求数据流的中位数/" itemprop="url">
-                  求数据流的中位数
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-09T21:41:56+08:00" content="2016-06-09">
-              2016-06-09
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/06/09/Leetcode经典题-求数据流的中位数/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/09/Leetcode经典题-求数据流的中位数/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>假设有一连续的输入数据流，设计尽可能时间空间尽可能<br>高效的算法来求得中位数-Leetcode经典题</p>
-<h2 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h2><p>主体思想，构造两个堆，一个大根堆，一个小根堆，<br>插入数据时保持两个堆的平衡，这样中位数取堆定即可</p>
-<p>以下算法实现了大根堆和小根堆</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iterator&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="keyword">class</span> getMidOnline&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">	<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; v1,v2;</div><div class="line">	getMidOnline()&#123;</div><div class="line">		v1.push_back(<span class="number">-1</span>);</div><div class="line">		v2.push_back(<span class="number">-1</span>);</div><div class="line">	&#125;	</div><div class="line">	<span class="function"><span class="keyword">int</span> <span class="title">get</span><span class="params">()</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> value)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span>;</div><div class="line"><span class="keyword">private</span>: </div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">adjustDown</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> k,<span class="keyword">int</span> len)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">adjustUp</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> pos)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">adjustDown2</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> k,<span class="keyword">int</span> len)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">adjustUp2</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> pos)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">bulidHeap</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> len)</span></span>;	</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">insertSmall</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> value,<span class="keyword">int</span> flag)</span></span>;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">headSort</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> len)</span></span>;</div><div class="line"></div><div class="line">&#125;;</div><div class="line"><span class="keyword">void</span> getMidOnline::adjustDown(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> k,<span class="keyword">int</span> len)<span class="comment">//k表示要调整的位置，len表示堆大小</span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i=k*<span class="number">2</span>;</div><div class="line">	<span class="keyword">while</span>(i&lt;=len)&#123;</div><div class="line">		<span class="keyword">if</span>(i&lt;len&amp;&amp;v[i]&lt;v[i+<span class="number">1</span>])++i;</div><div class="line">		<span class="keyword">if</span>(v[i]&gt;v[i/<span class="number">2</span>])</div><div class="line">			swap(v[i],v[i/<span class="number">2</span>]);</div><div class="line">		i = <span class="number">2</span>*i;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::adjustUp(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> pos)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span>  i=pos;</div><div class="line">	<span class="keyword">while</span>(i&gt;<span class="number">1</span>&amp;&amp;v[i]&gt;v[i/<span class="number">2</span>])</div><div class="line">	&#123;</div><div class="line">		swap(v[i],v[i/<span class="number">2</span>]);</div><div class="line">		i=i/<span class="number">2</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::adjustDown2(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> k,<span class="keyword">int</span> len)<span class="comment">//k表示要调整的位置，len表示堆大小</span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i=k*<span class="number">2</span>;</div><div class="line">	<span class="keyword">while</span>(i&lt;=len)&#123;</div><div class="line">		<span class="keyword">if</span>(i&lt;len&amp;&amp;v[i]&gt;v[i+<span class="number">1</span>])++i;</div><div class="line">		<span class="keyword">if</span>(v[i]&lt;v[i/<span class="number">2</span>])</div><div class="line">			swap(v[i],v[i/<span class="number">2</span>]);</div><div class="line">		i = <span class="number">2</span>*i;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::adjustUp2(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> pos)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span>  i=pos;</div><div class="line">	<span class="keyword">while</span>(i&gt;<span class="number">1</span>&amp;&amp;v[i]&lt;v[i/<span class="number">2</span>])</div><div class="line">	&#123;</div><div class="line">		swap(v[i],v[i/<span class="number">2</span>]);</div><div class="line">		i=i/<span class="number">2</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::bulidHeap(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> len)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=len/<span class="number">2</span>;i&gt;<span class="number">0</span>;--i)</div><div class="line">    	adjustDown(v,i,len);</div><div class="line">&#125; </div><div class="line"><span class="keyword">void</span> getMidOnline::insertSmall(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> value,<span class="keyword">int</span> flag)</div><div class="line">&#123;</div><div class="line">	v.push_back(value);</div><div class="line">	<span class="keyword">if</span>(flag==<span class="number">2</span>)adjustUp2(v,v.size()<span class="number">-1</span>);		</div><div class="line">	<span class="keyword">else</span> adjustUp(v,v.size()<span class="number">-1</span>);	</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::headSort(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;v,<span class="keyword">int</span> len)<span class="comment">//总体时间度O(nlogn)</span></div><div class="line">&#123;</div><div class="line">	bulidHeap(v,len);  <span class="comment">//时间复杂度O(nlogn)</span></div><div class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=len;i&gt;<span class="number">1</span>;--i)&#123; </div><div class="line">		swap(v[<span class="number">1</span>],v[i]);</div><div class="line">		adjustDown(v,<span class="number">1</span>,i<span class="number">-1</span>);<span class="comment">//时间复杂度O(logn)</span></div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">/************************************************</span></div><div class="line">*n1和n2表示两个堆的容量，新插入的数据分为三种情况</div><div class="line">*[d1-?,d1] [d1,d2], [d2,d2+?]三个区间</div><div class="line">*根据堆的大小比较以及新的数所在区间去调整堆</div><div class="line">*************************************************/</div><div class="line"><span class="keyword">void</span> getMidOnline::insert(<span class="keyword">int</span> value)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> n1=v1.size(),n2=v2.size();</div><div class="line">	<span class="keyword">if</span>(n1==<span class="number">1</span>)&#123; v1.push_back(value);<span class="keyword">return</span>;&#125;</div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(n2==<span class="number">1</span>)&#123;v2.push_back(value);<span class="keyword">return</span>;&#125;</div><div class="line">	<span class="keyword">if</span>(n1==<span class="number">2</span>&amp;&amp;n2==<span class="number">2</span>)</div><div class="line">		<span class="keyword">if</span>(v1[<span class="number">1</span>]&gt;v2[<span class="number">1</span>])swap(v1[<span class="number">1</span>],v2[<span class="number">1</span>]);</div><div class="line">	<span class="keyword">int</span> flag=<span class="number">-1</span>;</div><div class="line">	<span class="keyword">if</span>(value&gt;v2[<span class="number">1</span>])flag=<span class="number">2</span>;</div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(value&lt;v1[<span class="number">1</span>])flag=<span class="number">0</span>;</div><div class="line">	<span class="keyword">else</span> flag =<span class="number">1</span>;</div><div class="line">	<span class="keyword">if</span>(n1&lt;=n2)&#123;</div><div class="line">		<span class="keyword">switch</span>(flag)&#123;</div><div class="line">			<span class="keyword">case</span> <span class="number">0</span>:</div><div class="line">			<span class="keyword">case</span> <span class="number">1</span>:  insertSmall(v1,value,<span class="number">1</span>);<span class="keyword">break</span>;</div><div class="line">			<span class="keyword">case</span> <span class="number">2</span>: &#123;</div><div class="line">				insertSmall(v1,v2[<span class="number">1</span>],<span class="number">1</span>);</div><div class="line">			 	v2[<span class="number">1</span>]=value;</div><div class="line">			 	adjustDown2(v2,<span class="number">1</span>,v2.size()<span class="number">-1</span>);</div><div class="line">			 &#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> &#123;</div><div class="line">		<span class="keyword">switch</span>(flag)&#123;</div><div class="line">			<span class="keyword">case</span> <span class="number">1</span>:</div><div class="line">			<span class="keyword">case</span> <span class="number">2</span>:  insertSmall(v2,value,<span class="number">2</span>);<span class="keyword">break</span>;</div><div class="line">			<span class="keyword">case</span> <span class="number">0</span>:  &#123;</div><div class="line">				insertSmall(v2,v1[<span class="number">1</span>],<span class="number">2</span>);</div><div class="line">			 	v1[<span class="number">1</span>]=value;</div><div class="line">			 	adjustDown(v1,<span class="number">1</span>,v1.size()<span class="number">-1</span>);</div><div class="line">			 &#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">int</span> getMidOnline::get()</div><div class="line">&#123;</div><div class="line">	<span class="keyword">return</span> v1[<span class="number">1</span>];</div><div class="line">&#125;</div><div class="line"><span class="keyword">void</span> getMidOnline::print()</div><div class="line">&#123;</div><div class="line">    <span class="keyword">typedef</span> ostream_iterator&lt;<span class="keyword">int</span>&gt; osint;</div><div class="line">    copy(v1.begin()+<span class="number">1</span>,v1.end(),osint(<span class="built_in">cout</span>,<span class="string">" "</span>));</div><div class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">    copy(v2.begin()+<span class="number">1</span>,v2.end(),osint(<span class="built_in">cout</span>,<span class="string">" "</span>));</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line"></div><div class="line">	<span class="keyword">int</span> val;</div><div class="line">	getMidOnline s;</div><div class="line">	<span class="keyword">while</span>(<span class="number">1</span>)&#123;</div><div class="line">		<span class="keyword">int</span> val;</div><div class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="built_in">endl</span>&lt;&lt;<span class="string">"input:"</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">		<span class="built_in">cin</span>&gt;&gt;val;</div><div class="line">		s.insert(val);</div><div class="line">		</div><div class="line">		<span class="built_in">cout</span>&lt;&lt;<span class="string">"res: "</span>&lt;&lt;s.get()&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">		s.print();</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1688,7 +1718,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">22</span>
+              <span class="site-state-item-count">23</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1696,7 +1726,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

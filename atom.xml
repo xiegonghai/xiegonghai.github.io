@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-08-28T13:37:00.802Z</updated>
+  <updated>2016-08-28T15:14:13.634Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,60 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>我常用的linux命令总结</title>
+    <link href="http://yoursite.com/2016/08/01/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4-%E6%80%BB%E7%BB%93/"/>
+    <id>http://yoursite.com/2016/08/01/常用linux命令-总结/</id>
+    <published>2016-07-31T17:01:59.000Z</published>
+    <updated>2016-08-28T15:14:13.634Z</updated>
+    
+    <content type="html">&lt;p&gt;现在大部分程序员开发基本在开发机linux环境，熟悉linux能够大大的提升开发效率，这篇博客就用来持续更新自己常常使用的linux命令吧，持续更新。。。&lt;/p&gt;
+&lt;h2 id=&quot;进程与网络&quot;&gt;&lt;a href=&quot;#进程与网络&quot; class=&quot;headerlink&quot; title=&quot;进程与网络&quot;&gt;&lt;/a&gt;进程与网络&lt;/h2&gt;&lt;p&gt;###非常重要的命令netstat&lt;br&gt;常见参数&lt;br&gt;-a (all)显示所有选项，默认不显示LISTEN相关&lt;br&gt;-t (tcp)仅显示tcp相关选项&lt;br&gt;-u (udp)仅显示udp相关选项&lt;br&gt;-n 拒绝显示别名，能显示数字的全部转化成数字。&lt;br&gt;-l 仅列出有在 Listen (监听) 的服務状态&lt;/p&gt;
+&lt;p&gt;-p 显示建立相关链接的程序名&lt;br&gt;-r 显示路由信息，路由表&lt;br&gt;-e 显示扩展信息，例如uid等&lt;br&gt;-s 按各个协议进行统计&lt;br&gt;-c 每隔一个固定时间，执行该netstat命令。&lt;/p&gt;
+&lt;p&gt;提示：LISTEN和LISTENING的状态只有用-a或者-l才能看到&lt;/p&gt;
+&lt;h3 id=&quot;netstat查看redis客户端的tcp连接状态，ip以及端口号等&quot;&gt;&lt;a href=&quot;#netstat查看redis客户端的tcp连接状态，ip以及端口号等&quot; class=&quot;headerlink&quot; title=&quot;netstat查看redis客户端的tcp连接状态，ip以及端口号等&quot;&gt;&lt;/a&gt;netstat查看redis客户端的tcp连接状态，ip以及端口号等&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;netstat -nap | grep redis&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;ps命令通过进程名查看进程PID以及父进程ID-时间等&quot;&gt;&lt;a href=&quot;#ps命令通过进程名查看进程PID以及父进程ID-时间等&quot; class=&quot;headerlink&quot; title=&quot;ps命令通过进程名查看进程PID以及父进程ID,时间等&quot;&gt;&lt;/a&gt;ps命令通过进程名查看进程PID以及父进程ID,时间等&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;ps -ef | grep　php-fpm&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;-A：显示所有程序。&lt;br&gt;-f：显示UID,PPIP,C与STIME栏位。&lt;/p&gt;
+&lt;h3 id=&quot;lsof定位具体端口号是那个进程在占有-显示器进程名，进程id-协议以及状态&quot;&gt;&lt;a href=&quot;#lsof定位具体端口号是那个进程在占有-显示器进程名，进程id-协议以及状态&quot; class=&quot;headerlink&quot; title=&quot;lsof定位具体端口号是那个进程在占有,显示器进程名，进程id,协议以及状态&quot;&gt;&lt;/a&gt;lsof定位具体端口号是那个进程在占有,显示器进程名，进程id,协议以及状态&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;lsof -i:8080&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;kill-强制终止进程号为8080的进程&quot;&gt;&lt;a href=&quot;#kill-强制终止进程号为8080的进程&quot; class=&quot;headerlink&quot; title=&quot;kill 强制终止进程号为8080的进程&quot;&gt;&lt;/a&gt;kill 强制终止进程号为8080的进程&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;kill -9 8080&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;已知进程名称，杀死所有相关的程序&quot;&gt;&lt;a href=&quot;#已知进程名称，杀死所有相关的程序&quot; class=&quot;headerlink&quot; title=&quot;已知进程名称，杀死所有相关的程序&quot;&gt;&lt;/a&gt;已知进程名称，杀死所有相关的程序&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;ps -ef | grep press.php | grep -v grep | awk &amp;apos;&amp;#123;print $2&amp;#125;&amp;apos; | xargs kill -9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;``` shell&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;### pwdx 14190 查看进程id对应进程程序所在目录&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;``` shell&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;pwdx 14190&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;proc-14190-查看进程id对应运行中的进程的信息&quot;&gt;&lt;a href=&quot;#proc-14190-查看进程id对应运行中的进程的信息&quot; class=&quot;headerlink&quot; title=&quot;/proc/14190 查看进程id对应运行中的进程的信息&quot;&gt;&lt;/a&gt;/proc/14190 查看进程id对应运行中的进程的信息&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;ls -l /proc/14190&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;有关运行中的进程的信息&lt;/p&gt;
+&lt;p&gt;/proc 文件系统可以用于获取运行中的进程的信息。在/proc 中有一些编号的子目录。每个编号的目录对应一个进程id (PID)。这样，每一个运行中的进程/proc 中都有一个用它的PID 命名的目录。这些子目录中包含可以提供有关进程的状态和环境的重要细节信息的文件。让我们试着查找一个运行中的进程。&lt;/p&gt;
+&lt;h3 id=&quot;top-查看系统负载，cpu，内存使用，下面只查单进程状态&quot;&gt;&lt;a href=&quot;#top-查看系统负载，cpu，内存使用，下面只查单进程状态&quot; class=&quot;headerlink&quot; title=&quot;top 查看系统负载，cpu，内存使用，下面只查单进程状态&quot;&gt;&lt;/a&gt;top 查看系统负载，cpu，内存使用，下面只查单进程状态&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;top -Hp 进程号&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;pstree查看进程号对应进程名字&quot;&gt;&lt;a href=&quot;#pstree查看进程号对应进程名字&quot; class=&quot;headerlink&quot; title=&quot;pstree查看进程号对应进程名字&quot;&gt;&lt;/a&gt;pstree查看进程号对应进程名字&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;pstree -p 进程号&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;查看路由表&quot;&gt;&lt;a href=&quot;#查看路由表&quot; class=&quot;headerlink&quot; title=&quot;查看路由表&quot;&gt;&lt;/a&gt;查看路由表&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;netstat -r&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;文件目录操作&quot;&gt;&lt;a href=&quot;#文件目录操作&quot; class=&quot;headerlink&quot; title=&quot;文件目录操作&quot;&gt;&lt;/a&gt;文件目录操作&lt;/h2&gt;&lt;p&gt;###常见的rm,touch,mkdir,mv,cp,cd,mv,&lt;/p&gt;
+&lt;p&gt;###查找a开头的文件并删除&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;find / -name a* |xargs rm -rf&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;###查找所有fis开头的配置文件并将其中配置文件的localhost替换为127.0.0.1（常用于配环境）&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;find -name fis* ./  | xargs sed -i &amp;quot;%s/localhost/127.0.0.1/g&amp;quot;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;###将a,b,c移动到d,将非某文件名的文件移动到某目录下&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;mv a b c d&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;mv !(a) dir&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;###sed替换文件名中内容&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;sed &amp;apos;2s/localhost/127.0.0.1/g&amp;apos; 12.txt&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2表示第2行&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;s/表示替换&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;1,n表示1,n行&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;g表示全局替换&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;###查找a开头的文件并删除&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;find / -name a* |xargs rm -rf&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;h3 id=&quot;head-查看文件的前几行&quot;&gt;&lt;a href=&quot;#head-查看文件的前几行&quot; class=&quot;headerlink&quot; title=&quot;head 查看文件的前几行&quot;&gt;&lt;/a&gt;head 查看文件的前几行&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;find 10 1.log&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;tail-查看文件的末几行&quot;&gt;&lt;a href=&quot;#tail-查看文件的末几行&quot; class=&quot;headerlink&quot; title=&quot;tail 查看文件的末几行&quot;&gt;&lt;/a&gt;tail 查看文件的末几行&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;tail 10 1.log&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;tailf-查看最后匹配的内容，并且一直阻塞等待日志文件的更新，常用于日志的调试查看&quot;&gt;&lt;a href=&quot;#tailf-查看最后匹配的内容，并且一直阻塞等待日志文件的更新，常用于日志的调试查看&quot; class=&quot;headerlink&quot; title=&quot;tailf 查看最后匹配的内容，并且一直阻塞等待日志文件的更新，常用于日志的调试查看&quot;&gt;&lt;/a&gt;tailf 查看最后匹配的内容，并且一直阻塞等待日志文件的更新，常用于日志的调试查看&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;tailf 123.log | grep gointhis&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;grep非常快，sunday算法实现做了底层优化，比KMP易理解&quot;&gt;&lt;a href=&quot;#grep非常快，sunday算法实现做了底层优化，比KMP易理解&quot; class=&quot;headerlink&quot; title=&quot;grep非常快，sunday算法实现做了底层优化，比KMP易理解&quot;&gt;&lt;/a&gt;grep非常快，sunday算法实现做了底层优化，比KMP易理解&lt;/h3&gt;&lt;h3 id=&quot;grep在多个文件中查找：&quot;&gt;&lt;a href=&quot;#grep在多个文件中查找：&quot; class=&quot;headerlink&quot; title=&quot;grep在多个文件中查找：(&quot;&gt;&lt;/a&gt;grep在多个文件中查找：(&lt;/h3&gt;&lt;pre&gt;&lt;code class=&quot;shell&quot;&gt;grep &amp;quot;match_pattern&amp;quot; file_1 file_2 file_3 ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&quot;shell&quot;&gt;grep &amp;quot;text&amp;quot; -n file_name
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;系统与负载&quot;&gt;&lt;a href=&quot;#系统与负载&quot; class=&quot;headerlink&quot; title=&quot;系统与负载&quot;&gt;&lt;/a&gt;系统与负载&lt;/h2&gt;&lt;p&gt;查询系统具有多少个逻辑核：cat /proc/cpuinfo | grep “processor” | wc -l&lt;br&gt;查询系统CPU的物理核数：cat /proc/cpuinfo | grep “cpu cores” | uniq&lt;br&gt;查询系统CPU是否启用超线程：cat /proc/cpuinfo | grep -e “cpu cores”  -e “siblings” | sort | uniq&lt;br&gt;查询系统CPU的个数：cat /proc/cpuinfo | grep “physical id” | sort | uniq | wc -l&lt;/p&gt;
+&lt;h2 id=&quot;压缩-解压缩&quot;&gt;&lt;a href=&quot;#压缩-解压缩&quot; class=&quot;headerlink&quot; title=&quot;压缩-解压缩&quot;&gt;&lt;/a&gt;压缩-解压缩&lt;/h2&gt;&lt;p&gt;&lt;em&gt;.tar 用 tar –xvf 解压
+&lt;/em&gt;.tar.gz和*.tgz 用 tar –xzf 解压&lt;/p&gt;
+&lt;h3 id=&quot;zip压缩与解压缩&quot;&gt;&lt;a href=&quot;#zip压缩与解压缩&quot; class=&quot;headerlink&quot; title=&quot;zip压缩与解压缩&quot;&gt;&lt;/a&gt;zip压缩与解压缩&lt;/h3&gt;&lt;p&gt;zip -r filename.zip dir/file&lt;br&gt;unzip filename&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;现在大部分程序员开发基本在开发机linux环境，熟悉linux能够大大的提升开发效率，这篇博客就用来持续更新自己常常使用的linux命令吧，持续更新。。。&lt;/p&gt;
+&lt;h2 id=&quot;进程与网络&quot;&gt;&lt;a href=&quot;#进程与网络&quot; class=&quot;headerlink&quot; titl
+    
+    </summary>
+    
+      <category term="Linux" scheme="http://yoursite.com/categories/Linux/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>redis持久化之RDB与AOF</title>
@@ -194,7 +248,7 @@
     <link href="http://yoursite.com/2016/06/29/%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
     <id>http://yoursite.com/2016/06/29/程序性能优化/</id>
     <published>2016-06-29T12:20:59.000Z</published>
-    <updated>2016-08-28T13:47:45.838Z</updated>
+    <updated>2016-08-28T13:51:56.003Z</updated>
     
     <content type="html">&lt;h1 id=&quot;程序性能优化&quot;&gt;&lt;a href=&quot;#程序性能优化&quot; class=&quot;headerlink&quot; title=&quot;程序性能优化&quot;&gt;&lt;/a&gt;程序性能优化&lt;/h1&gt;&lt;p&gt; 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。&lt;/p&gt;
 &lt;h2 id=&quot;是否可优化&quot;&gt;&lt;a href=&quot;#是否可优化&quot; class=&quot;headerlink&quot; title=&quot;是否可优化&quot;&gt;&lt;/a&gt;是否可优化&lt;/h2&gt;&lt;p&gt;思考&lt;br&gt;&lt;figure class=&quot;highlight c++&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;swap&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; *xp, &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; *yp)&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*xp = *xp + *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*yp = *xp - *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	*xp = *xp - *yp;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -264,7 +318,7 @@
     <link href="http://yoursite.com/2016/06/16/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E6%80%BB%E7%BB%93/"/>
     <id>http://yoursite.com/2016/06/16/网络爬虫总结/</id>
     <published>2016-06-16T02:01:59.000Z</published>
-    <updated>2016-08-28T13:48:01.611Z</updated>
+    <updated>2016-08-28T13:51:52.793Z</updated>
     
     <content type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;在校期间由于到时I数据需求以及自己偶尔倒腾，写过一段时间爬虫，爬过csdn博客,天涯论坛,sina博客,sina微公益，学校就业系统数据(当时基本把全院就业数据爬下来了，包括每个人的身份证家庭住址联系方式就业去向等信息)等等,也爬过主流网站的信息当时想着做了一个粗糙的小型搜索引擎.在实习阶段写过一段时间爬虫系统，此时就主要用的scrapy框架了，爬取了7个主流手游网站游戏资讯论坛的信息.一直没有空去总结下,趁着有空总结下基本技巧&lt;/p&gt;
 &lt;h2 id=&quot;关于爬取的三个方面&quot;&gt;&lt;a href=&quot;#关于爬取的三个方面&quot; class=&quot;headerlink&quot; title=&quot;关于爬取的三个方面&quot;&gt;&lt;/a&gt;关于爬取的三个方面&lt;/h2&gt;&lt;h3 id=&quot;网络爬虫归根结底是如何拿到服务器数据&quot;&gt;&lt;a href=&quot;#网络爬虫归根结底是如何拿到服务器数据&quot; class=&quot;headerlink&quot; title=&quot;网络爬虫归根结底是如何拿到服务器数据&quot;&gt;&lt;/a&gt;网络爬虫归根结底是如何拿到服务器数据&lt;/h3&gt;&lt;p&gt;在你分析完目标站点的需要的数据之后,思考如何爬取过程自动化，一般站点的数据组织方式都是有规律，比如csdn会有一个所有博客的一个汇总存档页，如果你需要爬取所有的页面博客，你需要分析第1页到第n页的页面连接url规律,然后依次请求每页数据，得到每个页的几十个博客url，下层进行每个url的深入爬取。&lt;/p&gt;
@@ -333,7 +387,7 @@
     <link href="http://yoursite.com/2016/06/11/%E4%B8%80%E4%B8%AA%E5%B0%8FC++%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%A3%80%E6%B5%8B/"/>
     <id>http://yoursite.com/2016/06/11/一个小C++程序内存泄漏检测/</id>
     <published>2016-06-10T17:01:59.000Z</published>
-    <updated>2016-08-28T13:50:48.448Z</updated>
+    <updated>2016-08-28T13:51:53.936Z</updated>
     
     <content type="html">&lt;p&gt;c++一般采用malloc/free或new/delete来动态分配和释放内存&lt;br&gt;二者有何不同？malloc/free是C/C++语言的标准库函数，new/delete是C++的运算符&lt;br&gt;malloc/free以及new/delete一般是配对出现，如果malloc后没有free，或者new后没有delete都将造成内存泄漏&lt;/p&gt;
 &lt;p&gt;##一个小例子来说明内存泄漏&lt;br&gt;例子1&lt;br&gt;&lt;figure class=&quot;highlight c++&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#&lt;span class=&quot;meta-keyword&quot;&gt;include&lt;/span&gt;&lt;span class=&quot;meta-string&quot;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; *p = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;[&lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -672,7 +726,7 @@
     <link href="http://yoursite.com/2016/03/19/tinyhttpd-%E8%BD%BB%E9%87%8F%E7%BA%A7httpServer%E7%9A%84%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0/"/>
     <id>http://yoursite.com/2016/03/19/tinyhttpd-轻量级httpServer的源码实现/</id>
     <published>2016-03-19T07:41:56.000Z</published>
-    <updated>2016-08-28T13:48:40.513Z</updated>
+    <updated>2016-08-28T13:51:54.949Z</updated>
     
     <content type="html">&lt;p&gt;#tinyhttpd-轻量级httpServer的源码实现&lt;/p&gt;
 &lt;p&gt;tinyhttpd是一个超轻量型Http Server，使用C语言开发，全部代码只有500、600行，附带一个简单的Client，可以通过阅读这段代码理解一个Http Server的本质。&lt;/p&gt;
@@ -722,38 +776,6 @@
     </summary>
     
       <category term="Data structure and Algorithm" scheme="http://yoursite.com/categories/Data-structure-and-Algorithm/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Hexo博客搭建</title>
-    <link href="http://yoursite.com/2016/03/01/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/"/>
-    <id>http://yoursite.com/2016/03/01/hexo博客搭建/</id>
-    <published>2016-03-01T07:41:56.000Z</published>
-    <updated>2016-08-07T16:16:11.486Z</updated>
-    
-    <content type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;近来想着搭建一个基于github的博客站点,之前在csdn的博客频繁性恶心弹窗广告，后面虽说装adblock自己是看不到了，但别人浏览还是会有的，大概了解了下，比较好的博客模板有octopress,wordpress,hexo几种，octopress还不错，开始搭建之后，由于版本更新匹配的原因，总是会有小错误，加之对ruby不熟，于是切换到hexo来搭建&lt;/p&gt;
-&lt;h2 id=&quot;搭建教程&quot;&gt;&lt;a href=&quot;#搭建教程&quot; class=&quot;headerlink&quot; title=&quot;搭建教程&quot;&gt;&lt;/a&gt;搭建教程&lt;/h2&gt;&lt;p&gt;主要参考&lt;a href=&quot;http://www.mashiro.io/2015/09/hexo-guide-2/，写的很详细，就不重复&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.mashiro.io/2015/09/hexo-guide-2/，写的很详细，就不重复&lt;/a&gt; 造轮子了，仔细看完ok了&lt;/p&gt;
-&lt;h3 id=&quot;安装Git&quot;&gt;&lt;a href=&quot;#安装Git&quot; class=&quot;headerlink&quot; title=&quot;安装Git&quot;&gt;&lt;/a&gt;安装Git&lt;/h3&gt;&lt;p&gt;去 Git 官网下载并安装即可.&lt;/p&gt;
-&lt;h3 id=&quot;安装Node-Js&quot;&gt;&lt;a href=&quot;#安装Node-Js&quot; class=&quot;headerlink&quot; title=&quot;安装Node.Js&quot;&gt;&lt;/a&gt;安装Node.Js&lt;/h3&gt;&lt;p&gt;去NodeJs 官网下载并安装即可.&lt;br&gt;注意: 尽量使用默认路径, 以保证环境变量的自动配置.&lt;/p&gt;
-&lt;h3 id=&quot;安装Hexo&quot;&gt;&lt;a href=&quot;#安装Hexo&quot; class=&quot;headerlink&quot; title=&quot;安装Hexo&quot;&gt;&lt;/a&gt;安装Hexo&lt;/h3&gt;&lt;p&gt;使用npm命令即可直接安装 (可以直接在屏幕任意地方直接右键: Git Bash Here)&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;npm install -g hexo&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;静静等待安装完毕即可.&lt;/p&gt;
-&lt;h3 id=&quot;创建Hexo目录&quot;&gt;&lt;a href=&quot;#创建Hexo目录&quot; class=&quot;headerlink&quot; title=&quot;创建Hexo目录&quot;&gt;&lt;/a&gt;创建Hexo目录&lt;/h3&gt;&lt;p&gt;目录可以再随意地方创建 (注:尽量全英文路径 避免不必要的问题)&lt;br&gt;EG: C:\Users\Xuning\Documents\Hexo (这是我的本地路径)&lt;br&gt;现在进入Hexo目录内在里面右键选择: Git Bash Here&lt;/p&gt;
-&lt;p&gt;Hexo 会自动生成建站所需要的文件&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;hexo init&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;npm 会自动安装依赖环境&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;npm install&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;h3 id=&quot;运行&quot;&gt;&lt;a href=&quot;#运行&quot; class=&quot;headerlink&quot; title=&quot;运行&quot;&gt;&lt;/a&gt;运行&lt;/h3&gt;&lt;p&gt;Hexo 运行方法很简单只需要一条命令&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;hexo server&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;打开浏览器访问 &lt;a href=&quot;http://localhost:4000&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://localhost:4000&lt;/a&gt; 看看效果吧 如下所示&lt;/p&gt;
-&lt;h2 id=&quot;配置主题以及额外功能&quot;&gt;&lt;a href=&quot;#配置主题以及额外功能&quot; class=&quot;headerlink&quot; title=&quot;配置主题以及额外功能&quot;&gt;&lt;/a&gt;配置主题以及额外功能&lt;/h2&gt;&lt;p&gt;可从此看到一些常用主题的介绍&lt;br&gt;&lt;a href=&quot;https://www.zhihu.com/question/24422335&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://www.zhihu.com/question/24422335&lt;/a&gt;&lt;br&gt;next主题配置：&lt;br&gt;&lt;a href=&quot;http://theme-next.iissnan.com/theme-settings.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://theme-next.iissnan.com/theme-settings.html&lt;/a&gt;&lt;br&gt;分类和标签&lt;br&gt;&lt;a href=&quot;https://hexo.io/zh-cn/docs/front-matter.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://hexo.io/zh-cn/docs/front-matter.html&lt;/a&gt;&lt;br&gt;hexo and github详细教程&lt;br&gt;&lt;a href=&quot;http://www.mashiro.io/2015/09/hexo-guide-5/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.mashiro.io/2015/09/hexo-guide-5/&lt;/a&gt;&lt;br&gt;评论搭建&lt;br&gt;&lt;a href=&quot;http://www.arao.me/2015/hexo-next-theme-optimize-base/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.arao.me/2015/hexo-next-theme-optimize-base/&lt;/a&gt;&lt;br&gt;常见问题&lt;br&gt;&lt;a href=&quot;http://theme-next.iissnan.com/faqs.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://theme-next.iissnan.com/faqs.html&lt;/a&gt;&lt;br&gt;添加微信打赏分享&lt;br&gt;&lt;a href=&quot;http://www.tuicool.com/articles/NVzEVz7&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.tuicool.com/articles/NVzEVz7&lt;/a&gt;&lt;br&gt;添加社交登录评论功能&lt;br&gt;&lt;a href=&quot;https://github.com/iissnan/hexo-theme-next/pull/660&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/iissnan/hexo-theme-next/pull/660&lt;/a&gt;&lt;br&gt;添加社交分享按钮&lt;br&gt;&lt;a href=&quot;http://www.jiathis.com/index2(代码加到具体主题的post.swg里面&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.jiathis.com/index2(代码加到具体主题的post.swg里面&lt;/a&gt;)&lt;br&gt;或百度分享里找代码&lt;br&gt;字体大小设置&lt;br&gt;&lt;a href=&quot;https://github.com/iissnan/hexo-theme-next/issues/400&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/iissnan/hexo-theme-next/issues/400&lt;/a&gt;&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;近来想着搭建一个基于github的博客站点,之前在csdn的博客频繁性恶心弹窗广告，后面虽说装adblock自己是看不到了，但别人浏览还是会
-    
-    </summary>
-    
-      <category term="博客" scheme="http://yoursite.com/categories/%E5%8D%9A%E5%AE%A2/"/>
     
     
   </entry>
