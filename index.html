@@ -331,7 +331,7 @@
         
           
             <p>现在大部分程序员开发基本在开发机linux环境，熟悉linux能够大大的提升开发效率，这篇博客就用来持续更新自己常常使用的linux命令吧，持续更新。。。</p>
-<h2 id="进程与网络"><a href="#进程与网络" class="headerlink" title="进程与网络"></a>进程与网络</h2><p>###非常重要的命令netstat<br>常见参数<br>-a (all)显示所有选项，默认不显示LISTEN相关<br>-t (tcp)仅显示tcp相关选项<br>-u (udp)仅显示udp相关选项<br>-n 拒绝显示别名，能显示数字的全部转化成数字。<br>-l 仅列出有在 Listen (监听) 的服務状态</p>
+<h2 id="进程与网络"><a href="#进程与网络" class="headerlink" title="进程与网络"></a>进程与网络</h2><h3 id="非常重要的命令netstat"><a href="#非常重要的命令netstat" class="headerlink" title="非常重要的命令netstat"></a>非常重要的命令netstat</h3><p>常见参数<br>-a (all)显示所有选项，默认不显示LISTEN相关<br>-t (tcp)仅显示tcp相关选项<br>-u (udp)仅显示udp相关选项<br>-n 拒绝显示别名，能显示数字的全部转化成数字。<br>-l 仅列出有在 Listen (监听) 的服務状态</p>
 <p>-p 显示建立相关链接的程序名<br>-r 显示路由信息，路由表<br>-e 显示扩展信息，例如uid等<br>-s 按各个协议进行统计<br>-c 每隔一个固定时间，执行该netstat命令。</p>
 <p>提示：LISTEN和LISTENING的状态只有用-a或者-l才能看到</p>
 <h3 id="netstat查看redis客户端的tcp连接状态，ip以及端口号等"><a href="#netstat查看redis客户端的tcp连接状态，ip以及端口号等" class="headerlink" title="netstat查看redis客户端的tcp连接状态，ip以及端口号等"></a>netstat查看redis客户端的tcp连接状态，ip以及端口号等</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">netstat -nap | grep redis</div></pre></td></tr></table></figure>
