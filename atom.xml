@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-08-28T15:39:53.220Z</updated>
+  <updated>2016-08-28T15:40:44.722Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2016/08/01/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4-%E6%80%BB%E7%BB%93/"/>
     <id>http://yoursite.com/2016/08/01/常用linux命令-总结/</id>
     <published>2016-07-31T17:01:59.000Z</published>
-    <updated>2016-08-28T15:39:53.220Z</updated>
+    <updated>2016-08-28T15:40:44.722Z</updated>
     
     <content type="html">&lt;p&gt;现在大部分程序员开发基本在开发机linux环境，熟悉linux能够大大的提升开发效率，这篇博客就用来持续更新自己常常使用的linux命令吧，持续更新。。。&lt;/p&gt;
 &lt;h2 id=&quot;进程与网络&quot;&gt;&lt;a href=&quot;#进程与网络&quot; class=&quot;headerlink&quot; title=&quot;进程与网络&quot;&gt;&lt;/a&gt;进程与网络&lt;/h2&gt;&lt;h3 id=&quot;非常重要的命令netstat&quot;&gt;&lt;a href=&quot;#非常重要的命令netstat&quot; class=&quot;headerlink&quot; title=&quot;非常重要的命令netstat&quot;&gt;&lt;/a&gt;非常重要的命令netstat&lt;/h3&gt;&lt;p&gt;常见参数&lt;br&gt;-a (all)显示所有选项，默认不显示LISTEN相关&lt;br&gt;-t (tcp)仅显示tcp相关选项&lt;br&gt;-u (udp)仅显示udp相关选项&lt;br&gt;-n 拒绝显示别名，能显示数字的全部转化成数字。&lt;br&gt;-l 仅列出有在 Listen (监听) 的服務状态&lt;/p&gt;
