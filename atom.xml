@@ -4,9 +4,9 @@
   <subtitle>梦想还是要有的</subtitle>
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://yoursite.com/"/>
+  <link href="https://yoursite.com/"/>
   <updated>2016-08-28T15:40:44.722Z</updated>
-  <id>http://yoursite.com/</id>
+  <id>https://yoursite.com/</id>
   
   <author>
     <name>xiegonghai</name>
@@ -17,8 +17,8 @@
   
   <entry>
     <title>我常用的linux命令总结</title>
-    <link href="http://yoursite.com/2016/08/01/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4-%E6%80%BB%E7%BB%93/"/>
-    <id>http://yoursite.com/2016/08/01/常用linux命令-总结/</id>
+    <link href="https://yoursite.com/2016/08/01/%E5%B8%B8%E7%94%A8linux%E5%91%BD%E4%BB%A4-%E6%80%BB%E7%BB%93/"/>
+    <id>https://yoursite.com/2016/08/01/常用linux命令-总结/</id>
     <published>2016-07-31T17:01:59.000Z</published>
     <updated>2016-08-28T15:40:44.722Z</updated>
     
@@ -63,15 +63,15 @@
     
     </summary>
     
-      <category term="Linux" scheme="http://yoursite.com/categories/Linux/"/>
+      <category term="Linux" scheme="https://yoursite.com/categories/Linux/"/>
     
     
   </entry>
   
   <entry>
     <title>redis持久化之RDB与AOF</title>
-    <link href="http://yoursite.com/2016/07/16/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%B9%8BAOF&RDB/"/>
-    <id>http://yoursite.com/2016/07/16/redis持久化之AOF&RDB/</id>
+    <link href="https://yoursite.com/2016/07/16/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%B9%8BAOF&RDB/"/>
+    <id>https://yoursite.com/2016/07/16/redis持久化之AOF&RDB/</id>
     <published>2016-07-16T05:38:59.000Z</published>
     <updated>2016-08-28T13:37:00.802Z</updated>
     
@@ -103,15 +103,15 @@
     
     </summary>
     
-      <category term="Redis学习" scheme="http://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
+      <category term="Redis学习" scheme="https://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
     
     
   </entry>
   
   <entry>
     <title>redis中跳表实现(vs红黑树)</title>
-    <link href="http://yoursite.com/2016/07/06/redis%E4%B8%AD%E8%B7%B3%E8%A1%A8%E5%88%86%E6%9E%90(vs%E7%BA%A2%E9%BB%91%E6%A0%91)/"/>
-    <id>http://yoursite.com/2016/07/06/redis中跳表分析(vs红黑树)/</id>
+    <link href="https://yoursite.com/2016/07/06/redis%E4%B8%AD%E8%B7%B3%E8%A1%A8%E5%88%86%E6%9E%90(vs%E7%BA%A2%E9%BB%91%E6%A0%91)/"/>
+    <id>https://yoursite.com/2016/07/06/redis中跳表分析(vs红黑树)/</id>
     <published>2016-07-06T09:38:59.000Z</published>
     <updated>2016-08-28T13:43:10.263Z</updated>
     
@@ -141,15 +141,15 @@
     
     </summary>
     
-      <category term="Redis学习" scheme="http://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
+      <category term="Redis学习" scheme="https://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
     
     
   </entry>
   
   <entry>
     <title>linux I/O复用之-select epoll</title>
-    <link href="http://yoursite.com/2016/07/05/IO%E5%A4%8D%E7%94%A8%E4%B9%8B-Select%20poll%20%E5%92%8Cepoll/"/>
-    <id>http://yoursite.com/2016/07/05/IO复用之-Select poll 和epoll/</id>
+    <link href="https://yoursite.com/2016/07/05/IO%E5%A4%8D%E7%94%A8%E4%B9%8B-Select%20poll%20%E5%92%8Cepoll/"/>
+    <id>https://yoursite.com/2016/07/05/IO复用之-Select poll 和epoll/</id>
     <published>2016-07-04T17:01:59.000Z</published>
     <updated>2016-08-28T13:43:14.446Z</updated>
     
@@ -190,15 +190,15 @@
     
     </summary>
     
-      <category term="C++与linux网络编程" scheme="http://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+      <category term="C++与linux网络编程" scheme="https://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
     
     
   </entry>
   
   <entry>
     <title>并发编程之-多进程-I/O复用-多线程</title>
-    <link href="http://yoursite.com/2016/07/03/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%A4%9A%E8%BF%9B%E7%A8%8B-IO%E5%A4%8D%E7%94%A8-%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
-    <id>http://yoursite.com/2016/07/03/并发编程-多进程-IO复用-多线程/</id>
+    <link href="https://yoursite.com/2016/07/03/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%A4%9A%E8%BF%9B%E7%A8%8B-IO%E5%A4%8D%E7%94%A8-%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    <id>https://yoursite.com/2016/07/03/并发编程-多进程-IO复用-多线程/</id>
     <published>2016-07-03T02:01:59.000Z</published>
     <updated>2016-08-28T13:43:13.426Z</updated>
     
@@ -237,15 +237,15 @@
     
     </summary>
     
-      <category term="C++与linux网络编程" scheme="http://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+      <category term="C++与linux网络编程" scheme="https://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
     
     
   </entry>
   
   <entry>
     <title>程序性能优化方法</title>
-    <link href="http://yoursite.com/2016/06/29/%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
-    <id>http://yoursite.com/2016/06/29/程序性能优化/</id>
+    <link href="https://yoursite.com/2016/06/29/%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
+    <id>https://yoursite.com/2016/06/29/程序性能优化/</id>
     <published>2016-06-29T12:20:59.000Z</published>
     <updated>2016-08-28T13:51:56.003Z</updated>
     
@@ -307,15 +307,15 @@
     
     </summary>
     
-      <category term="性能优化" scheme="http://yoursite.com/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
+      <category term="性能优化" scheme="https://yoursite.com/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
     
     
   </entry>
   
   <entry>
     <title>爬虫总结</title>
-    <link href="http://yoursite.com/2016/06/16/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E6%80%BB%E7%BB%93/"/>
-    <id>http://yoursite.com/2016/06/16/网络爬虫总结/</id>
+    <link href="https://yoursite.com/2016/06/16/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E6%80%BB%E7%BB%93/"/>
+    <id>https://yoursite.com/2016/06/16/网络爬虫总结/</id>
     <published>2016-06-16T02:01:59.000Z</published>
     <updated>2016-08-28T13:51:52.793Z</updated>
     
@@ -348,15 +348,15 @@
     
     </summary>
     
-      <category term="C++与linux网络编程" scheme="http://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+      <category term="C++与linux网络编程" scheme="https://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
     
     
   </entry>
   
   <entry>
     <title>布隆过滤器浅谈</title>
-    <link href="http://yoursite.com/2016/06/11/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8/"/>
-    <id>http://yoursite.com/2016/06/11/布隆过滤器/</id>
+    <link href="https://yoursite.com/2016/06/11/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8/"/>
+    <id>https://yoursite.com/2016/06/11/布隆过滤器/</id>
     <published>2016-06-11T12:41:56.000Z</published>
     <updated>2016-08-07T16:22:24.568Z</updated>
     
@@ -376,15 +376,15 @@
     
     </summary>
     
-      <category term="Data structure and Algorithm" scheme="http://yoursite.com/categories/Data-structure-and-Algorithm/"/>
+      <category term="Data structure and Algorithm" scheme="https://yoursite.com/categories/Data-structure-and-Algorithm/"/>
     
     
   </entry>
   
   <entry>
     <title>C++内存泄漏以及检测</title>
-    <link href="http://yoursite.com/2016/06/11/%E4%B8%80%E4%B8%AA%E5%B0%8FC++%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%A3%80%E6%B5%8B/"/>
-    <id>http://yoursite.com/2016/06/11/一个小C++程序内存泄漏检测/</id>
+    <link href="https://yoursite.com/2016/06/11/%E4%B8%80%E4%B8%AA%E5%B0%8FC++%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%A3%80%E6%B5%8B/"/>
+    <id>https://yoursite.com/2016/06/11/一个小C++程序内存泄漏检测/</id>
     <published>2016-06-10T17:01:59.000Z</published>
     <updated>2016-08-28T13:51:53.936Z</updated>
     
@@ -420,15 +420,15 @@
     
     </summary>
     
-      <category term="C++与linux网络编程" scheme="http://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+      <category term="C++与linux网络编程" scheme="https://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
     
     
   </entry>
   
   <entry>
     <title>字典树实现</title>
-    <link href="http://yoursite.com/2016/06/10/%E5%AD%97%E5%85%B8%E6%A0%91%E5%AE%9E%E7%8E%B0/"/>
-    <id>http://yoursite.com/2016/06/10/字典树实现/</id>
+    <link href="https://yoursite.com/2016/06/10/%E5%AD%97%E5%85%B8%E6%A0%91%E5%AE%9E%E7%8E%B0/"/>
+    <id>https://yoursite.com/2016/06/10/字典树实现/</id>
     <published>2016-06-10T13:41:56.000Z</published>
     <updated>2016-08-11T00:38:42.661Z</updated>
     
@@ -455,15 +455,15 @@
     
     </summary>
     
-      <category term="Data structure and Algorithm" scheme="http://yoursite.com/categories/Data-structure-and-Algorithm/"/>
+      <category term="Data structure and Algorithm" scheme="https://yoursite.com/categories/Data-structure-and-Algorithm/"/>
     
     
   </entry>
   
   <entry>
     <title>求数据流的中位数</title>
-    <link href="http://yoursite.com/2016/06/09/Leetcode%E7%BB%8F%E5%85%B8%E9%A2%98-%E6%B1%82%E6%95%B0%E6%8D%AE%E6%B5%81%E7%9A%84%E4%B8%AD%E4%BD%8D%E6%95%B0/"/>
-    <id>http://yoursite.com/2016/06/09/Leetcode经典题-求数据流的中位数/</id>
+    <link href="https://yoursite.com/2016/06/09/Leetcode%E7%BB%8F%E5%85%B8%E9%A2%98-%E6%B1%82%E6%95%B0%E6%8D%AE%E6%B5%81%E7%9A%84%E4%B8%AD%E4%BD%8D%E6%95%B0/"/>
+    <id>https://yoursite.com/2016/06/09/Leetcode经典题-求数据流的中位数/</id>
     <published>2016-06-09T13:41:56.000Z</published>
     <updated>2016-08-07T16:50:53.553Z</updated>
     
@@ -479,15 +479,15 @@
     
     </summary>
     
-      <category term="Data structure and Algorithm" scheme="http://yoursite.com/categories/Data-structure-and-Algorithm/"/>
+      <category term="Data structure and Algorithm" scheme="https://yoursite.com/categories/Data-structure-and-Algorithm/"/>
     
     
   </entry>
   
   <entry>
     <title>设计一个LRU-Cache</title>
-    <link href="http://yoursite.com/2016/06/03/%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AALRU%20Cache/"/>
-    <id>http://yoursite.com/2016/06/03/设计一个LRU Cache/</id>
+    <link href="https://yoursite.com/2016/06/03/%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AALRU%20Cache/"/>
+    <id>https://yoursite.com/2016/06/03/设计一个LRU Cache/</id>
     <published>2016-06-03T12:41:56.000Z</published>
     <updated>2016-08-07T16:22:53.784Z</updated>
     
@@ -506,15 +506,15 @@
     
     </summary>
     
-      <category term="Data structure and Algorithm" scheme="http://yoursite.com/categories/Data-structure-and-Algorithm/"/>
+      <category term="Data structure and Algorithm" scheme="https://yoursite.com/categories/Data-structure-and-Algorithm/"/>
     
     
   </entry>
   
   <entry>
     <title>linux网络socket编程(二)</title>
-    <link href="http://yoursite.com/2016/05/18/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80(%E4%BA%8C)/"/>
-    <id>http://yoursite.com/2016/05/18/网络编程基础(二)/</id>
+    <link href="https://yoursite.com/2016/05/18/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80(%E4%BA%8C)/"/>
+    <id>https://yoursite.com/2016/05/18/网络编程基础(二)/</id>
     <published>2016-05-17T17:01:59.000Z</published>
     <updated>2016-08-28T13:35:02.076Z</updated>
     
@@ -551,15 +551,15 @@
     
     </summary>
     
-      <category term="C++与linux网络编程" scheme="http://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+      <category term="C++与linux网络编程" scheme="https://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
     
     
   </entry>
   
   <entry>
     <title>redis基本数据结构总结</title>
-    <link href="http://yoursite.com/2016/05/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93/"/>
-    <id>http://yoursite.com/2016/05/13/redis基本数据结构设计总结/</id>
+    <link href="https://yoursite.com/2016/05/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93/"/>
+    <id>https://yoursite.com/2016/05/13/redis基本数据结构设计总结/</id>
     <published>2016-05-13T09:38:59.000Z</published>
     <updated>2016-08-28T13:43:12.162Z</updated>
     
@@ -607,15 +607,15 @@
     
     </summary>
     
-      <category term="Redis学习" scheme="http://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
+      <category term="Redis学习" scheme="https://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
     
     
   </entry>
   
   <entry>
     <title>编辑距离</title>
-    <link href="http://yoursite.com/2016/05/10/%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB/"/>
-    <id>http://yoursite.com/2016/05/10/编辑距离/</id>
+    <link href="https://yoursite.com/2016/05/10/%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB/"/>
+    <id>https://yoursite.com/2016/05/10/编辑距离/</id>
     <published>2016-05-10T09:41:59.000Z</published>
     <updated>2016-08-11T01:12:03.823Z</updated>
     
@@ -632,15 +632,15 @@
     
     </summary>
     
-      <category term="Data structure and Algorithm" scheme="http://yoursite.com/categories/Data-structure-and-Algorithm/"/>
+      <category term="Data structure and Algorithm" scheme="https://yoursite.com/categories/Data-structure-and-Algorithm/"/>
     
     
   </entry>
   
   <entry>
     <title>redis中dict实现以及常用的哈希方法</title>
-    <link href="http://yoursite.com/2016/04/09/redis%E4%B8%ADdict%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E5%B8%B8%E7%94%A8%E7%9A%84%E5%93%88%E5%B8%8C%E6%96%B9%E6%B3%95/"/>
-    <id>http://yoursite.com/2016/04/09/redis中dict实现以及常用的哈希方法/</id>
+    <link href="https://yoursite.com/2016/04/09/redis%E4%B8%ADdict%E5%AE%9E%E7%8E%B0%E4%BB%A5%E5%8F%8A%E5%B8%B8%E7%94%A8%E7%9A%84%E5%93%88%E5%B8%8C%E6%96%B9%E6%B3%95/"/>
+    <id>https://yoursite.com/2016/04/09/redis中dict实现以及常用的哈希方法/</id>
     <published>2016-04-08T16:38:59.000Z</published>
     <updated>2016-08-12T00:13:48.863Z</updated>
     
@@ -665,15 +665,15 @@
     
     </summary>
     
-      <category term="Redis学习" scheme="http://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
+      <category term="Redis学习" scheme="https://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
     
     
   </entry>
   
   <entry>
     <title>Hexo修改样式</title>
-    <link href="http://yoursite.com/2016/03/29/hexo%E4%BF%AE%E6%94%B9%E6%A0%B7%E5%BC%8F/"/>
-    <id>http://yoursite.com/2016/03/29/hexo修改样式/</id>
+    <link href="https://yoursite.com/2016/03/29/hexo%E4%BF%AE%E6%94%B9%E6%A0%B7%E5%BC%8F/"/>
+    <id>https://yoursite.com/2016/03/29/hexo修改样式/</id>
     <published>2016-03-29T07:41:56.000Z</published>
     <updated>2016-08-07T16:15:58.941Z</updated>
     
@@ -690,15 +690,15 @@
     
     </summary>
     
-      <category term="博客" scheme="http://yoursite.com/categories/%E5%8D%9A%E5%AE%A2/"/>
+      <category term="博客" scheme="https://yoursite.com/categories/%E5%8D%9A%E5%AE%A2/"/>
     
     
   </entry>
   
   <entry>
     <title>WordSeg-朴素贝叶斯分词</title>
-    <link href="http://yoursite.com/2016/03/23/Word_seg%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E8%AF%8D/"/>
-    <id>http://yoursite.com/2016/03/23/Word_seg朴素贝叶斯分词/</id>
+    <link href="https://yoursite.com/2016/03/23/Word_seg%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E8%AF%8D/"/>
+    <id>https://yoursite.com/2016/03/23/Word_seg朴素贝叶斯分词/</id>
     <published>2016-03-22T16:38:59.000Z</published>
     <updated>2016-07-18T00:20:31.614Z</updated>
     
@@ -715,15 +715,15 @@
     
     </summary>
     
-      <category term="Data structure and Algorithm" scheme="http://yoursite.com/categories/Data-structure-and-Algorithm/"/>
+      <category term="Data structure and Algorithm" scheme="https://yoursite.com/categories/Data-structure-and-Algorithm/"/>
     
     
   </entry>
   
   <entry>
     <title>tinyhttpd-轻量级httpServer的源码实现</title>
-    <link href="http://yoursite.com/2016/03/19/tinyhttpd-%E8%BD%BB%E9%87%8F%E7%BA%A7httpServer%E7%9A%84%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0/"/>
-    <id>http://yoursite.com/2016/03/19/tinyhttpd-轻量级httpServer的源码实现/</id>
+    <link href="https://yoursite.com/2016/03/19/tinyhttpd-%E8%BD%BB%E9%87%8F%E7%BA%A7httpServer%E7%9A%84%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0/"/>
+    <id>https://yoursite.com/2016/03/19/tinyhttpd-轻量级httpServer的源码实现/</id>
     <published>2016-03-19T07:41:56.000Z</published>
     <updated>2016-08-28T13:51:54.949Z</updated>
     
@@ -746,15 +746,15 @@
     
     </summary>
     
-      <category term="C++与linux网络编程" scheme="http://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+      <category term="C++与linux网络编程" scheme="https://yoursite.com/categories/C-%E4%B8%8Elinux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
     
     
   </entry>
   
   <entry>
     <title>dp-深入理解动态规划</title>
-    <link href="http://yoursite.com/2016/03/10/Dp--%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
-    <id>http://yoursite.com/2016/03/10/Dp--深入理解动态规划/</id>
+    <link href="https://yoursite.com/2016/03/10/Dp--%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"/>
+    <id>https://yoursite.com/2016/03/10/Dp--深入理解动态规划/</id>
     <published>2016-03-10T08:41:59.000Z</published>
     <updated>2016-07-16T10:38:38.024Z</updated>
     
@@ -774,7 +774,7 @@
     
     </summary>
     
-      <category term="Data structure and Algorithm" scheme="http://yoursite.com/categories/Data-structure-and-Algorithm/"/>
+      <category term="Data structure and Algorithm" scheme="https://yoursite.com/categories/Data-structure-and-Algorithm/"/>
     
     
   </entry>
