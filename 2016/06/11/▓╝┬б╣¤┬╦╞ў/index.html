@@ -1,0 +1,691 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Xiegonghai's Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="布隆过滤器之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下设计初衷：（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的，不知道当时布隆为啥想到设计时究竟是碰到了啥问题，但这确实很有效来看下面的问题：1.检查一个单词是否拼写正确-&amp;gt;看它是否在已经字典中2.网络爬虫-&amp;gt;一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="布隆过滤器浅谈">
+<meta property="og:url" content="https://yoursite.com/2016/06/11/布隆过滤器/index.html">
+<meta property="og:site_name" content="Xiegonghai's Blog">
+<meta property="og:description" content="布隆过滤器之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下设计初衷：（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的，不知道当时布隆为啥想到设计时究竟是碰到了啥问题，但这确实很有效来看下面的问题：1.检查一个单词是否拼写正确-&amp;gt;看它是否在已经字典中2.网络爬虫-&amp;gt;一个">
+<meta property="og:updated_time" content="2016-08-07T16:22:24.568Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="布隆过滤器浅谈">
+<meta name="twitter:description" content="布隆过滤器之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下设计初衷：（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的，不知道当时布隆为啥想到设计时究竟是碰到了啥问题，但这确实很有效来看下面的问题：1.检查一个单词是否拼写正确-&amp;gt;看它是否在已经字典中2.网络爬虫-&amp;gt;一个">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://yoursite.com/2016/06/11/布隆过滤器/"/>
+
+  <title> 布隆过滤器浅谈 | Xiegonghai's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Xiegonghai's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">梦想还是要有的</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="https://xiegonghai.github.io/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="https://xiegonghai.github.io/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://xiegonghai.github.io/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="https://xiegonghai.github.io/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                布隆过滤器浅谈
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-11T20:41:56+08:00" content="2016-06-11">
+              2016-06-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="https://xiegonghai.github.io/categories//Data-structure-and-Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Data structure and Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/11/布隆过滤器/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/11/布隆过滤器/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h2><h2 id="之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下"><a href="#之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下" class="headerlink" title="之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下"></a>之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下</h2><p>设计初衷：<br>（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的，不知道当时布隆为啥想到设计时究竟是碰到了啥问题，但这确实很有效<br><strong>来看下面的问题：<br>1.检查一个单词是否拼写正确-&gt;看它是否在已经字典中<br>2.网络爬虫-&gt;一个网址是否访问过<br>3.邮件过滤，建立那些发垃圾邮件的地址的黑名单</strong></p>
+<p><strong>你可能会说哈希表不就行了吗，但在2,3的问题中，网页和垃圾邮件地址全球动不动便是几十亿那，哈希的存储效率也就50%左右</strong><br>    一亿Email（一个占16字节）约为1.6GB内存，要是几十亿个地址就几百GB，需要耗费很大代码<br>所以啊，能不能少花点内存来干这事：于是布隆过滤器来了，只要12.5%到25%的哈希表空间就能干这事，但是有点小错误，这个小错误概率太小就基本不担心了</p>
+<p>工作原理：<br>一亿Email =&gt; 16亿二进制（bit)==2亿字节（哈希就是16亿字节了）</p>
+<h3 id="1-先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，-F8-产生8个信息指纹（比如md5"><a href="#1-先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，-F8-产生8个信息指纹（比如md5" class="headerlink" title="1.先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，..F8)产生8个信息指纹（比如md5),"></a>1.先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，..F8)产生8个信息指纹（比如md5),</h3><p>###2.然后用一个统一的随机数产生器G把这8个信息指纹=&gt;8个自然数g1,g2,g3..,g8,这些位置上的位置为1</p>
+<p>1亿个地址放入建好这个布隆过滤器</p>
+<p>然后新来一个，同样处理，对应8个二进制位 t1,t2,…,t8<br>如果全为1，好的=&gt;判定位垃圾邮件</p>
+<p>你会想了，这样靠谱不，万一把非垃圾邮件误判了咋办</p>
+<p>我们来看看误判的概率：<br>先来算任何一个位被置为1的概率p，这样你可以简单的就知道<br>新来一个，有8个位，如果被误判了，此时这8个位全为1，其概率为$$p^8$$<br>我们来推到下一般的情况，假设有m个位，n个元素，有k个哈希函数，<br>针对单个元素插入来说：<br>$$任一个位被置为1的概率：1/m$$<br>$$K个函数都没有把它置为1：（1-1/m)^k$$<br>$$插入了那个元素依然没有被置为1：（1-1/m)^{kn}$$<br>$$反过来说，一个位被置为1：1-（1-1/m)^{kn}$$<br>同样的新来一个，要命中其概率为：<br>$1-[1-1/m]^{kn})^k 近似（1-e^{-kn/m})^k$<br>上次k=8,n/m=1/16,计算值大约在万分之五，误判率非常低，基本可容忍。*</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/11/一个小C++程序内存泄漏检测/" rel="next" title="C++内存泄漏以及检测">
+                <i class="fa fa-chevron-left"></i> C++内存泄漏以及检测
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/16/网络爬虫总结/" rel="prev" title="爬虫总结">
+                爬虫总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+  </div>
+  
+<div class="bdsharebuttonbox">
+<a href="#" class="bds_more" data-cmd="more"></a>
+<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+<a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+<a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+<script>
+window._bd_share_config=
+{"common":
+  {"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/11/布隆过滤器/"
+           data-title="布隆过滤器浅谈" data-url="https://yoursite.com/2016/06/11/布隆过滤器/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/home.jpg"
+               alt="xiegonghai" />
+          <p class="site-author-name" itemprop="name">xiegonghai</p>
+          <p class="site-description motion-element" itemprop="description">while(question)just thinking;</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="https://xiegonghai.github.io/archives/">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="https://xiegonghai.github.io/categories/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/justdoithai" title="我的csdn博客" target="_blank">我的csdn博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cplusplus.com/reference/algorithm" title="C++标准库" target="_blank">C++标准库</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xiegonghai" title="我的github" target="_blank">我的github</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://net.pku.edu.cn/~yhf/linux_c/" title="linux_C函数" target="_blank">linux_C函数</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://man.linuxde.net/" title="linux命令" target="_blank">linux命令</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://tool.oschina.net/" title="Tools" target="_blank">Tools</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#布隆过滤器"><span class="nav-number">1.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下"><span class="nav-number">2.</span> <span class="nav-text">之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，-F8-产生8个信息指纹（比如md5"><span class="nav-number">2.1.</span> <span class="nav-text">1.先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，..F8)产生8个信息指纹（比如md5),</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xiegonghai</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"doit"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

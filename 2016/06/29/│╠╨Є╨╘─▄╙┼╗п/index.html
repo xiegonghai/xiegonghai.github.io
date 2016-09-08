@@ -1,0 +1,739 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Xiegonghai's Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="程序性能优化 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。
+是否可优化思考12345void swap(int *xp, int *yp)&amp;#123;	*xp = *xp + *yp;	*yp = *xp - *yp;	*xp = *xp - *yp;&amp;#125;
+可否替换为1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序性能优化方法">
+<meta property="og:url" content="https://yoursite.com/2016/06/29/程序性能优化/index.html">
+<meta property="og:site_name" content="Xiegonghai's Blog">
+<meta property="og:description" content="程序性能优化 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。
+是否可优化思考12345void swap(int *xp, int *yp)&amp;#123;	*xp = *xp + *yp;	*yp = *xp - *yp;	*xp = *xp - *yp;&amp;#125;
+可否替换为1">
+<meta property="og:updated_time" content="2016-08-28T13:51:56.003Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="程序性能优化方法">
+<meta name="twitter:description" content="程序性能优化 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。
+是否可优化思考12345void swap(int *xp, int *yp)&amp;#123;	*xp = *xp + *yp;	*yp = *xp - *yp;	*xp = *xp - *yp;&amp;#125;
+可否替换为1">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://yoursite.com/2016/06/29/程序性能优化/"/>
+
+  <title> 程序性能优化方法 | Xiegonghai's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Xiegonghai's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">梦想还是要有的</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="https://xiegonghai.github.io/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="https://xiegonghai.github.io/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://xiegonghai.github.io/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="https://xiegonghai.github.io/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                程序性能优化方法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-29T20:20:59+08:00" content="2016-06-29">
+              2016-06-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="https://xiegonghai.github.io/categories//性能优化/" itemprop="url" rel="index">
+                    <span itemprop="name">性能优化</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/29/程序性能优化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/29/程序性能优化/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="程序性能优化"><a href="#程序性能优化" class="headerlink" title="程序性能优化"></a>程序性能优化</h1><p> 在深入理解os这本书中，在里面有一章是专门针对性能优化的，在高并发的系统中，程序性能直接关系到用户体验，一般来说用户容忍度总是非常低的，比如打开网页要求2s得到相应。</p>
+<h2 id="是否可优化"><a href="#是否可优化" class="headerlink" title="是否可优化"></a>是否可优化</h2><p>思考<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span></span>&#123;</div><div class="line">	*xp = *xp + *yp;</div><div class="line">	*yp = *xp - *yp;</div><div class="line">	*xp = *xp - *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span></span>&#123;</div><div class="line">    *xp = *xp + *yp;</div><div class="line">    *yp = *xp - *yp;</div><div class="line">    *xp = *xp - *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>又如<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">	*xp += *yp;</div><div class="line">    *xp += *yp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">twiddle1</span><span class="params">(<span class="keyword">int</span> *xp, <span class="keyword">int</span> *yp)</span> </span>&#123;</div><div class="line">*xp = <span class="number">2</span>* (*yp);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>实际上上面连个看起来是传进来了不同的参数，但是当参数相同的话，结果是不一样的，优化是错的<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span></span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> f() + f() + f();&#125;</div></pre></td></tr></table></figure></p>
+<p>可否替换为<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">func</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> <span class="number">3</span>*f();&#125;</div></pre></td></tr></table></figure></p>
+<p>这种情况下，当f调用了全局变量就会产生副作用，返回值也可能会不一样</p>
+<h2 id="常用的优化方法"><a href="#常用的优化方法" class="headerlink" title="常用的优化方法"></a>常用的优化方法</h2><h3 id="1-在循环中减少函数调用"><a href="#1-在循环中减少函数调用" class="headerlink" title="1.在循环中减少函数调用"></a><strong>1.在循环中减少函数调用</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Implementation of library function strlen */</span></div><div class="line"> <span class="comment">/* Compute length of string */</span></div><div class="line"><span class="keyword">size_t</span> <span class="built_in">strlen</span>(<span class="keyword">const</span> <span class="keyword">char</span> *s)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> length = <span class="number">0</span>;</div><div class="line">	<span class="keyword">while</span> (*s != ’\<span class="number">0</span>’) &#123;</div><div class="line">		s++;</div><div class="line">		length++;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> length;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lower1</span><span class="params">(<span class="keyword">char</span> *s)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(s); i++)&#123;</div><div class="line">		<span class="keyword">if</span> (s[i] &gt;= ’A’ &amp;&amp; s[i] &lt;= ’Z’)</div><div class="line">		s[i] -= (’A’ - ’a’);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 将strlen(s)从循环中外提</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">lower1</span><span class="params">(<span class="keyword">char</span> *s)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> len = <span class="built_in">strlen</span>(s); <span class="comment">//循环中调用外提</span></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++)&#123;</div><div class="line">		<span class="keyword">if</span> (s[i] &gt;= ’A’ &amp;&amp; s[i] &lt;= ’Z’)</div><div class="line">		s[i] -= (’A’ - ’a’);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-消除不必要的存储器引用"><a href="#2-消除不必要的存储器引用" class="headerlink" title="2.消除不必要的存储器引用"></a><strong>2.消除不必要的存储器引用</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span></span></div><div class="line"> &#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> length = vec_length(v); </div><div class="line">	*dest = IDENT; </div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">		<span class="keyword">data_t</span> val;</div><div class="line">		get_vec_element(v, i, &amp;val);</div><div class="line">		*dest = *dest OPER val;  </div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在每次循环中减少中间过程读写<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Accumulate result in local variable */</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine4</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span></span></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> i;</div><div class="line">	<span class="keyword">int</span> length = vec_length(v);</div><div class="line">	<span class="keyword">data_t</span> *data = get_vec_start(v); <span class="comment">//</span></div><div class="line">	<span class="keyword">data_t</span> x = IDENT;</div><div class="line">	*dest = IDENT;</div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">		x = x OPER data[i]; <span class="comment">//循环内相除存储器引用</span></div><div class="line">	&#125;</div><div class="line">	*dest = x;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="3-循环展开"><a href="#3-循环展开" class="headerlink" title="3.循环展开"></a><strong>3.循环展开</strong></h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">vsum1</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</div><div class="line">    c[i] = a[i] + b[i];</div><div class="line"> &#125;</div><div class="line">循环展开为</div><div class="line">``` C++</div><div class="line"><span class="comment">/* Sum vector of n elements (n must be even) */</span></div><div class="line"> <span class="function"><span class="keyword">void</span> <span class="title">vsum2</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line"> &#123;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i+=<span class="number">2</span>) &#123;</div><div class="line">         <span class="comment">/* Compute two elements per iteration */</span></div><div class="line">        c[i] = a[i] + b[i];</div><div class="line">        c[i+<span class="number">1</span>] = a[i+<span class="number">1</span>] + b[i+<span class="number">1</span>];</div><div class="line">    &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<h3 id="4-提高并行性"><a href="#4-提高并行性" class="headerlink" title="4.提高并行性"></a><strong>4.提高并行性</strong></h3><p>使用多个临时变量，只在必要的时候将多个临时变量合并</p>
+<h3 id="5-重新结合变换"><a href="#5-重新结合变换" class="headerlink" title="5.重新结合变换"></a><strong>5.重新结合变换</strong></h3><p>acc = (acc OP data[i]) OP data[i+1];<br>每次迭代都要求前一次迭代必须结束才能开始，因为第一个操作就要求读取acc的值．<br>acc = acc OP (data[i] OP data[i+1]);<br>修改后，下一次迭代的开始可以先于当前迭代的结束，因为下一次迭代可以先计算data[i] OP data[i+1]这个操作．</p>
+<h2 id="阿姆达尔定律"><a href="#阿姆达尔定律" class="headerlink" title="阿姆达尔定律"></a>阿姆达尔定律</h2><p>阿姆达尔定律是计算机系统设计的重要定量原理之一，于1967年由IBM360系列机的主要设计者阿姆达尔首先提出。该定律是指：系统中对某一部件采用更快执行方式所能获得的系统性能改进程度，取决于这种执行方式被使用的频率，或所占总执行时间的比例。阿姆达尔定律实际上定义了采取增强（加速）某部分功能处理的措施后可获得的性能改进或执行时间的加速比。简单来说是通过更快的处理器来获得加速是由慢的系统组件所限制。<br>阿姆达尔曾致力于并行处理系统的研究。对于固定负载情况下描述并行处理效果的加速比s，阿姆达尔经过深入研究给出了如下公式：<br>$$S=1/(1-a+a/n)$$<br>其中，a为并行计算部分所占比例，n为并行处理结点个数。这样，当1-a=0时，(即没有串行，只有并行)最大加速比s=n；当a=0时（即只有串行，没有并行），最小加速比s=1；当n→∞时，极限加速比s→ 1/（1-a），这也就是加速比的上限。例如，若串行代码占整个代码的25%，则并行处理的总体性能不可能超过4。这一公式已被学术界所接受，并被称做“阿姆达尔定律”，也称为“安达尔定理”(Amdahl law)。</p>
+<h2 id="C-C-中的优化"><a href="#C-C-中的优化" class="headerlink" title="C/C++中的优化"></a>C/C++中的优化</h2><blockquote>
+<ul>
+<li><strong>如字符串初始化使用 str[‘\0’] (避免使用memeset)</strong></li>
+<li><strong>char buffer[1024] = {100} 会调用memset, 可以改为:</strong><br>char buffer[1024];<br>buffer[0] = 100</li>
+<li><strong>选择正确的数据结构，正确选择stl的容器</strong><ul>
+<li>数据量大时可以使用std::str1 或boost中 unordered_set/map 替代<br>map/set, 前者基于hash实现, 后者基于rb tree实现</li>
+<li>std::list 求长度 O(n)</li>
+<li>STL 的容器用完或者使用前记得reset, 否则会膨胀, 类似内存泄漏<br>reset 并没真正释放内存, 可能只是修改了长度和指针位置</li>
+<li>尽量使用std::sort, 而不是自写排序</li>
+<li>使用reverse 避免不必要的内存重分配</li>
+<li>去重和查找尽量用hashmap 而不是 vector + find</li>
+</ul>
+</li>
+<li><strong>避免重复申请内存</strong><ul>
+<li>用可重复初始化对象, 代替每次都new</li>
+<li>重复多次申请小块内存, 可以自己实现简单的buffer管理器</li>
+<li>使用tcmalloc ?</li>
+</ul>
+</li>
+<li><strong>多线程</strong><ul>
+<li>多线程的调度, 让 IO 和 CPU计算 相互重叠，降低<br>latency</li>
+<li>能提高绝对性能, 但是平均性能提升明显</li>
+</ul>
+</li>
+<li><strong>openmp让循环中可以并行的部分得到并行处理</strong><ul>
+<li>o 打开编译选项 -fopenmp</li>
+</ul>
+</li>
+<li><strong>按字节固定初始有时可使用memeset,比for循环快很多</strong><ul>
+<li>测试过1亿字符串统一赋值，用memeset比for循环赋值快10倍</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>&lt;&lt;深入理解操作系统&gt;&gt;<br>&lt;&lt;大牛分享&gt;&gt;</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/16/网络爬虫总结/" rel="next" title="爬虫总结">
+                <i class="fa fa-chevron-left"></i> 爬虫总结
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/03/并发编程-多进程-IO复用-多线程/" rel="prev" title="并发编程之-多进程-I/O复用-多线程">
+                并发编程之-多进程-I/O复用-多线程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+  </div>
+  
+<div class="bdsharebuttonbox">
+<a href="#" class="bds_more" data-cmd="more"></a>
+<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+<a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+<a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+<script>
+window._bd_share_config=
+{"common":
+  {"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/29/程序性能优化/"
+           data-title="程序性能优化方法" data-url="https://yoursite.com/2016/06/29/程序性能优化/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/home.jpg"
+               alt="xiegonghai" />
+          <p class="site-author-name" itemprop="name">xiegonghai</p>
+          <p class="site-description motion-element" itemprop="description">while(question)just thinking;</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="https://xiegonghai.github.io/archives/">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="https://xiegonghai.github.io/categories/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/justdoithai" title="我的csdn博客" target="_blank">我的csdn博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cplusplus.com/reference/algorithm" title="C++标准库" target="_blank">C++标准库</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xiegonghai" title="我的github" target="_blank">我的github</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://net.pku.edu.cn/~yhf/linux_c/" title="linux_C函数" target="_blank">linux_C函数</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://man.linuxde.net/" title="linux命令" target="_blank">linux命令</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://tool.oschina.net/" title="Tools" target="_blank">Tools</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#程序性能优化"><span class="nav-number">1.</span> <span class="nav-text">程序性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#是否可优化"><span class="nav-number">1.1.</span> <span class="nav-text">是否可优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用的优化方法"><span class="nav-number">1.2.</span> <span class="nav-text">常用的优化方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-在循环中减少函数调用"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.在循环中减少函数调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-消除不必要的存储器引用"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.消除不必要的存储器引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-循环展开"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.循环展开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-提高并行性"><span class="nav-number">1.2.4.</span> <span class="nav-text">4.提高并行性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-重新结合变换"><span class="nav-number">1.2.5.</span> <span class="nav-text">5.重新结合变换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阿姆达尔定律"><span class="nav-number">1.3.</span> <span class="nav-text">阿姆达尔定律</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-C-中的优化"><span class="nav-number">1.4.</span> <span class="nav-text">C/C++中的优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">1.5.</span> <span class="nav-text">参考文献</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xiegonghai</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"doit"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
