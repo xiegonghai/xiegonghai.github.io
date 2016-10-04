@@ -1,0 +1,703 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Xiegonghai's Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="前言我们知道docker是一种轻量级的虚拟化技术，而安装一个博客系统是一件繁琐的事情，需要安装和配置一系列的依赖包，以及修改相应的自己喜欢的样式，往往我们在特定的系统下安装好便一直使用，可是如果电脑坏了或者换电脑了，那重新搭建无疑是很费力不讨好的事情，如果新电脑是不同系统的话，为了做到一处安装处处使用的目的，我觉得尝试下docker技术，打算制作一个在linux下hexo博客的基础镜像，以后只要通">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker制作hexo博客镜像">
+<meta property="og:url" content="https://yoursite.com/2016/10/01/Docker制作hexo博客镜像/index.html">
+<meta property="og:site_name" content="Xiegonghai's Blog">
+<meta property="og:description" content="前言我们知道docker是一种轻量级的虚拟化技术，而安装一个博客系统是一件繁琐的事情，需要安装和配置一系列的依赖包，以及修改相应的自己喜欢的样式，往往我们在特定的系统下安装好便一直使用，可是如果电脑坏了或者换电脑了，那重新搭建无疑是很费力不讨好的事情，如果新电脑是不同系统的话，为了做到一处安装处处使用的目的，我觉得尝试下docker技术，打算制作一个在linux下hexo博客的基础镜像，以后只要通">
+<meta property="og:updated_time" content="2016-10-04T05:03:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker制作hexo博客镜像">
+<meta name="twitter:description" content="前言我们知道docker是一种轻量级的虚拟化技术，而安装一个博客系统是一件繁琐的事情，需要安装和配置一系列的依赖包，以及修改相应的自己喜欢的样式，往往我们在特定的系统下安装好便一直使用，可是如果电脑坏了或者换电脑了，那重新搭建无疑是很费力不讨好的事情，如果新电脑是不同系统的话，为了做到一处安装处处使用的目的，我觉得尝试下docker技术，打算制作一个在linux下hexo博客的基础镜像，以后只要通">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://yoursite.com/2016/10/01/Docker制作hexo博客镜像/"/>
+
+  <title> Docker制作hexo博客镜像 | Xiegonghai's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Xiegonghai's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">梦想还是要有的</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="https://xiegonghai.github.io/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="https://xiegonghai.github.io/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://xiegonghai.github.io/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="https://xiegonghai.github.io/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Docker制作hexo博客镜像
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-01T10:01:59+00:00" content="2016-10-01">
+              2016-10-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/10/01/Docker制作hexo博客镜像/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/01/Docker制作hexo博客镜像/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们知道docker是一种轻量级的虚拟化技术，而安装一个博客系统是一件繁琐的事情，需要安装和配置一系列的依赖包，以及修改相应的自己喜欢的样式，往往我们在特定的系统下安装好便一直使用，可是如果电脑坏了或者换电脑了，那重新搭建无疑是很费力不讨好的事情，如果新电脑是不同系统的话，为了做到一处安装处处使用的目的，我觉得尝试下docker技术，打算制作一个在linux下hexo博客的基础镜像，以后只要通过docker运行基础镜像便可以使用我搭建好的博客系统，无论我在哪里，只要拉取网盘镜像通过docker跑博客容器，那么便可以写博客并发布了</p>
+<p>传统的虚拟机镜像安装一个ubuntu系统就十几个G，按docker官方仓库的ubuntu镜像也就一两百M，可以在这个基础上安装git,hexo,python,nodejs等,构建一个hexo博客系统可运行环境并保存相关镜像,这个大小相对虚拟机要小很多,而且容器可以很方便的和宿主机共享数据卷,我们可以在本地宿主机写相关博客，在docker博客容器内发布就可以了</p>
+<h1 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h1><p>拉取linux基础镜像<br>基础容器内搭建hexo博客系统相关环境<br>保存修改后镜像<br>下面来介绍下相关技术以及流程：</p>
+<h1 id="在基础容器内搭建自己的hexo博客并修改相关样式"><a href="#在基础容器内搭建自己的hexo博客并修改相关样式" class="headerlink" title="在基础容器内搭建自己的hexo博客并修改相关样式"></a>在基础容器内搭建自己的hexo博客并修改相关样式</h1><p>教程参看官方搭建文档 <a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="external">https://hexo.io/zh-cn/docs/</a><br>然后配置自己的hexo与github的连接<br>使得用hexo发布的时候可以发布到自己的github上<br>主要流程：<br>a.install git,安装详细下面介绍<br>记得本地秘钥加到github<br>b.在根目录<em>config.yml加上</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repository: git@github.com:xiegonghai/xiegonghai.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure></p>
+<h1 id="linux安装git"><a href="#linux安装git" class="headerlink" title="linux安装git"></a>linux安装git</h1><p>1.安装git<br>apt-get install git<br>2.配置用户名密码<br>git config –global user.name = “”<br>git config –global user.email = “”<br>3.生成秘钥上传到github<br>ssh-keygen -C “emailAddress@gmail.com” -t rsa<br>将~/.ssh/id_rsa.pub内容加到github里<br>4.测试连通<br>ssh -v git@github.com</p>
+<h1 id="docker-相关命令"><a href="#docker-相关命令" class="headerlink" title="docker 相关命令"></a>docker 相关命令</h1><p>0.安装docker<br>apt-get update<br>apt-get install -y docker.io<br>ln -sf /usr/bin/docker.io /usr/local/bin/docker<br>sed -i ‘$acomplete -F _docker docker’ /etc/bash_completion.d/docker.io<br>安装新版<br>apt-get install apt-transport-https<br>apt-key adv –keyserver hkp://keyserver.ubuntu.com:80 –recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9<br>sh -c “echo deb <a href="https://get.docker.io/ubuntu" target="_blank" rel="external">https://get.docker.io/ubuntu</a> docker main &gt; /etc/apt/sources.list.d/docker.list”<br>apt-get update<br>apt-get install lxc-docker<br>1.启动docker服务<br>service docker start<br>2.查看docker现有镜像(相当于查看有哪些源码)<br>docker images<br>3.查看在运行的容器有哪些(相当于查看有哪些进程)<br>docker ps -a<br>4.搜索共享仓库有哪些镜像<br>docker search centos<br>5.从registry.hub.docker.com拉取相关镜像<br>docker pull centos<br>6.保存镜像<br>docker save -o ubuntu_14.04.tar ubuntu:14.04<br>docker export 7691a814370e &gt;ubuntu.tar<br>7.载入镜像<br>docker load –input ubuntu_14.04.tar<br>docker load &lt; ubuntu_14.04.tar<br>docker import <a href="http://example.com/exampleimage.tgz" target="_blank" rel="external">http://example.com/exampleimage.tgz</a> example/imagerepo<br>cat ubuntu.tar | sudo docker import - test/ubuntu:v1.0<br>8.移除本地镜像<br>docker rmi training/sinatra<br>9.提交修改到容器<br>docker commit 614122caabb aoct/apache2<br>(容器id,目标镜像仓库,镜像名)<br>docker commit -m “” – “” id aoct/apache2<br>10.检查新创建的镜像的详细信息<br>docker inspect aoct/apache2<br>11.删除某个镜像<br>docker rm trusting_newron<br>12.停止或者重启某个容器<br>docker stop<br>docker restart<br>13.日志查看</p>
+<p>docker logs instance_name<br>docker tag image_id repository:tag</p>
+<p>14.运行一个容器<br>docker run -d ubuntu:14.04 /bin/sh -c “”</p>
+<h3 id="挂载一个主机目录到容器的指定目录"><a href="#挂载一个主机目录到容器的指定目录" class="headerlink" title="挂载一个主机目录到容器的指定目录"></a>挂载一个主机目录到容器的指定目录</h3><p>docker run -d -P –name web -v /src/webapp:/opt/webapp training/webapp python  app.py<br>:ro设定为只读<br>docker run -d -P –name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py<br>挂载主机单个文件到容器<br>docker run -rm -it -v ~/.bash_history ubuntu /bin/bash</p>
+<p>15.通过dockerfile来创建容器<br>新建一个目录,创建一个名为Dockerfile的文件<br>dockerfile 编写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">FROM ubuntu:14.04</div><div class="line">MAINTAINER 312182515@qq.com</div><div class="line">RUN apt-get update</div><div class="line">ENV LANG zh_CN.UTF-8</div><div class="line">ENV LC_ALL zh_CN.UTF-8</div></pre></td></tr></table></figure></p>
+<p>命令构建容器<br>docker bulid -t =”ubuntu:hexo” .<br>-t里的为相应仓库和tag,.表示dockerfile所在目录</p>
+<h1 id="docker-enter命令实现"><a href="#docker-enter命令实现" class="headerlink" title="docker-enter命令实现"></a>docker-enter命令实现</h1><p>1.安装nsenter<br>cd /tmp<br>curl <a href="https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz" target="_blank" rel="external">https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz</a> | tar -zxf-<br>cd util-linux-2.24<br>./configure –without-ncurses<br>make nsenter<br>cp nsenter /usr/local/bin<br>2.写如下脚本保存为docker-enter<br>并保存至bin/下面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line"></div><div class="line">if [ -e $(dirname &quot;$0&quot;)/nsenter ]; then</div><div class="line">  # with boot2docker, nsenter is not in the PATH but it is in the same folder</div><div class="line">  NSENTER=$(dirname &quot;$0&quot;)/nsenter</div><div class="line">else</div><div class="line">  NSENTER=nsenter</div><div class="line">fi</div><div class="line"></div><div class="line">if [ -z &quot;$1&quot; ]; then</div><div class="line">  echo &quot;Usage: `basename &quot;$0&quot;` CONTAINER [COMMAND [ARG]...]&quot;</div><div class="line">  echo &quot;&quot;</div><div class="line">  echo &quot;Enters the Docker CONTAINER and executes the specified COMMAND.&quot;</div><div class="line">  echo &quot;If COMMAND is not specified, runs an interactive shell in CONTAINER.&quot;</div><div class="line">else</div><div class="line">  PID=$(docker inspect --format &quot;&#123;&#123;.State.Pid&#125;&#125;&quot; &quot;$1&quot;)</div><div class="line">  if [ -z &quot;$PID&quot; ]; then</div><div class="line">    exit 1</div><div class="line">  fi</div><div class="line">  shift</div><div class="line"></div><div class="line">  OPTS=&quot;--target $PID --mount --uts --ipc --net --pid --&quot;</div><div class="line"></div><div class="line">  if [ -z &quot;$1&quot; ]; then</div><div class="line">    # No command given.</div><div class="line">    # Use su to clear all host environment variables except for TERM,</div><div class="line">    # initialize the environment variables HOME, SHELL, USER, LOGNAME, PATH,</div><div class="line">    # and start a login shell.</div><div class="line">    &quot;$NSENTER&quot; $OPTS su - root</div><div class="line">  else</div><div class="line">    # Use env to clear all host environment variables.</div><div class="line">    &quot;$NSENTER&quot; $OPTS env --ignore-environment -- &quot;$@&quot;</div><div class="line">  fi</div><div class="line">fi</div></pre></td></tr></table></figure>
+<h1 id="ubuntu容器镜像语言设置问题"><a href="#ubuntu容器镜像语言设置问题" class="headerlink" title="ubuntu容器镜像语言设置问题"></a>ubuntu容器镜像语言设置问题</h1><ol>
+<li><p>查看安装语言<br>locale -a</p>
+</li>
+<li><p>安装相关语言<br>locale-gen en_US.UTF-8<br>locale-gen zh_CN.UTF-8</p>
+</li>
+</ol>
+<p>三步曲<br>a. vim /var/lib/locales/supported.d/<br>加入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">zh_CN.UTF-8 UTF-8</div><div class="line">zh_CN GB2312</div><div class="line">zh_CN.GBK GBK</div><div class="line">en_US.UTF-8 UTF-8</div><div class="line">fr_FR ISO-8859-1</div><div class="line">zh_CN.GB18030 GB18030</div></pre></td></tr></table></figure></p>
+<p>b. 生成相关locales<br>locale-gen –purge</p>
+<p>c. vim /etc/default/locale</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">LANG=&quot;zh_CN.UTF-8&quot;</div><div class="line">LANGUAGE=&quot;zh_CN:zh&quot;</div><div class="line">LC_ALL=&quot;zh_CN.UTF-8&quot;</div></pre></td></tr></table></figure>
+<p>reboot并检测locale命令</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/01/常用linux命令-总结/" rel="next" title="我常用的linux命令总结">
+                <i class="fa fa-chevron-left"></i> 我常用的linux命令总结
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+  </div>
+  
+<div class="bdsharebuttonbox">
+<a href="#" class="bds_more" data-cmd="more"></a>
+<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+<a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+<a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+<script>
+window._bd_share_config=
+{"common":
+  {"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/10/01/Docker制作hexo博客镜像/"
+           data-title="Docker制作hexo博客镜像" data-url="https://yoursite.com/2016/10/01/Docker制作hexo博客镜像/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/home.jpg"
+               alt="xiegonghai" />
+          <p class="site-author-name" itemprop="name">xiegonghai</p>
+          <p class="site-description motion-element" itemprop="description">while(question)just thinking;</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="https://xiegonghai.github.io/archives/">
+              <span class="site-state-item-count">24</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="https://xiegonghai.github.io/categories/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/justdoithai" title="我的csdn博客" target="_blank">我的csdn博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cplusplus.com/reference/algorithm" title="C++标准库" target="_blank">C++标准库</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xiegonghai" title="我的github" target="_blank">我的github</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://net.pku.edu.cn/~yhf/linux_c/" title="linux_C函数" target="_blank">linux_C函数</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://man.linuxde.net/" title="linux命令" target="_blank">linux命令</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://tool.oschina.net/" title="Tools" target="_blank">Tools</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#主要流程"><span class="nav-number">2.</span> <span class="nav-text">主要流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在基础容器内搭建自己的hexo博客并修改相关样式"><span class="nav-number">3.</span> <span class="nav-text">在基础容器内搭建自己的hexo博客并修改相关样式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#linux安装git"><span class="nav-number">4.</span> <span class="nav-text">linux安装git</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#docker-相关命令"><span class="nav-number">5.</span> <span class="nav-text">docker 相关命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#挂载一个主机目录到容器的指定目录"><span class="nav-number">5.0.1.</span> <span class="nav-text">挂载一个主机目录到容器的指定目录</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#docker-enter命令实现"><span class="nav-number">6.</span> <span class="nav-text">docker-enter命令实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ubuntu容器镜像语言设置问题"><span class="nav-number">7.</span> <span class="nav-text">ubuntu容器镜像语言设置问题</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xiegonghai</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"doit"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

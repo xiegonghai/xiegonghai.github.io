@@ -260,6 +260,149 @@
             
               
                 
+                <a class="post-title-link" href="/2016/10/01/Docker制作hexo博客镜像/" itemprop="url">
+                  Docker制作hexo博客镜像
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-01T10:01:59+00:00" content="2016-10-01">
+              2016-10-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/10/01/Docker制作hexo博客镜像/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/01/Docker制作hexo博客镜像/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们知道docker是一种轻量级的虚拟化技术，而安装一个博客系统是一件繁琐的事情，需要安装和配置一系列的依赖包，以及修改相应的自己喜欢的样式，往往我们在特定的系统下安装好便一直使用，可是如果电脑坏了或者换电脑了，那重新搭建无疑是很费力不讨好的事情，如果新电脑是不同系统的话，为了做到一处安装处处使用的目的，我觉得尝试下docker技术，打算制作一个在linux下hexo博客的基础镜像，以后只要通过docker运行基础镜像便可以使用我搭建好的博客系统，无论我在哪里，只要拉取网盘镜像通过docker跑博客容器，那么便可以写博客并发布了</p>
+<p>传统的虚拟机镜像安装一个ubuntu系统就十几个G，按docker官方仓库的ubuntu镜像也就一两百M，可以在这个基础上安装git,hexo,python,nodejs等,构建一个hexo博客系统可运行环境并保存相关镜像,这个大小相对虚拟机要小很多,而且容器可以很方便的和宿主机共享数据卷,我们可以在本地宿主机写相关博客，在docker博客容器内发布就可以了</p>
+<h1 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h1><p>拉取linux基础镜像<br>基础容器内搭建hexo博客系统相关环境<br>保存修改后镜像<br>下面来介绍下相关技术以及流程：</p>
+<h1 id="在基础容器内搭建自己的hexo博客并修改相关样式"><a href="#在基础容器内搭建自己的hexo博客并修改相关样式" class="headerlink" title="在基础容器内搭建自己的hexo博客并修改相关样式"></a>在基础容器内搭建自己的hexo博客并修改相关样式</h1><p>教程参看官方搭建文档 <a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="external">https://hexo.io/zh-cn/docs/</a><br>然后配置自己的hexo与github的连接<br>使得用hexo发布的时候可以发布到自己的github上<br>主要流程：<br>a.install git,安装详细下面介绍<br>记得本地秘钥加到github<br>b.在根目录<em>config.yml加上</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git</div><div class="line">  repository: git@github.com:xiegonghai/xiegonghai.github.io.git</div><div class="line">  branch: master</div></pre></td></tr></table></figure></p>
+<h1 id="linux安装git"><a href="#linux安装git" class="headerlink" title="linux安装git"></a>linux安装git</h1><p>1.安装git<br>apt-get install git<br>2.配置用户名密码<br>git config –global user.name = “”<br>git config –global user.email = “”<br>3.生成秘钥上传到github<br>ssh-keygen -C “emailAddress@gmail.com” -t rsa<br>将~/.ssh/id_rsa.pub内容加到github里<br>4.测试连通<br>ssh -v git@github.com</p>
+<h1 id="docker-相关命令"><a href="#docker-相关命令" class="headerlink" title="docker 相关命令"></a>docker 相关命令</h1><p>0.安装docker<br>apt-get update<br>apt-get install -y docker.io<br>ln -sf /usr/bin/docker.io /usr/local/bin/docker<br>sed -i ‘$acomplete -F _docker docker’ /etc/bash_completion.d/docker.io<br>安装新版<br>apt-get install apt-transport-https<br>apt-key adv –keyserver hkp://keyserver.ubuntu.com:80 –recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9<br>sh -c “echo deb <a href="https://get.docker.io/ubuntu" target="_blank" rel="external">https://get.docker.io/ubuntu</a> docker main &gt; /etc/apt/sources.list.d/docker.list”<br>apt-get update<br>apt-get install lxc-docker<br>1.启动docker服务<br>service docker start<br>2.查看docker现有镜像(相当于查看有哪些源码)<br>docker images<br>3.查看在运行的容器有哪些(相当于查看有哪些进程)<br>docker ps -a<br>4.搜索共享仓库有哪些镜像<br>docker search centos<br>5.从registry.hub.docker.com拉取相关镜像<br>docker pull centos<br>6.保存镜像<br>docker save -o ubuntu_14.04.tar ubuntu:14.04<br>docker export 7691a814370e &gt;ubuntu.tar<br>7.载入镜像<br>docker load –input ubuntu_14.04.tar<br>docker load &lt; ubuntu_14.04.tar<br>docker import <a href="http://example.com/exampleimage.tgz" target="_blank" rel="external">http://example.com/exampleimage.tgz</a> example/imagerepo<br>cat ubuntu.tar | sudo docker import - test/ubuntu:v1.0<br>8.移除本地镜像<br>docker rmi training/sinatra<br>9.提交修改到容器<br>docker commit 614122caabb aoct/apache2<br>(容器id,目标镜像仓库,镜像名)<br>docker commit -m “” – “” id aoct/apache2<br>10.检查新创建的镜像的详细信息<br>docker inspect aoct/apache2<br>11.删除某个镜像<br>docker rm trusting_newron<br>12.停止或者重启某个容器<br>docker stop<br>docker restart<br>13.日志查看</p>
+<p>docker logs instance_name<br>docker tag image_id repository:tag</p>
+<p>14.运行一个容器<br>docker run -d ubuntu:14.04 /bin/sh -c “”</p>
+<h3 id="挂载一个主机目录到容器的指定目录"><a href="#挂载一个主机目录到容器的指定目录" class="headerlink" title="挂载一个主机目录到容器的指定目录"></a>挂载一个主机目录到容器的指定目录</h3><p>docker run -d -P –name web -v /src/webapp:/opt/webapp training/webapp python  app.py<br>:ro设定为只读<br>docker run -d -P –name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py<br>挂载主机单个文件到容器<br>docker run -rm -it -v ~/.bash_history ubuntu /bin/bash</p>
+<p>15.通过dockerfile来创建容器<br>新建一个目录,创建一个名为Dockerfile的文件<br>dockerfile 编写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">FROM ubuntu:14.04</div><div class="line">MAINTAINER 312182515@qq.com</div><div class="line">RUN apt-get update</div><div class="line">ENV LANG zh_CN.UTF-8</div><div class="line">ENV LC_ALL zh_CN.UTF-8</div></pre></td></tr></table></figure></p>
+<p>命令构建容器<br>docker bulid -t =”ubuntu:hexo” .<br>-t里的为相应仓库和tag,.表示dockerfile所在目录</p>
+<h1 id="docker-enter命令实现"><a href="#docker-enter命令实现" class="headerlink" title="docker-enter命令实现"></a>docker-enter命令实现</h1><p>1.安装nsenter<br>cd /tmp<br>curl <a href="https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz" target="_blank" rel="external">https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz</a> | tar -zxf-<br>cd util-linux-2.24<br>./configure –without-ncurses<br>make nsenter<br>cp nsenter /usr/local/bin<br>2.写如下脚本保存为docker-enter<br>并保存至bin/下面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">#!/bin/sh</div><div class="line"></div><div class="line">if [ -e $(dirname &quot;$0&quot;)/nsenter ]; then</div><div class="line">  # with boot2docker, nsenter is not in the PATH but it is in the same folder</div><div class="line">  NSENTER=$(dirname &quot;$0&quot;)/nsenter</div><div class="line">else</div><div class="line">  NSENTER=nsenter</div><div class="line">fi</div><div class="line"></div><div class="line">if [ -z &quot;$1&quot; ]; then</div><div class="line">  echo &quot;Usage: `basename &quot;$0&quot;` CONTAINER [COMMAND [ARG]...]&quot;</div><div class="line">  echo &quot;&quot;</div><div class="line">  echo &quot;Enters the Docker CONTAINER and executes the specified COMMAND.&quot;</div><div class="line">  echo &quot;If COMMAND is not specified, runs an interactive shell in CONTAINER.&quot;</div><div class="line">else</div><div class="line">  PID=$(docker inspect --format &quot;&#123;&#123;.State.Pid&#125;&#125;&quot; &quot;$1&quot;)</div><div class="line">  if [ -z &quot;$PID&quot; ]; then</div><div class="line">    exit 1</div><div class="line">  fi</div><div class="line">  shift</div><div class="line"></div><div class="line">  OPTS=&quot;--target $PID --mount --uts --ipc --net --pid --&quot;</div><div class="line"></div><div class="line">  if [ -z &quot;$1&quot; ]; then</div><div class="line">    # No command given.</div><div class="line">    # Use su to clear all host environment variables except for TERM,</div><div class="line">    # initialize the environment variables HOME, SHELL, USER, LOGNAME, PATH,</div><div class="line">    # and start a login shell.</div><div class="line">    &quot;$NSENTER&quot; $OPTS su - root</div><div class="line">  else</div><div class="line">    # Use env to clear all host environment variables.</div><div class="line">    &quot;$NSENTER&quot; $OPTS env --ignore-environment -- &quot;$@&quot;</div><div class="line">  fi</div><div class="line">fi</div></pre></td></tr></table></figure>
+<h1 id="ubuntu容器镜像语言设置问题"><a href="#ubuntu容器镜像语言设置问题" class="headerlink" title="ubuntu容器镜像语言设置问题"></a>ubuntu容器镜像语言设置问题</h1><ol>
+<li><p>查看安装语言<br>locale -a</p>
+</li>
+<li><p>安装相关语言<br>locale-gen en_US.UTF-8<br>locale-gen zh_CN.UTF-8</p>
+</li>
+</ol>
+<p>三步曲<br>a. vim /var/lib/locales/supported.d/<br>加入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">zh_CN.UTF-8 UTF-8</div><div class="line">zh_CN GB2312</div><div class="line">zh_CN.GBK GBK</div><div class="line">en_US.UTF-8 UTF-8</div><div class="line">fr_FR ISO-8859-1</div><div class="line">zh_CN.GB18030 GB18030</div></pre></td></tr></table></figure></p>
+<p>b. 生成相关locales<br>locale-gen –purge</p>
+<p>c. vim /etc/default/locale</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">LANG=&quot;zh_CN.UTF-8&quot;</div><div class="line">LANGUAGE=&quot;zh_CN:zh&quot;</div><div class="line">LC_ALL=&quot;zh_CN.UTF-8&quot;</div></pre></td></tr></table></figure>
+<p>reboot并检测locale命令</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/08/01/常用linux命令-总结/" itemprop="url">
                   我常用的linux命令总结
                 </a>
@@ -1538,140 +1681,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/06/10/字典树实现/" itemprop="url">
-                  字典树实现
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-10T21:41:56+00:00" content="2016-06-10">
-              2016-06-10
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/06/10/字典树实现/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/10/字典树实现/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>Trie树，又称字典树，单词查找树或者前缀树，是一种用于快速检索的多叉树结构，如英文字母的字典树是一个26叉树，数字的字典树是一个10叉树。</p>
-<h3 id="Trie树的基本性质可以归纳为："><a href="#Trie树的基本性质可以归纳为：" class="headerlink" title="Trie树的基本性质可以归纳为："></a>Trie树的基本性质可以归纳为：</h3><p>（1）根节点不包含字符，除根节点意外每个节点只包含一个字符。</p>
-<p>（2）从根节点到某一个节点，路径上经过的字符连接起来，为该节点对应的字符串。</p>
-<p>（3）每个节点的所有子节点包含的字符串不相同。</p>
-<h3 id="Trie树复杂度分析"><a href="#Trie树复杂度分析" class="headerlink" title="Trie树复杂度分析"></a>Trie树复杂度分析</h3><p>（1） 插入、查找的时间复杂度均为O(N)，其中N为字符串长度。</p>
-<p>（2） 空间复杂度是26^n级别的，非常庞大（可采用双数组实现改善）。</p>
-<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><p>Trie是一种非常简单高效的数据结构，但有大量的应用实例<br>1） 字符串检索<br>事先将已知的一些字符串（字典）的有关信息保存到trie树里，查找另外一些未知字符串是否出现过或者出现频率</p>
-<p>举例：<br>@  给出N 个单词组成的熟词表，以及一篇全用小写英文书写的文章，请你按最早出现的顺序写出所有不在熟词表中的生词</p>
-<p>@  给出一个词典，其中的单词为不良单词。单词均为小写字母。再给出一段文本，文本的每一行也由小写字母构成。判断文本中是否含有任何不良单词。例如，若rob是不良单词，那么文本problem含有不良单词</p>
-<p>2）字符串最长公共前缀</p>
-<p>Trie树利用多个字符串的公共前缀来节省存储空间，反之，当我们把大量字符串存储到一棵trie树上时，我们可以快速得到某些字符串的公共前缀</p>
-<p>@ 给出N 个小写英文字母串，以及Q 个询问，即询问某两个串的最长公共前缀的长度是多少？</p>
-<p>解决方案：首先对所有的串建立其对应的字母树。此时发现，对于两个串的最长公共前缀的长度即它们所在结点的公共祖先个数，于是，问题就转化为了离线（Offline）的最近公共祖先（Least Common Ancestor，简称LCA）问题</p>
-<p>3）排序</p>
-<p>Trie树是一棵多叉树，只要先序遍历整棵树，输出相应的字符串便是按字典序排序的结果</p>
-<h2 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstring&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxBranchNum = <span class="number">26</span>;<span class="comment">//如果区分大小写，可以扩展到52</span></div><div class="line"></div><div class="line"><span class="comment">/*定义trie树结点*/</span></div><div class="line"><span class="keyword">class</span> TrieNode</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">     <span class="keyword">char</span>* word; <span class="comment">//节点表示的单词</span></div><div class="line">     <span class="keyword">int</span> count;  <span class="comment">//单词出现的次数</span></div><div class="line">     TrieNode* nextBranch[MaxBranchNum];<span class="comment">//指向26个字符节点的指针</span></div><div class="line"><span class="keyword">public</span>:</div><div class="line">     TrieNode() : word(<span class="literal">NULL</span>),count(<span class="number">0</span>)</div><div class="line">     &#123;</div><div class="line">          <span class="built_in">memset</span>(nextBranch,<span class="literal">NULL</span>,<span class="keyword">sizeof</span>(TrieNode*) * MaxBranchNum);</div><div class="line">     &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">/*定义类Trie*/</span></div><div class="line"><span class="keyword">class</span> Trie</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">     Trie();</div><div class="line">     ~Trie();</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Insert</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//插入字符串str</span></div><div class="line">     <span class="function"><span class="keyword">bool</span> <span class="title">Search</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str,<span class="keyword">int</span>&amp; count)</span></span>;<span class="comment">//查找字符串str，并返回出现的次数</span></div><div class="line">     <span class="function"><span class="keyword">bool</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//删除字符串str</span></div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">PrintALL</span><span class="params">()</span></span>;<span class="comment">//打印trie树中所有的结点</span></div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">PrintPre</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span>;<span class="comment">//打印以str为前缀的单词</span></div><div class="line"><span class="keyword">private</span>:</div><div class="line">     TrieNode* pRoot;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Destory</span><span class="params">(TrieNode* pRoot)</span></span>;</div><div class="line">     <span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">(TrieNode* pRoot)</span></span>;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">Trie::Trie()</div><div class="line">&#123;</div><div class="line">     pRoot = <span class="keyword">new</span> TrieNode();<span class="comment">//注意字典树的根不存放字符</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">Trie::~Trie()</div><div class="line">&#123;</div><div class="line">     Destory(pRoot);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*插入一个单词*/</span></div><div class="line"><span class="keyword">void</span> Trie::Insert(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(<span class="literal">NULL</span> != str);</div><div class="line">     <span class="keyword">int</span> index;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;str[i];i++)</div><div class="line">     &#123;</div><div class="line">          index = str[i] - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          <span class="keyword">if</span> (<span class="literal">NULL</span> == pLoc-&gt;nextBranch[index])<span class="comment">//该单词的前缀不存在，要生成该结点</span></div><div class="line">          &#123;</div><div class="line">               pLoc-&gt;nextBranch[index] = <span class="keyword">new</span> TrieNode();</div><div class="line">          &#125;</div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pLoc-&gt;word)<span class="comment">//单词已经出现过</span></div><div class="line">     &#123;</div><div class="line">          pLoc-&gt;count++;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">else</span>    <span class="comment">//单词没有出现过，应该插入单词</span></div><div class="line">     &#123;</div><div class="line">          pLoc-&gt;count++;</div><div class="line">          pLoc-&gt;word = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="built_in">strlen</span>(str) + <span class="number">1</span>];</div><div class="line">          assert(<span class="literal">NULL</span> != pLoc-&gt;word);</div><div class="line">          <span class="built_in">strcpy</span>(pLoc-&gt;word,str);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*查找一个单词，如果存在该单词，则返回其出现次数*/</span></div><div class="line"><span class="keyword">bool</span> Trie::Search(<span class="keyword">const</span> <span class="keyword">char</span>* str,<span class="keyword">int</span>&amp; count)</div><div class="line">&#123;</div><div class="line">     assert(str != <span class="literal">NULL</span>);</div><div class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc &amp;&amp; pLoc-&gt;word)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          count = pLoc-&gt;count;</div><div class="line">          <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">bool</span> Trie::Remove(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(<span class="literal">NULL</span> != str);</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc &amp;&amp; pLoc-&gt; word)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          <span class="keyword">delete</span>[] pLoc-&gt;word;</div><div class="line">          pLoc-&gt;word = <span class="literal">NULL</span>;</div><div class="line">          <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Trie::PrintALL()</div><div class="line">&#123;</div><div class="line">     Print(pRoot);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> Trie::PrintPre(<span class="keyword">const</span> <span class="keyword">char</span>* str)</div><div class="line">&#123;</div><div class="line">     assert(str != <span class="literal">NULL</span>);</div><div class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">     <span class="keyword">int</span> index = <span class="number">-1</span>;;</div><div class="line">     TrieNode* pLoc = pRoot;</div><div class="line">     <span class="keyword">while</span>(pLoc &amp;&amp; *str)</div><div class="line">     &#123;</div><div class="line">          index = *str - <span class="string">'a'</span>;<span class="comment">//如果区分大小写，可以扩展</span></div><div class="line"></div><div class="line">          <span class="keyword">if</span>(index &lt; <span class="number">0</span> || index &gt; MaxBranchNum)<span class="comment">//不是一个单词，不执行插入</span></div><div class="line">          &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          pLoc = pLoc-&gt;nextBranch[index];</div><div class="line">          str++;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">if</span> (pLoc)<span class="comment">//条件成立，找到该单词</span></div><div class="line">     &#123;</div><div class="line">          Print(pLoc);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*按照字典顺序输出以pRoot为根的所有的单词*/</span></div><div class="line"><span class="keyword">void</span> Trie::Print(TrieNode* pRoot)</div><div class="line">&#123;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> == pRoot)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//输出单词</span></div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pRoot-&gt;word)</div><div class="line">     &#123;</div><div class="line">          <span class="built_in">cout</span>&lt;&lt;pRoot-&gt;word&lt;&lt;<span class="string">" "</span>&lt;&lt;pRoot-&gt;count&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//递归处理分支</span></div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; MaxBranchNum;i++)</div><div class="line">     &#123;</div><div class="line">          Print(pRoot-&gt;nextBranch[i]);</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*销毁trie树*/</span></div><div class="line"><span class="keyword">void</span> Trie::Destory(TrieNode* pRoot)</div><div class="line">&#123;</div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> == pRoot)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">return</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; MaxBranchNum;i++)</div><div class="line">     &#123;</div><div class="line">          Destory(pRoot-&gt;nextBranch[i]);</div><div class="line">     &#125;</div><div class="line">     <span class="comment">//销毁单词占得空间</span></div><div class="line">     <span class="keyword">if</span> (<span class="literal">NULL</span> != pRoot-&gt;word)</div><div class="line">     &#123;</div><div class="line">          <span class="keyword">delete</span> []pRoot-&gt;word;</div><div class="line">          pRoot-&gt;word = <span class="literal">NULL</span>;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">delete</span> pRoot;<span class="comment">//销毁结点</span></div><div class="line">     pRoot = <span class="literal">NULL</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">     Trie t;</div><div class="line">     <span class="built_in">string</span> str;</div><div class="line">     <span class="comment">//int count = -1;</span></div><div class="line">     <span class="keyword">int</span> n,m,count;</div><div class="line">    <span class="keyword">while</span>(<span class="built_in">cin</span>&gt;&gt;n)</div><div class="line">    &#123;</div><div class="line">         <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;++i)</div><div class="line">          &#123;</div><div class="line">               <span class="built_in">cin</span>&gt;&gt;str;</div><div class="line">               t.Insert(str.c_str());</div><div class="line">          &#125;</div><div class="line">          <span class="built_in">cin</span>&gt;&gt;m;</div><div class="line">          <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;++i)</div><div class="line">          &#123;</div><div class="line">               <span class="built_in">cin</span>&gt;&gt;str;</div><div class="line">               <span class="keyword">bool</span> isFind = t.Search(str.c_str(),count);</div><div class="line">               <span class="built_in">cout</span>&lt;&lt;<span class="string">"isfind:"</span>&lt;&lt;isFind&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">               <span class="keyword">if</span>(isFind)<span class="built_in">cout</span>&lt;&lt;count&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">               <span class="keyword">else</span> <span class="built_in">cout</span>&lt;&lt;<span class="number">0</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line">          &#125;</div><div class="line">    &#125;</div><div class="line">     system(<span class="string">"pause"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1717,7 +1726,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="https://xiegonghai.github.io/archives/">
-              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-count">24</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1725,7 +1734,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="https://xiegonghai.github.io/categories/">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
