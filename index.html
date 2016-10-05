@@ -521,6 +521,24 @@
 <h2 id="压缩-解压缩"><a href="#压缩-解压缩" class="headerlink" title="压缩-解压缩"></a>压缩-解压缩</h2><p><em>.tar 用 tar –xvf 解压
 </em>.tar.gz和*.tgz 用 tar –xzf 解压</p>
 <h3 id="zip压缩与解压缩"><a href="#zip压缩与解压缩" class="headerlink" title="zip压缩与解压缩"></a>zip压缩与解压缩</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">zip -r filename.zip dir/file</div><div class="line">unzip filename</div></pre></td></tr></table></figure>
+<p>linux正则匹配电话号码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat file.txt | grep -Eo &quot;^(\([0-9]&#123;3&#125;\) )&#123;1&#125;[0-9]&#123;3&#125;-[0-9]&#123;4&#125;$|^([0-9]&#123;3&#125;-)&#123;2&#125;[0-9]&#123;4&#125;$&quot;</div></pre></td></tr></table></figure>
+<p>linux打印第N行</p>
+<p>方法一：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">awk &apos;NR==10&apos; file.txt  //awk的默认动作就是打印$0，所以NR==10后面可以不用加&#123;print $0&#125;</div></pre></td></tr></table></figure>
+<p>方法二：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sed -n &apos;10p&apos; file.txt  //如果不够10行，则什么也不打印</div></pre></td></tr></table></figure>
+<p>方法三：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">line=$(cat file.txt | wc -l)     //千万注意，等号前后一定不要有空格</div><div class="line">if [ &quot;$line&quot; -ge 10 ] ; then   //$line的双引号也可以不用加</div><div class="line">  cat file.txt | head -n 10 | tail -n 1</div><div class="line">fi</div></pre></td></tr></table></figure>
+<p>linux 统计单词数据并按频次降序<br>一行命令<br>方法一</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat words.txt | tr -s &apos; &apos; &apos;\n&apos; | sort | uniq -c | sort -nr | awk &apos;&#123;print $2 &quot; &quot; $1&#125;&apos;</div></pre></td></tr></table></figure>
+<p>解释：<br>tr -s ‘ ‘ ‘\n’  用换行替换空格，这样每一行就是一个单词了<br>sort -nr n是以数字排序 r是逆序（降序）</p>
+<p>方法二：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">awk &apos;</div><div class="line">&#123;for(i=1;i&lt;=NF;i++)</div><div class="line">&#123;s[$i]++;&#125;</div><div class="line">&#125;</div><div class="line">END&#123;</div><div class="line">for(i in s)</div><div class="line">&#123;print i &quot; &quot; s[i]&#125;</div><div class="line">&#125;&apos; words.txt | sort -nr -k 2</div></pre></td></tr></table></figure>
+<p>sort的k参数是以第几列来排序的意思</p>
+<p>对于文本行按列聚合</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">awk &apos;&#123;</div><div class="line">	for(i=1;i&lt;=NF;i++)&#123; </div><div class="line">		if(NR==1)&#123; s[i]=$i;</div><div class="line">		&#125; </div><div class="line">		else&#123; s[i]=s[i]&quot; &quot;$i;&#125;</div><div class="line">		&#125;</div><div class="line">	&#125; </div><div class="line">END&#123;</div><div class="line">	for(i=1;s[i]!=&quot;&quot;;i++) </div><div class="line">&#125;&apos; file.txt</div></pre></td></tr></table></figure>
+
           
         
       
