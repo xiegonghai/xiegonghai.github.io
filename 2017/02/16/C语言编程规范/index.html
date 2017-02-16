@@ -86,22 +86,25 @@
 
 
 
-<meta name="description" content="前言近期进行了华为的入职前培训，总结下C编程的基本知识
+<meta name="description" content="前言总结下C编程的基本知识
 一个良好的系统的评价体系Progrem SMaRTPerformance(高效)Portable(可移植性)Simple(简洁)Maintainable(可维护）Robustness(可靠）Testable(可测试）
-头文件编程规范###　三大原则(设计层面）：1.头文件适合放置接口声明，不适合放实现2.头文件应当职责单一：头文件插入其实不简">
+头文件编程规范三大原则(设计层面）：1.头文件适合放置接口声明，不适合放实现2.头文件应当职责单一：头文件插入其实不简单：查找，
+打开，读取，拷贝优化编译">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C语言编程规范以及常见问题">
 <meta property="og:url" content="https://yoursite.com/2017/02/16/C语言编程规范/index.html">
 <meta property="og:site_name" content="Xiegonghai's Blog">
-<meta property="og:description" content="前言近期进行了华为的入职前培训，总结下C编程的基本知识
+<meta property="og:description" content="前言总结下C编程的基本知识
 一个良好的系统的评价体系Progrem SMaRTPerformance(高效)Portable(可移植性)Simple(简洁)Maintainable(可维护）Robustness(可靠）Testable(可测试）
-头文件编程规范###　三大原则(设计层面）：1.头文件适合放置接口声明，不适合放实现2.头文件应当职责单一：头文件插入其实不简">
-<meta property="og:updated_time" content="2017-02-16T04:37:48.522Z">
+头文件编程规范三大原则(设计层面）：1.头文件适合放置接口声明，不适合放实现2.头文件应当职责单一：头文件插入其实不简单：查找，
+打开，读取，拷贝优化编译">
+<meta property="og:updated_time" content="2017-02-16T04:42:09.774Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C语言编程规范以及常见问题">
-<meta name="twitter:description" content="前言近期进行了华为的入职前培训，总结下C编程的基本知识
+<meta name="twitter:description" content="前言总结下C编程的基本知识
 一个良好的系统的评价体系Progrem SMaRTPerformance(高效)Portable(可移植性)Simple(简洁)Maintainable(可维护）Robustness(可靠）Testable(可测试）
-头文件编程规范###　三大原则(设计层面）：1.头文件适合放置接口声明，不适合放实现2.头文件应当职责单一：头文件插入其实不简">
+头文件编程规范三大原则(设计层面）：1.头文件适合放置接口声明，不适合放实现2.头文件应当职责单一：头文件插入其实不简单：查找，
+打开，读取，拷贝优化编译">
 
 
 
@@ -330,9 +333,9 @@
       
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近期进行了华为的入职前培训，总结下C编程的基本知识</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>总结下C编程的基本知识</p>
 <h2 id="一个良好的系统的评价体系"><a href="#一个良好的系统的评价体系" class="headerlink" title="一个良好的系统的评价体系"></a>一个良好的系统的评价体系</h2><p><strong>Progrem SMaRT</strong><br>Performance(高效)<br>Portable(可移植性)<br>Simple(简洁)<br>Maintainable(可维护）<br>Robustness(可靠）<br>Testable(可测试）</p>
-<h2 id="头文件编程规范"><a href="#头文件编程规范" class="headerlink" title="头文件编程规范"></a>头文件编程规范</h2><p>###　三大原则(设计层面）：<br>1.头文件适合放置接口声明，不适合放实现<br>2.头文件应当职责单一：头文件插入其实不简单：查找，</p>
+<h2 id="头文件编程规范"><a href="#头文件编程规范" class="headerlink" title="头文件编程规范"></a>头文件编程规范</h2><h3 id="三大原则-设计层面）："><a href="#三大原则-设计层面）：" class="headerlink" title="三大原则(设计层面）："></a>三大原则(设计层面）：</h3><p>1.头文件适合放置接口声明，不适合放实现<br>2.头文件应当职责单一：头文件插入其实不简单：查找，</p>
 <p>打开，读取，拷贝<br>优化编译的措施：编译前将头文件放在一个目录下，减少</p>
 <p>20%的编译时间<br>3.头文件应该向稳定方向包含</p>
 <h3 id="八项规则-编码层面-："><a href="#八项规则-编码层面-：" class="headerlink" title="八项规则(编码层面)："></a>八项规则(编码层面)：</h3><p>1.只能通过包含文件的方式使用其他模块的接口，禁止在C</p>
@@ -536,7 +539,7 @@ window._bd_share_config=
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个良好的系统的评价体系"><span class="nav-number">2.</span> <span class="nav-text">一个良好的系统的评价体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#头文件编程规范"><span class="nav-number">3.</span> <span class="nav-text">头文件编程规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#八项规则-编码层面-："><span class="nav-number">3.1.</span> <span class="nav-text">八项规则(编码层面)：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C函数编程规范"><span class="nav-number">4.</span> <span class="nav-text">C函数编程规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见问题"><span class="nav-number">5.</span> <span class="nav-text">常见问题</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个良好的系统的评价体系"><span class="nav-number">2.</span> <span class="nav-text">一个良好的系统的评价体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#头文件编程规范"><span class="nav-number">3.</span> <span class="nav-text">头文件编程规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#三大原则-设计层面）："><span class="nav-number">3.1.</span> <span class="nav-text">三大原则(设计层面）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#八项规则-编码层面-："><span class="nav-number">3.2.</span> <span class="nav-text">八项规则(编码层面)：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C函数编程规范"><span class="nav-number">4.</span> <span class="nav-text">C函数编程规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见问题"><span class="nav-number">5.</span> <span class="nav-text">常见问题</span></a></li></ol></div>
             
           </div>
         </section>

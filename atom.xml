@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yoursite.com/"/>
-  <updated>2017-02-16T04:37:48.522Z</updated>
+  <updated>2017-02-16T04:42:09.774Z</updated>
   <id>https://yoursite.com/</id>
   
   <author>
@@ -20,11 +20,11 @@
     <link href="https://yoursite.com/2017/02/16/C%E8%AF%AD%E8%A8%80%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/"/>
     <id>https://yoursite.com/2017/02/16/C语言编程规范/</id>
     <published>2017-02-16T13:14:00.000Z</published>
-    <updated>2017-02-16T04:37:48.522Z</updated>
+    <updated>2017-02-16T04:42:09.774Z</updated>
     
-    <content type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;近期进行了华为的入职前培训，总结下C编程的基本知识&lt;/p&gt;
+    <content type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;总结下C编程的基本知识&lt;/p&gt;
 &lt;h2 id=&quot;一个良好的系统的评价体系&quot;&gt;&lt;a href=&quot;#一个良好的系统的评价体系&quot; class=&quot;headerlink&quot; title=&quot;一个良好的系统的评价体系&quot;&gt;&lt;/a&gt;一个良好的系统的评价体系&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Progrem SMaRT&lt;/strong&gt;&lt;br&gt;Performance(高效)&lt;br&gt;Portable(可移植性)&lt;br&gt;Simple(简洁)&lt;br&gt;Maintainable(可维护）&lt;br&gt;Robustness(可靠）&lt;br&gt;Testable(可测试）&lt;/p&gt;
-&lt;h2 id=&quot;头文件编程规范&quot;&gt;&lt;a href=&quot;#头文件编程规范&quot; class=&quot;headerlink&quot; title=&quot;头文件编程规范&quot;&gt;&lt;/a&gt;头文件编程规范&lt;/h2&gt;&lt;p&gt;###　三大原则(设计层面）：&lt;br&gt;1.头文件适合放置接口声明，不适合放实现&lt;br&gt;2.头文件应当职责单一：头文件插入其实不简单：查找，&lt;/p&gt;
+&lt;h2 id=&quot;头文件编程规范&quot;&gt;&lt;a href=&quot;#头文件编程规范&quot; class=&quot;headerlink&quot; title=&quot;头文件编程规范&quot;&gt;&lt;/a&gt;头文件编程规范&lt;/h2&gt;&lt;h3 id=&quot;三大原则-设计层面）：&quot;&gt;&lt;a href=&quot;#三大原则-设计层面）：&quot; class=&quot;headerlink&quot; title=&quot;三大原则(设计层面）：&quot;&gt;&lt;/a&gt;三大原则(设计层面）：&lt;/h3&gt;&lt;p&gt;1.头文件适合放置接口声明，不适合放实现&lt;br&gt;2.头文件应当职责单一：头文件插入其实不简单：查找，&lt;/p&gt;
 &lt;p&gt;打开，读取，拷贝&lt;br&gt;优化编译的措施：编译前将头文件放在一个目录下，减少&lt;/p&gt;
 &lt;p&gt;20%的编译时间&lt;br&gt;3.头文件应该向稳定方向包含&lt;/p&gt;
 &lt;h3 id=&quot;八项规则-编码层面-：&quot;&gt;&lt;a href=&quot;#八项规则-编码层面-：&quot; class=&quot;headerlink&quot; title=&quot;八项规则(编码层面)：&quot;&gt;&lt;/a&gt;八项规则(编码层面)：&lt;/h3&gt;&lt;p&gt;1.只能通过包含文件的方式使用其他模块的接口，禁止在C&lt;/p&gt;
@@ -39,8 +39,8 @@
     
     <summary type="html">
     
-      &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;近期进行了华为的入职前培训，总结下C编程的基本知识&lt;/p&gt;
-&lt;h2 id=&quot;一个良好的系统的评价体系&quot;&gt;&lt;a href=&quot;#一个良好的系统的
+      &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;总结下C编程的基本知识&lt;/p&gt;
+&lt;h2 id=&quot;一个良好的系统的评价体系&quot;&gt;&lt;a href=&quot;#一个良好的系统的评价体系&quot; class=&quot;h
     
     </summary>
     
