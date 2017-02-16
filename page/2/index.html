@@ -260,6 +260,149 @@
             
               
                 
+                <a class="post-title-link" href="/2016/06/11/一个小C++程序内存泄漏检测/" itemprop="url">
+                  C++内存泄漏以及检测
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-11T01:01:59+00:00" content="2016-06-11">
+              2016-06-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/11/一个小C++程序内存泄漏检测/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/11/一个小C++程序内存泄漏检测/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>c++一般采用malloc/free或new/delete来动态分配和释放内存<br>二者有何不同？malloc/free是C/C++语言的标准库函数，new/delete是C++的运算符<br>malloc/free以及new/delete一般是配对出现，如果malloc后没有free，或者new后没有delete都将造成内存泄漏</p>
+<p>##一个小例子来说明内存泄漏<br>例子1<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> *p = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">100</span>];</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
+<div align="center"><br><img src="/img/leak1.jpg" alt="^_^||"><br></div>
+
+
+<p>例2 我们正确的进行释放<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> *p = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">100</span>];</div><div class="line">    <span class="keyword">delete</span> []p;</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
+<div align="center"><br><img src="/img/leak2.jpg" alt="^_^||"><br></div>
+
+
+<p>例3 我们用delete p来代替delete []p;<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> *p = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">100</span>];</div><div class="line">    <span class="keyword">delete</span> p;</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
+<div align="center"><br><img src="/img/leak3.jpg" alt="^_^||"><br></div>
+
+<p>从valgrind上我们可以看到，delete p和delete []p都没有造成内存泄漏，进行了全部内存的释放<br>但对与delete p用法valgrind明显的抛出了free/delete不匹配的提醒<br>其实按照正常逻辑推理，应该delete p只是释放了首地址元素的内存，应该会造成内存泄漏，而事实上<br>两种方式并未造成内存泄漏，这里尚有些疑问。</p>
+<h2 id="malloc-free-与-new-free-的比较"><a href="#malloc-free-与-new-free-的比较" class="headerlink" title="malloc/free 与 new/free 的比较"></a>malloc/free 与 new/free 的比较</h2><h3 id="各自用法"><a href="#各自用法" class="headerlink" title="各自用法"></a>各自用法</h3><p>函数malloc 的原型如下：<br>void <em> malloc(size_t size);<br>用malloc 申请一块长度为length 的整数类型的内存，程序如下：<br>int </em>p = (int <em>) malloc(sizeof(int) </em> length);<br>我们应当把注意力集中在两个要素上：“类型转换”和“sizeof”<br>1、malloc 返回值的类型是void <em>，所以在调用malloc 时要显式地进行类型转换，将void </em> 转换成所需要的指针类型。<br>2、 malloc 函数本身并不识别要申请的内存是什么类型，它只关心内存的总字节数。</p>
+<p>函数free 的原型如下：<br>void free( void * memblock );<br>为什么free 函数不象malloc 函数那样复杂呢？这是因为指针p 的类型以及它所指的内存的容量事先都是知道的，语句free(p)能正确地释放内存。如果p 是NULL 指针，那么free对p 无论操作多少次都不会出问题。如果p 不是NULL 指针，那么free 对p连续操作两次就会导致程序运行错误。</p>
+<p>运算符new 使用起来要比函数malloc 简单得多，例如：<br>int <em>p1 = (int </em>)malloc(sizeof(int) <em> length);<br>int </em>p2 = new int[length];<br>这是因为new内置了sizeof、类型转换和类型安全检查功能。对于非内部数据类型的对象而言，new 在创建动态对象的同时完成了初始化工作。如果对象有多个构造函数，那么new 的语句也可以有多种形式。<br>如果用new 创建对象数组，那么只能使用对象的无参数构造函数。例如<br>Obj <em>objects = new Obj[100];       // 创建100 个动态对象<br>不能写成<br>(x)Obj </em>objects = new Obj<a href="1">100</a>;        // 创建100 个动态对象的同时赋初值1<br>在用delete 释放对象数组时，留意不要丢了符号‘[]’。例如<br>delete []objects; // 正确的用法<br>delete objects; // 错误的用法</p>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><blockquote>
+<p>1.new自动计算需要分配的空间，而malloc需要手工计算字节数<br>2、new是类型安全的，而malloc不是，比如：<br>                 int<em> p = new float[2]; // 编译时指出错误<br>                 int</em> p = malloc(2*sizeof(float)); // 编译时无法指出错误<br>3.new operator 由两步构成，分别是 operator new 和 construct,operator new对应于malloc，但operator new可以重载，可以自定义内存分配策略，甚至不做内存分配，甚至分配到非内存设备上。而malloc无能为力<br>4.new将调用constructor，而malloc不能；delete将调用destructor，而free不能<br>5.malloc/free要库文件支持，new/delete则不要。 </p>
+</blockquote>
+<p><strong>malloc/free是C/C++语言的标准库函数，new/delete是C++的运算符。<br>对于用户自定义的对象而言，用maloc/free无法满足动态管理对象的要求。对象在创建的同时要自动执行构造函数，对象在消亡之前要自动执行析构函数。由于malloc/free是库函数而不是运算符，不在编译器控制权限之内，不能够把执行构造函数和析构函数的任务强加于malloc/free。因此C++需要一个能完成动态内存分配和初始化工作的运算符new，以及一个能完成清理与释放内存工作的运算符delete</strong></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>valgrind的使用<br><a href="http://blog.csdn.net/justdoithai/article/details/52347676" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/52347676</a><br><a href="http://blog.csdn.net/hackbuteer1/article/details/6789164" target="_blank" rel="external">http://blog.csdn.net/hackbuteer1/article/details/6789164</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/06/10/字典树实现/" itemprop="url">
                   字典树实现
                 </a>
@@ -1429,130 +1572,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/03/23/Word_seg朴素贝叶斯分词/" itemprop="url">
-                  WordSeg-朴素贝叶斯分词
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-03-23T00:38:59+00:00" content="2016-03-23">
-              2016-03-23
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Data structure and Algorithm</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/03/23/Word_seg朴素贝叶斯分词/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/23/Word_seg朴素贝叶斯分词/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="小程序注解"><a href="#小程序注解" class="headerlink" title="小程序注解"></a>小程序注解</h2><p>以下是相应的Python代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#朴素贝叶斯分词(含义是分词后，得分的假设是基于两词之间是独立的，后词的出现与前词无关)</span></div><div class="line"><span class="comment"># p[i][n]表示从i到n的句子的最佳划分的得分,我们用dp表达式p[i][n]=max(freq(s[i:k])+p[k][n])</span></div><div class="line"><span class="comment"># 依次求出长度为1,2,3,n的句子划分，那么p[0][n]便是最佳划分结果,用t[i]表示产生的最佳划分每次向前走几个字符</span></div><div class="line"><span class="keyword">import</span> math</div><div class="line">d = &#123;&#125;</div><div class="line">log = <span class="keyword">lambda</span> x: float(<span class="string">'-inf'</span>) <span class="keyword">if</span> <span class="keyword">not</span> x <span class="keyword">else</span> math.log(x) <span class="comment">#匿名函数</span></div><div class="line">prob = <span class="keyword">lambda</span> x: d[x] <span class="keyword">if</span> x <span class="keyword">in</span> d <span class="keyword">else</span> <span class="number">0</span> <span class="keyword">if</span> len(x)&gt;<span class="number">1</span> <span class="keyword">else</span> <span class="number">1</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(filename=<span class="string">'SogouLabDic.dic'</span>)</span>:</span></div><div class="line">    d[<span class="string">'_N_'</span>] = <span class="number">0.0</span></div><div class="line">    <span class="keyword">with</span> open(filename, <span class="string">'r'</span>,encoding=<span class="string">'gb18030'</span>) <span class="keyword">as</span> handle:</div><div class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> handle:</div><div class="line">            <span class="comment">#print(line)</span></div><div class="line">            word, freq = line.split(<span class="string">'\t'</span>)[<span class="number">0</span>:<span class="number">2</span>]  <span class="comment">#取list的前2个元素,词和相应的词数</span></div><div class="line">            d[<span class="string">'_N_'</span>] += int(freq)+<span class="number">1</span>             <span class="comment"># 此表的词频总和,每个词数都加1    </span></div><div class="line">            <span class="keyword">try</span>:</div><div class="line">                <span class="comment">#print('utf')</span></div><div class="line">                d[word.decode(<span class="string">'utf-8'</span>)] = int(freq)+<span class="number">1</span> <span class="comment">#词数加1</span></div><div class="line">            <span class="keyword">except</span>:</div><div class="line">                <span class="comment">#print('gbk')</span></div><div class="line">                <span class="keyword">try</span>:</div><div class="line">                    d[word] = int(freq)+<span class="number">1</span>            <span class="comment">#词数加1</span></div><div class="line">                <span class="keyword">except</span>:</div><div class="line">                    print(word)</div><div class="line">                    <span class="keyword">break</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">solve</span><span class="params">(s)</span>:</span></div><div class="line">    l = len(s)</div><div class="line">    p = [<span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(l+<span class="number">1</span>)] <span class="comment">#1,2,...,l位置为0</span></div><div class="line">    t = [<span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(l)]</div><div class="line">    <span class="comment"># 如'大床房多少钱'，当前位置到末尾分别为1,2,...l长度的词，t[i]保留从当前位置向前划分的最佳长度，比如从'大'开始，</span></div><div class="line">    <span class="comment">#大床最佳，或大床房最佳，取决词库</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(l<span class="number">-1</span>, <span class="number">-1</span>, <span class="number">-1</span>): <span class="comment">#start,stop，step</span></div><div class="line">        <span class="comment"># prob(s[i:i+k])/d['_t_']为词表词频度</span></div><div class="line">        p[i], t[i] = max((prob(s[i:i+k])/d[<span class="string">'_N_'</span>]+p[i+k], k)<span class="comment">#在一个二元组列表里返回第一个元素最大的二元组,</span></div><div class="line">                         <span class="keyword">for</span> k <span class="keyword">in</span> range(<span class="number">1</span>, l-i+<span class="number">1</span>))</div><div class="line">    dis = <span class="number">0</span></div><div class="line">    <span class="keyword">while</span> dis&lt;l:  <span class="comment">#dis=0,不断向前遍历分割词汇</span></div><div class="line">        <span class="keyword">yield</span> s[dis:dis+t[dis]]</div><div class="line">        dis += t[dis]</div><div class="line">    </div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    init()</div><div class="line">    st=<span class="string">'百度是全球最大的中文搜索引擎、最大的中文网站'</span></div><div class="line">    print(len(st))</div><div class="line">    lpp=list(solve(st))</div><div class="line">    <span class="keyword">for</span> o <span class="keyword">in</span> range(len(lpp)):</div><div class="line">        print(lpp[o])</div><div class="line">    <span class="keyword">print</span> (<span class="string">' '</span>.join(list(solve(st))))</div></pre></td></tr></table></figure></p>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">百度</div><div class="line">是</div><div class="line">全球</div><div class="line">最大</div><div class="line">的</div><div class="line">中文</div><div class="line">搜索</div><div class="line">引擎</div><div class="line">、</div><div class="line">最大</div><div class="line">的</div><div class="line">中文</div><div class="line">网站</div></pre></td></tr></table></figure>
-<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>本实现基于朴素的贝叶斯思想，分词效果具有局限性，想要更精准的分词需要更大的词典以及更加好的<br>开源代码，如jieba等,推荐一个优秀的开源实现 <a href="https://github.com/yanyiwu" target="_blank" rel="external">https://github.com/yanyiwu</a></p>
-<h2 id="词典下载"><a href="#词典下载" class="headerlink" title="词典下载"></a>词典下载</h2><p>如若要运行该Python代码，需要搜狗实验室词典SogouLabDic.dic，可到我的github进行下载，仅当学习用还是不错我的，觉得不错可给star</p>
-<p>我的github:<a href="https://github.com/xiegonghai" target="_blank" rel="external">https://github.com/xiegonghai</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1598,7 +1617,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="https://xiegonghai.github.io/archives/">
-              <span class="site-state-item-count">25</span>
+              <span class="site-state-item-count">26</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1606,7 +1625,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="https://xiegonghai.github.io/categories/">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1686,7 +1705,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

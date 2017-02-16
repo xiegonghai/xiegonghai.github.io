@@ -260,6 +260,138 @@
             
               
                 
+                <a class="post-title-link" href="/2017/02/16/C语言编程规范/" itemprop="url">
+                  C语言编程规范以及常见问题
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-02-16T13:14:00+00:00" content="2017-02-16">
+              2017-02-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/C-C-与linux网络编程/" itemprop="url" rel="index">
+                    <span itemprop="name">C,C++与linux网络编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/02/16/C语言编程规范/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/16/C语言编程规范/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近期进行了华为的入职前培训，总结下C编程的基本知识</p>
+<h2 id="一个良好的系统的评价体系"><a href="#一个良好的系统的评价体系" class="headerlink" title="一个良好的系统的评价体系"></a>一个良好的系统的评价体系</h2><p><strong>Progrem SMaRT</strong><br>Performance(高效)<br>Portable(可移植性)<br>Simple(简洁)<br>Maintainable(可维护）<br>Robustness(可靠）<br>Testable(可测试）</p>
+<h2 id="头文件编程规范"><a href="#头文件编程规范" class="headerlink" title="头文件编程规范"></a>头文件编程规范</h2><p>###　三大原则(设计层面）：<br>1.头文件适合放置接口声明，不适合放实现<br>2.头文件应当职责单一：头文件插入其实不简单：查找，</p>
+<p>打开，读取，拷贝<br>优化编译的措施：编译前将头文件放在一个目录下，减少</p>
+<p>20%的编译时间<br>3.头文件应该向稳定方向包含</p>
+<h3 id="八项规则-编码层面-："><a href="#八项规则-编码层面-：" class="headerlink" title="八项规则(编码层面)："></a>八项规则(编码层面)：</h3><p>1.只能通过包含文件的方式使用其他模块的接口，禁止在C</p>
+<p>中通过extern的方式使用外部函数接口，变量<br>3.禁止在头文件中定义变量<br>3.禁止extern “c”中包含头文件<br>4.总是编写内部的ifndef保护符<br>5.头文件应当自包含，保证自身完整性<br>6.禁止头文件循环依赖<br>7.禁止包含用不到的头文件（避免包含万能头文件）<br>8.每一个C文件应有一个同名的h文件，用于声明需要对外公开的接口</p>
+<h2 id="C函数编程规范"><a href="#C函数编程规范" class="headerlink" title="C函数编程规范"></a>C函数编程规范</h2><p>1.圈复杂度小于7(可执行的路径条数)<br>2.函数短小（小于50行）<br>3.嵌套层数小于5<br>4.职责单一<br>5.单一抽象层次<br>6.参数尽量不超过3个<br>7.避免重复(代码复用)<br>8.避免重入<br>9.不要返回局部变量地址</p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><p>1.堆<br>注意判断malloc返回值<br>分配过细粒度用栈(&lt;8字节)</p>
+<p>2.栈<br>不返回栈变量地址，容量不能过大<br>由编译器决定</p>
+<p>3.类型强制转换<br>无有符号互转<br>截断int-&gt;short<br>short len = (short)a(int);</p>
+<p>4.整数溢出<br>相加相乘等</p>
+<p>5.字节对齐<br>小端-高位低址(x86,arm) 大端-高位高址(unix,网络)</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/10/01/Docker制作hexo博客镜像/" itemprop="url">
                   Docker技术实践(搭建web服务器and制作hexo博客)
                 </a>
@@ -1602,149 +1734,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/06/11/一个小C++程序内存泄漏检测/" itemprop="url">
-                  C++内存泄漏以及检测
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-11T01:01:59+00:00" content="2016-06-11">
-              2016-06-11
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/C-与linux网络编程/" itemprop="url" rel="index">
-                    <span itemprop="name">C++与linux网络编程</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/06/11/一个小C++程序内存泄漏检测/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/11/一个小C++程序内存泄漏检测/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>c++一般采用malloc/free或new/delete来动态分配和释放内存<br>二者有何不同？malloc/free是C/C++语言的标准库函数，new/delete是C++的运算符<br>malloc/free以及new/delete一般是配对出现，如果malloc后没有free，或者new后没有delete都将造成内存泄漏</p>
-<p>##一个小例子来说明内存泄漏<br>例子1<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> *p = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">100</span>];</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
-<div align="center"><br><img src="/img/leak1.jpg" alt="^_^||"><br></div>
-
-
-<p>例2 我们正确的进行释放<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> *p = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">100</span>];</div><div class="line">    <span class="keyword">delete</span> []p;</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
-<div align="center"><br><img src="/img/leak2.jpg" alt="^_^||"><br></div>
-
-
-<p>例3 我们用delete p来代替delete []p;<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> *p = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">100</span>];</div><div class="line">    <span class="keyword">delete</span> p;</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>我们用valgrind工具来检测这段程序的内存泄漏情况</p>
-<div align="center"><br><img src="/img/leak3.jpg" alt="^_^||"><br></div>
-
-<p>从valgrind上我们可以看到，delete p和delete []p都没有造成内存泄漏，进行了全部内存的释放<br>但对与delete p用法valgrind明显的抛出了free/delete不匹配的提醒<br>其实按照正常逻辑推理，应该delete p只是释放了首地址元素的内存，应该会造成内存泄漏，而事实上<br>两种方式并未造成内存泄漏，这里尚有些疑问。</p>
-<h2 id="malloc-free-与-new-free-的比较"><a href="#malloc-free-与-new-free-的比较" class="headerlink" title="malloc/free 与 new/free 的比较"></a>malloc/free 与 new/free 的比较</h2><h3 id="各自用法"><a href="#各自用法" class="headerlink" title="各自用法"></a>各自用法</h3><p>函数malloc 的原型如下：<br>void <em> malloc(size_t size);<br>用malloc 申请一块长度为length 的整数类型的内存，程序如下：<br>int </em>p = (int <em>) malloc(sizeof(int) </em> length);<br>我们应当把注意力集中在两个要素上：“类型转换”和“sizeof”<br>1、malloc 返回值的类型是void <em>，所以在调用malloc 时要显式地进行类型转换，将void </em> 转换成所需要的指针类型。<br>2、 malloc 函数本身并不识别要申请的内存是什么类型，它只关心内存的总字节数。</p>
-<p>函数free 的原型如下：<br>void free( void * memblock );<br>为什么free 函数不象malloc 函数那样复杂呢？这是因为指针p 的类型以及它所指的内存的容量事先都是知道的，语句free(p)能正确地释放内存。如果p 是NULL 指针，那么free对p 无论操作多少次都不会出问题。如果p 不是NULL 指针，那么free 对p连续操作两次就会导致程序运行错误。</p>
-<p>运算符new 使用起来要比函数malloc 简单得多，例如：<br>int <em>p1 = (int </em>)malloc(sizeof(int) <em> length);<br>int </em>p2 = new int[length];<br>这是因为new内置了sizeof、类型转换和类型安全检查功能。对于非内部数据类型的对象而言，new 在创建动态对象的同时完成了初始化工作。如果对象有多个构造函数，那么new 的语句也可以有多种形式。<br>如果用new 创建对象数组，那么只能使用对象的无参数构造函数。例如<br>Obj <em>objects = new Obj[100];       // 创建100 个动态对象<br>不能写成<br>(x)Obj </em>objects = new Obj<a href="1">100</a>;        // 创建100 个动态对象的同时赋初值1<br>在用delete 释放对象数组时，留意不要丢了符号‘[]’。例如<br>delete []objects; // 正确的用法<br>delete objects; // 错误的用法</p>
-<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><blockquote>
-<p>1.new自动计算需要分配的空间，而malloc需要手工计算字节数<br>2、new是类型安全的，而malloc不是，比如：<br>                 int<em> p = new float[2]; // 编译时指出错误<br>                 int</em> p = malloc(2*sizeof(float)); // 编译时无法指出错误<br>3.new operator 由两步构成，分别是 operator new 和 construct,operator new对应于malloc，但operator new可以重载，可以自定义内存分配策略，甚至不做内存分配，甚至分配到非内存设备上。而malloc无能为力<br>4.new将调用constructor，而malloc不能；delete将调用destructor，而free不能<br>5.malloc/free要库文件支持，new/delete则不要。 </p>
-</blockquote>
-<p><strong>malloc/free是C/C++语言的标准库函数，new/delete是C++的运算符。<br>对于用户自定义的对象而言，用maloc/free无法满足动态管理对象的要求。对象在创建的同时要自动执行构造函数，对象在消亡之前要自动执行析构函数。由于malloc/free是库函数而不是运算符，不在编译器控制权限之内，不能够把执行构造函数和析构函数的任务强加于malloc/free。因此C++需要一个能完成动态内存分配和初始化工作的运算符new，以及一个能完成清理与释放内存工作的运算符delete</strong></p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>valgrind的使用<br><a href="http://blog.csdn.net/justdoithai/article/details/52347676" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/52347676</a><br><a href="http://blog.csdn.net/hackbuteer1/article/details/6789164" target="_blank" rel="external">http://blog.csdn.net/hackbuteer1/article/details/6789164</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1790,7 +1779,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="https://xiegonghai.github.io/archives/">
-              <span class="site-state-item-count">25</span>
+              <span class="site-state-item-count">26</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1798,7 +1787,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="https://xiegonghai.github.io/categories/">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1878,7 +1867,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
