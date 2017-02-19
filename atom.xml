@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yoursite.com/"/>
-  <updated>2017-02-16T04:42:09.774Z</updated>
+  <updated>2017-02-19T04:02:22.000Z</updated>
   <id>https://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,84 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>JAVA语言编程规范以及常见问题</title>
+    <link href="https://yoursite.com/2017/02/19/java%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/"/>
+    <id>https://yoursite.com/2017/02/19/java编程规范/</id>
+    <published>2017-02-19T13:14:00.000Z</published>
+    <updated>2017-02-19T04:02:22.000Z</updated>
+    
+    <content type="html">&lt;h2 id=&quot;第一章-排版&quot;&gt;&lt;a href=&quot;#第一章-排版&quot; class=&quot;headerlink&quot; title=&quot;第一章 排版&quot;&gt;&lt;/a&gt;第一章 排版&lt;/h2&gt;&lt;p&gt;团队一致&lt;br&gt;规则1：不同的概念之间，增加空行&lt;br&gt;规则2：将逻辑紧密相关的代码放在一起&lt;br&gt;规则3：控制一行的宽度，不要超过120个字符(拆行）&lt;br&gt;规则4：控制一行的宽度，不同的概念见（关键字，变量，操作符增加空格，以便清楚区分概念&lt;br&gt;规则5：控制采用缩进来区分不同层次的概念(不同tab, 不同操作系统空格数不一样，用4个空格）&lt;/p&gt;
+&lt;p&gt;建议1：将局部变量的作用最小化&lt;br&gt;建议2：if,for,do,while,case,switch,default等语句自占一行，且if,for,do,while无论多少语句要加括号&lt;br&gt;建议3：控制文件的长度，最好不要超过500行&lt;/p&gt;
+&lt;h2 id=&quot;第二章-注释&quot;&gt;&lt;a href=&quot;#第二章-注释&quot; class=&quot;headerlink&quot; title=&quot;第二章 注释&quot;&gt;&lt;/a&gt;第二章 注释&lt;/h2&gt;&lt;p&gt;原则：尽量用代码来解释自己（写注释是一种失败）&lt;/p&gt;
+&lt;p&gt;规则1：注释应解释代码的意图，而不是描述代码怎么做&lt;br&gt;规则2：保证注释与代码一致，避免产生误导&lt;br&gt;规则3:注释应与其描述代码位置相邻，放在代码上方&lt;/p&gt;
+&lt;p&gt;建议1：不要用注释保留废弃代码&lt;br&gt;建议2：不用用注释记录修改日志&lt;/p&gt;
+&lt;h2 id=&quot;第三章：命名&quot;&gt;&lt;a href=&quot;#第三章：命名&quot; class=&quot;headerlink&quot; title=&quot;第三章：命名&quot;&gt;&lt;/a&gt;第三章：命名&lt;/h2&gt;&lt;p&gt;原则:团队为包，类，方法，变量取一个好名字，使代码易于理解&lt;/p&gt;
+&lt;p&gt;a) 能清晰的表达意图&lt;br&gt;b）避免造成误导&lt;br&gt;c）避免不必要的编解码&lt;br&gt;d）能区分出意思&lt;br&gt;e) 不用或少用缩写&lt;/p&gt;
+&lt;p&gt;规则1：进行使用魔鬼数字&lt;br&gt;规则2:常量命名，由全大写单词组成，单词间用下划线分割，且使用static final(全局唯一且不可改）&lt;br&gt;规则3:首字母小写的驼峰命名法&lt;br&gt;规则4：方法的命名，用动词和动宾结构，首字母小写的驼峰命名法&lt;br&gt;规则5： 类和接口的命名，首字母大写的驼峰命名法&lt;br&gt;规则6：包的命名，由一个或若干个单词组成，所有的字母为小写&lt;/p&gt;
+&lt;p&gt;建议1：int[] index,而不要使用 int index[]&lt;/p&gt;
+&lt;h2 id=&quot;第四章：-变量和类型&quot;&gt;&lt;a href=&quot;#第四章：-变量和类型&quot; class=&quot;headerlink&quot; title=&quot;第四章： 变量和类型&quot;&gt;&lt;/a&gt;第四章： 变量和类型&lt;/h2&gt;&lt;p&gt;原则:谨慎使用静态成员变量&lt;/p&gt;
+&lt;p&gt;规则1：避免随意进行类型强制转换，应改善设计，或在转换前用instanceof进行判断&lt;/p&gt;
+&lt;p&gt;规则2：需要精确计算时不要使用float和double&lt;br&gt;如System.out.println(1.03-0.42)&lt;br&gt;结果为0.610000000000001&lt;/p&gt;
+&lt;p&gt;需要精确计算推荐使用int,long,BigDecimal等&lt;/p&gt;
+&lt;p&gt;规则3：不能用浮点数作为循环变量&lt;br&gt;(float)2000000000==2000000050为true&lt;/p&gt;
+&lt;p&gt;规则4：浮点类型数据判断相等不能直接使用==&lt;br&gt;math.abs(a-b)&amp;lt;1E-6F&lt;/p&gt;
+&lt;p&gt;规则5：避免同一个局部变量在前后表达不同的含义&lt;/p&gt;
+&lt;p&gt;规则6:不要再单个的表达式中对相同的变量赋值超过一次&lt;/p&gt;
+&lt;h2 id=&quot;第5章-方法&quot;&gt;&lt;a href=&quot;#第5章-方法&quot; class=&quot;headerlink&quot; title=&quot;第5章 方法&quot;&gt;&lt;/a&gt;第5章 方法&lt;/h2&gt;&lt;p&gt;原则1：&lt;br&gt;原则2:方法设计应遵循单一职责原则(SRP)，一个方法仅完成一件事&lt;/p&gt;
+&lt;p&gt;原则3:方法设计应遵循单一抽象层次原则(SLAP)&lt;/p&gt;
+&lt;p&gt;原则4：方法设计应遵循命令与查询职责分离原则(CQRS)&lt;br&gt;Query 一般会有返回值&lt;br&gt;Command有比较多的输入，设置某些东西&lt;/p&gt;
+&lt;p&gt;将Command和Query功能合并入一个方法，方便了客户的使用，却降低了清晰性&lt;/p&gt;
+&lt;p&gt;规则1：不要把方法的入参当作工作变量/临时变量，除非特别重要&lt;/p&gt;
+&lt;p&gt;规则2：使用类名调用静态方法，而不要使用实例或表达式来调用。&lt;br&gt;明确的使用类名调用静态方法不容易造成混淆，使用实例调用静态方法时，调用的静态方法是声明类型的静态方法，与实际的实际类型无关，可能会导致与预期的结果不一致，当父类与子类有同名静态方法时，声明父类变量引用子类实例，调用该静态方法时调用的是父类的静态方法，而非子类的静态方法。&lt;/p&gt;
+&lt;h2 id=&quot;第6章：包，类和接口&quot;&gt;&lt;a href=&quot;#第6章：包，类和接口&quot; class=&quot;headerlink&quot; title=&quot;第6章：包，类和接口&quot;&gt;&lt;/a&gt;第6章：包，类和接口&lt;/h2&gt;&lt;p&gt;原则1：类和接口的设计应遵循面向对象SOLID设计原则&lt;br&gt;1.单一职责原则&lt;br&gt;2.开放封闭原则：新增功能时可以不修改原有的代码，也就是对扩展开放，对修改封闭，比如，可以通过实现一个已有的接口，或者继承一个已有的类，或者替换组合中的一个实现，来扩展新功能，而不修改原有的代码。&lt;br&gt;3.里氏替换原则:子类的实例应该能够替换任何其超类的实例，违反此原则的经典例子是，从长方形派生一个正方形&lt;br&gt;4.接口分离原则：使用多个专门的接口比使用单一的总接口要好&lt;br&gt;5.依赖倒置原则&lt;br&gt;面向过程的开发中，高层直接调用底层，造成高层依赖于底层的具体实现，高层应该调用抽象的接口，底层则应该实现接口，两者都依赖于接口，这样解除了高层和底层的耦合。&lt;/p&gt;
+&lt;p&gt;原则2：类的设计应遵循迪米特法则(最小知识原则）&lt;br&gt;一个类不应该包含太多其他类的方法&lt;/p&gt;
+&lt;p&gt;原则3：类的设计应遵循tell，dont ask原则&lt;/p&gt;
+&lt;p&gt;你应该尽量告诉对象你希望它们去做的事情，而不要询问它们的状态之后作出决定，最后才告诉它们做什么事情&lt;/p&gt;
+&lt;p&gt;规则1：除提供给外部使用的全局常量外，应尽量避免类成员变量被外部直接访问&lt;/p&gt;
+&lt;p&gt;说明：将变量设置为私有的理由是：我们不想其他人依赖这个变量，依赖类内部的实现细节，这样，当内部实现需要变更时，影响面就比较小，变更的成本就比较低&lt;/p&gt;
+&lt;p&gt;我们应当尽量将类成员作用域设置为最小的&lt;/p&gt;
+&lt;p&gt;规则2：避免在无关的变量或无关的概念之间重用名字，&lt;br&gt;避免隐藏，遮蔽，遮掩&lt;br&gt;隐藏：&lt;br&gt;遮蔽：类内部&lt;br&gt;比如同名变量取最近的&lt;br&gt;遮掩：类内部&lt;br&gt;编译失败等&lt;/p&gt;
+&lt;p&gt;规则3：不要再父类的构造方法中调用可能被子类复写的方法&lt;/p&gt;
+&lt;p&gt;规则4:覆写equals方法时，应同时覆写hashcode方法&lt;br&gt;说明：因为java对象在存放到基于Hash的集合(HashMap,HashTable等)时，会使用其Hash码进行索引，如果只覆写了equals方法，而没有正确覆写hashCode方法，则会导致效率低下甚至出错&lt;/p&gt;
+&lt;p&gt;java对象的hashCode方法有如下约定：&lt;br&gt;1.同一次运行中 ，同一个对象如果equals方法中用的信息没有改变，多次调用hashCode的方法返回值必须相同&lt;br&gt;2.如果两个对象调用的equals方法时相等，则这两个对象的hashCode方法，也必须返回相同的值&lt;br&gt;3.如果两个对象调用的equals方法时不相等，则这两个对象的hashcode方法，不要求其返回值不同。&lt;/p&gt;
+&lt;p&gt;规则5：子类覆写父类方法时应加上@Override注解&lt;br&gt;加上的好处是，如果覆写时因为疏忽，导致子类方法的参数同父类不一致编译时会报错，使问题在编译期就被发现，如果父类修改了方法定义造成子类不再覆写父类方法，也能使问题在编译期今早被发现&lt;/p&gt;
+&lt;h3 id=&quot;异常&quot;&gt;&lt;a href=&quot;#异常&quot; class=&quot;headerlink&quot; title=&quot;异常&quot;&gt;&lt;/a&gt;异常&lt;/h3&gt;&lt;pre&gt;&lt;code&gt;原则1 只针对真正异常的情况才使用exception机制
+说明：不要用exception机制来做流程控制，exception机制只应该用于处理罕见的，意料之外的，导致正常流程无法继续执行的行为，而不是取代正常的业务逻辑判断。
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;规则1：在抛出异常的时候，应该同时提供足够信息，以便对分析“异常是如何产生的”,比如“对该异常有贡献”的参数和变量的值，这样能方便程序员知道应该去查找哪些错误，可以极大地加速诊断过程。但是注意要符合公司安全红线和法律法规的要检查求，不要包含敏感信息或个人信息&lt;/p&gt;
+&lt;p&gt;规则2：对可恢复的情况使用受检异常(checked exception),对编程错误使用运行时异常(runtime exception)&lt;br&gt;受检异常(checked exception),运行时异常(runtime exception)和错误(error)&lt;/p&gt;
+&lt;p&gt;使用原则：&lt;/p&gt;
+&lt;p&gt;1、如果期望调用者能够恢复，则应该使用受检异常，可以强迫调用者在一个catch字句中处理该异常或者继续向外传播&lt;br&gt;2.运行时异常是指难以恢复或者不可恢复的程序错误，大多数运行时异常都是表面前提违例&lt;br&gt;precondition violation是指API的调用方没有遵循调用约定&lt;/p&gt;
+&lt;p&gt;3.错误被jvm保留用于指示资源不足，约束失败或其他程序无法继续执行的情况，最好不要实现新的ERROR子类，所有抛出的未受检异常都应该是RuntimeException的子类&lt;/p&gt;
+&lt;p&gt;规则3：不要忽略异常&lt;/p&gt;
+&lt;p&gt;规则4：方法注释和文档中要包含所抛出异常的说明&lt;/p&gt;
+&lt;p&gt;规则5：方法抛出的异常，应该与本身的抽象层次相对应&lt;/p&gt;
+&lt;p&gt;规则6：在finally块中不要使用return，break,或continue使finally块非正常结束&lt;/p&gt;
+&lt;p&gt;规则7：不要直接捕获受检异常的基类Exception&lt;/p&gt;
+&lt;p&gt;建议1：对第三方API抛出大量各类异常进行封装&lt;br&gt;为了避免与第三方API产生太过紧密的耦合，避免因第三方&lt;br&gt;修改了异常之后而导致自身代码的变更，需对第三方抛出的异常&lt;br&gt;进行封装&lt;/p&gt;
+&lt;p&gt;建议2：一个方法不应抛出大多类型的异常&lt;br&gt;方法抛出过多的异常，会增加客户端异常处理的工作，同时也表明&lt;br&gt;看方法承担了过多的职责&lt;/p&gt;
+&lt;h2 id=&quot;第8章-语言特性&quot;&gt;&lt;a href=&quot;#第8章-语言特性&quot; class=&quot;headerlink&quot; title=&quot;第8章 语言特性&quot;&gt;&lt;/a&gt;第8章 语言特性&lt;/h2&gt;&lt;p&gt;规则1：不要写复杂的表达式&lt;br&gt;复杂的表达式难以理解，会增加软件维护的成本和出错机率，建议将难懂的语句封装到某个方法里&lt;/p&gt;
+&lt;p&gt;规则2：运算时应避免产生溢出&lt;br&gt;long = int + int&lt;br&gt;BigInteger = long + long&lt;/p&gt;
+&lt;h3 id=&quot;运算和表达式&quot;&gt;&lt;a href=&quot;#运算和表达式&quot; class=&quot;headerlink&quot; title=&quot;运算和表达式&quot;&gt;&lt;/a&gt;运算和表达式&lt;/h3&gt;&lt;p&gt;建议： 运算采用括号明确运算的优先级&lt;/p&gt;
+&lt;h3 id=&quot;控制语句：&quot;&gt;&lt;a href=&quot;#控制语句：&quot; class=&quot;headerlink&quot; title=&quot;控制语句：&quot;&gt;&lt;/a&gt;控制语句：&lt;/h3&gt;&lt;p&gt;规则1：在switch语句的每一个case，和default都放置一条break语句&lt;/p&gt;
+&lt;p&gt;规则2：采用for-each代替for循环&lt;/p&gt;
+&lt;p&gt;for(string item:list)&lt;br&gt;{&lt;br&gt;    System.out.println(item);&lt;br&gt;}&lt;/p&gt;
+&lt;h3 id=&quot;泛型：&quot;&gt;&lt;a href=&quot;#泛型：&quot; class=&quot;headerlink&quot; title=&quot;泛型：&quot;&gt;&lt;/a&gt;泛型：&lt;/h3&gt;&lt;p&gt;规则：在集合中使用泛型（v1.5)&lt;br&gt;不好：&lt;br&gt;private final(Collection stamps = …&lt;br&gt;stamps.add(new Coin(…));&lt;br&gt;推荐：&lt;br&gt;private final(Collection&lt;stamp&gt; stamps = …&lt;br&gt;stamps.add(new Coin(…));&lt;/stamp&gt;&lt;/p&gt;
+&lt;p&gt;在使用 for(Stamps s:stamps){}不需要手动类型转换&lt;/p&gt;
+&lt;h3 id=&quot;其他语言特性&quot;&gt;&lt;a href=&quot;#其他语言特性&quot; class=&quot;headerlink&quot; title=&quot;其他语言特性&quot;&gt;&lt;/a&gt;其他语言特性&lt;/h3&gt;&lt;p&gt;规则：新代码不要使用已标注为@deprecated的方法（jdk废弃的）&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;第一章-排版&quot;&gt;&lt;a href=&quot;#第一章-排版&quot; class=&quot;headerlink&quot; title=&quot;第一章 排版&quot;&gt;&lt;/a&gt;第一章 排版&lt;/h2&gt;&lt;p&gt;团队一致&lt;br&gt;规则1：不同的概念之间，增加空行&lt;br&gt;规则2：将逻辑紧密相关的代码放在一起&lt;br&gt;规则3：
+    
+    </summary>
+    
+      <category term="JAVA" scheme="https://yoursite.com/categories/JAVA/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>C语言编程规范以及常见问题</title>
@@ -839,31 +917,6 @@
     </summary>
     
       <category term="Redis学习" scheme="https://yoursite.com/categories/Redis%E5%AD%A6%E4%B9%A0/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Hexo修改样式</title>
-    <link href="https://yoursite.com/2016/03/29/hexo%E4%BF%AE%E6%94%B9%E6%A0%B7%E5%BC%8F/"/>
-    <id>https://yoursite.com/2016/03/29/hexo修改样式/</id>
-    <published>2016-03-29T15:41:56.000Z</published>
-    <updated>2017-02-16T04:34:25.870Z</updated>
-    
-    <content type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;自从搭建博客之后，发现样式还不是自己最满意的，于是重新进行了修改，修改了文章页&lt;br&gt;宽度等，对齐了侧栏，修改了代码框显示在不同浏览器样式不一致问题，之前除了chrome以外，代码周边出现难看的滚动条，发现了插入图片功能，:),作为一位程序员，就得自己改造才舒服，就像自己代码改造latex简历一样.&lt;/p&gt;
-&lt;h2 id=&quot;修改宽度&quot;&gt;&lt;a href=&quot;#修改宽度&quot; class=&quot;headerlink&quot; title=&quot;修改宽度&quot;&gt;&lt;/a&gt;修改宽度&lt;/h2&gt;&lt;p&gt;\hexo\themes\next\source\css_variable\下文件&lt;br&gt;查看代码自定义博客页面的各模块大小颜色位置等，修改即可&lt;/p&gt;
-&lt;h2 id=&quot;修改代码框样式&quot;&gt;&lt;a href=&quot;#修改代码框样式&quot; class=&quot;headerlink&quot; title=&quot;修改代码框样式&quot;&gt;&lt;/a&gt;修改代码框样式&lt;/h2&gt;&lt;p&gt;\hexo\themes\next\source\css_common\components\highlight\highlight.styl theme.styl&lt;br&gt;浏览器调试修改css文件，查看样式，同时修改上述文件css定义&lt;/p&gt;
-&lt;h2 id=&quot;插入图片&quot;&gt;&lt;a href=&quot;#插入图片&quot; class=&quot;headerlink&quot; title=&quot;插入图片&quot;&gt;&lt;/a&gt;插入图片&lt;/h2&gt;&lt;p&gt;对于hexo，有两种方式：&lt;br&gt;使用本地路径：在hexo/source目录下新建一个img文件夹，将图片放入该文件夹下，插入图片时链接即为/img/图片名称。 &lt;/p&gt;
-&lt;h3 id=&quot;题外话&quot;&gt;&lt;a href=&quot;#题外话&quot; class=&quot;headerlink&quot; title=&quot;题外话&quot;&gt;&lt;/a&gt;题外话&lt;/h3&gt;&lt;p&gt;如何制作漂亮的简历个性化修改latex代码，可以参看我的csdn博客：&lt;br&gt;&lt;a href=&quot;http://blog.csdn.net/justdoithai/article/category/6186790&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://blog.csdn.net/justdoithai/article/category/6186790&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;http://blog.csdn.net/justdoithai/article/details/51206465&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://blog.csdn.net/justdoithai/article/details/51206465&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;http://blog.csdn.net/justdoithai/article/details/51627064&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://blog.csdn.net/justdoithai/article/details/51627064&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;http://blog.csdn.net/justdoithai/article/details/51627423&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://blog.csdn.net/justdoithai/article/details/51627423&lt;/a&gt;&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;自从搭建博客之后，发现样式还不是自己最满意的，于是重新进行了修改，修改了文章页&lt;br&gt;宽度等，对齐了侧栏，修改了代码框显示在不同浏览器样式不
-    
-    </summary>
-    
-      <category term="博客" scheme="https://yoursite.com/categories/%E5%8D%9A%E5%AE%A2/"/>
     
     
   </entry>

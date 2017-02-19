@@ -260,6 +260,133 @@
             
               
                 
+                <a class="post-title-link" href="/2016/06/11/布隆过滤器/" itemprop="url">
+                  布隆过滤器浅谈
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-11T20:41:56+00:00" content="2016-06-11">
+              2016-06-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Data-structure-and-Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">Data structure and Algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/11/布隆过滤器/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/11/布隆过滤器/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h2><h2 id="之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下"><a href="#之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下" class="headerlink" title="之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下"></a>之前就阅读过数学之美，知道有这么个基础的算法，可是因为不常用到也就没当回事，最近重新看到它觉得很高大上，就想来mark下</h2><p>设计初衷：<br>（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的，不知道当时布隆为啥想到设计时究竟是碰到了啥问题，但这确实很有效<br><strong>来看下面的问题：<br>1.检查一个单词是否拼写正确-&gt;看它是否在已经字典中<br>2.网络爬虫-&gt;一个网址是否访问过<br>3.邮件过滤，建立那些发垃圾邮件的地址的黑名单</strong></p>
+<p><strong>你可能会说哈希表不就行了吗，但在2,3的问题中，网页和垃圾邮件地址全球动不动便是几十亿那，哈希的存储效率也就50%左右</strong><br>    一亿Email（一个占16字节）约为1.6GB内存，要是几十亿个地址就几百GB，需要耗费很大代码<br>所以啊，能不能少花点内存来干这事：于是布隆过滤器来了，只要12.5%到25%的哈希表空间就能干这事，但是有点小错误，这个小错误概率太小就基本不担心了</p>
+<p>工作原理：<br>一亿Email =&gt; 16亿二进制（bit)==2亿字节（哈希就是16亿字节了）</p>
+<h3 id="1-先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，-F8-产生8个信息指纹（比如md5"><a href="#1-先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，-F8-产生8个信息指纹（比如md5" class="headerlink" title="1.先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，..F8)产生8个信息指纹（比如md5),"></a>1.先全部位清0，对每一个电子邮件地址X，用8个不同的随机数产生器（F1，F2，..F8)产生8个信息指纹（比如md5),</h3><p>###2.然后用一个统一的随机数产生器G把这8个信息指纹=&gt;8个自然数g1,g2,g3..,g8,这些位置上的位置为1</p>
+<p>1亿个地址放入建好这个布隆过滤器</p>
+<p>然后新来一个，同样处理，对应8个二进制位 t1,t2,…,t8<br>如果全为1，好的=&gt;判定位垃圾邮件</p>
+<p>你会想了，这样靠谱不，万一把非垃圾邮件误判了咋办</p>
+<p>我们来看看误判的概率：<br>先来算任何一个位被置为1的概率p，这样你可以简单的就知道<br>新来一个，有8个位，如果被误判了，此时这8个位全为1，其概率为$$p^8$$<br>我们来推到下一般的情况，假设有m个位，n个元素，有k个哈希函数，<br>针对单个元素插入来说：<br>$$任一个位被置为1的概率：1/m$$<br>$$K个函数都没有把它置为1：（1-1/m)^k$$<br>$$插入了那个元素依然没有被置为1：（1-1/m)^{kn}$$<br>$$反过来说，一个位被置为1：1-（1-1/m)^{kn}$$<br>同样的新来一个，要命中其概率为：<br>$1-[1-1/m]^{kn})^k 近似（1-e^{-kn/m})^k$<br>上次k=8,n/m=1/16,计算值大约在万分之五，误判率非常低，基本可容忍。*</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/06/11/一个小C++程序内存泄漏检测/" itemprop="url">
                   C++内存泄漏以及检测
                 </a>
@@ -1448,130 +1575,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/03/29/hexo修改样式/" itemprop="url">
-                  Hexo修改样式
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-03-29T15:41:56+00:00" content="2016-03-29">
-              2016-03-29
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/博客/" itemprop="url" rel="index">
-                    <span itemprop="name">博客</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/03/29/hexo修改样式/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/29/hexo修改样式/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自从搭建博客之后，发现样式还不是自己最满意的，于是重新进行了修改，修改了文章页<br>宽度等，对齐了侧栏，修改了代码框显示在不同浏览器样式不一致问题，之前除了chrome以外，代码周边出现难看的滚动条，发现了插入图片功能，:),作为一位程序员，就得自己改造才舒服，就像自己代码改造latex简历一样.</p>
-<h2 id="修改宽度"><a href="#修改宽度" class="headerlink" title="修改宽度"></a>修改宽度</h2><p>\hexo\themes\next\source\css_variable\下文件<br>查看代码自定义博客页面的各模块大小颜色位置等，修改即可</p>
-<h2 id="修改代码框样式"><a href="#修改代码框样式" class="headerlink" title="修改代码框样式"></a>修改代码框样式</h2><p>\hexo\themes\next\source\css_common\components\highlight\highlight.styl theme.styl<br>浏览器调试修改css文件，查看样式，同时修改上述文件css定义</p>
-<h2 id="插入图片"><a href="#插入图片" class="headerlink" title="插入图片"></a>插入图片</h2><p>对于hexo，有两种方式：<br>使用本地路径：在hexo/source目录下新建一个img文件夹，将图片放入该文件夹下，插入图片时链接即为/img/图片名称。 </p>
-<h3 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h3><p>如何制作漂亮的简历个性化修改latex代码，可以参看我的csdn博客：<br><a href="http://blog.csdn.net/justdoithai/article/category/6186790" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/category/6186790</a><br><a href="http://blog.csdn.net/justdoithai/article/details/51206465" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/51206465</a><br><a href="http://blog.csdn.net/justdoithai/article/details/51627064" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/51627064</a><br><a href="http://blog.csdn.net/justdoithai/article/details/51627423" target="_blank" rel="external">http://blog.csdn.net/justdoithai/article/details/51627423</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1617,7 +1620,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="https://xiegonghai.github.io/archives/">
-              <span class="site-state-item-count">26</span>
+              <span class="site-state-item-count">27</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1625,7 +1628,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="https://xiegonghai.github.io/categories/">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

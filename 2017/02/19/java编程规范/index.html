@@ -1,0 +1,740 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Xiegonghai's Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="第一章 排版团队一致规则1：不同的概念之间，增加空行规则2：将逻辑紧密相关的代码放在一起规则3：控制一行的宽度，不要超过120个字符(拆行）规则4：控制一行的宽度，不同的概念见（关键字，变量，操作符增加空格，以便清楚区分概念规则5：控制采用缩进来区分不同层次的概念(不同tab, 不同操作系统空格数不一样，用4个空格）
+建议1：将局部变量的作用最小化建议2：if,for,do,while,case,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA语言编程规范以及常见问题">
+<meta property="og:url" content="https://yoursite.com/2017/02/19/java编程规范/index.html">
+<meta property="og:site_name" content="Xiegonghai's Blog">
+<meta property="og:description" content="第一章 排版团队一致规则1：不同的概念之间，增加空行规则2：将逻辑紧密相关的代码放在一起规则3：控制一行的宽度，不要超过120个字符(拆行）规则4：控制一行的宽度，不同的概念见（关键字，变量，操作符增加空格，以便清楚区分概念规则5：控制采用缩进来区分不同层次的概念(不同tab, 不同操作系统空格数不一样，用4个空格）
+建议1：将局部变量的作用最小化建议2：if,for,do,while,case,">
+<meta property="og:updated_time" content="2017-02-19T04:02:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JAVA语言编程规范以及常见问题">
+<meta name="twitter:description" content="第一章 排版团队一致规则1：不同的概念之间，增加空行规则2：将逻辑紧密相关的代码放在一起规则3：控制一行的宽度，不要超过120个字符(拆行）规则4：控制一行的宽度，不同的概念见（关键字，变量，操作符增加空格，以便清楚区分概念规则5：控制采用缩进来区分不同层次的概念(不同tab, 不同操作系统空格数不一样，用4个空格）
+建议1：将局部变量的作用最小化建议2：if,for,do,while,case,">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://yoursite.com/2017/02/19/java编程规范/"/>
+
+  <title> JAVA语言编程规范以及常见问题 | Xiegonghai's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Xiegonghai's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">梦想还是要有的</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="https://xiegonghai.github.io/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="https://xiegonghai.github.io/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://xiegonghai.github.io/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="https://xiegonghai.github.io/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                JAVA语言编程规范以及常见问题
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-02-19T13:14:00+00:00" content="2017-02-19">
+              2017-02-19
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/02/19/java编程规范/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/19/java编程规范/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="第一章-排版"><a href="#第一章-排版" class="headerlink" title="第一章 排版"></a>第一章 排版</h2><p>团队一致<br>规则1：不同的概念之间，增加空行<br>规则2：将逻辑紧密相关的代码放在一起<br>规则3：控制一行的宽度，不要超过120个字符(拆行）<br>规则4：控制一行的宽度，不同的概念见（关键字，变量，操作符增加空格，以便清楚区分概念<br>规则5：控制采用缩进来区分不同层次的概念(不同tab, 不同操作系统空格数不一样，用4个空格）</p>
+<p>建议1：将局部变量的作用最小化<br>建议2：if,for,do,while,case,switch,default等语句自占一行，且if,for,do,while无论多少语句要加括号<br>建议3：控制文件的长度，最好不要超过500行</p>
+<h2 id="第二章-注释"><a href="#第二章-注释" class="headerlink" title="第二章 注释"></a>第二章 注释</h2><p>原则：尽量用代码来解释自己（写注释是一种失败）</p>
+<p>规则1：注释应解释代码的意图，而不是描述代码怎么做<br>规则2：保证注释与代码一致，避免产生误导<br>规则3:注释应与其描述代码位置相邻，放在代码上方</p>
+<p>建议1：不要用注释保留废弃代码<br>建议2：不用用注释记录修改日志</p>
+<h2 id="第三章：命名"><a href="#第三章：命名" class="headerlink" title="第三章：命名"></a>第三章：命名</h2><p>原则:团队为包，类，方法，变量取一个好名字，使代码易于理解</p>
+<p>a) 能清晰的表达意图<br>b）避免造成误导<br>c）避免不必要的编解码<br>d）能区分出意思<br>e) 不用或少用缩写</p>
+<p>规则1：进行使用魔鬼数字<br>规则2:常量命名，由全大写单词组成，单词间用下划线分割，且使用static final(全局唯一且不可改）<br>规则3:首字母小写的驼峰命名法<br>规则4：方法的命名，用动词和动宾结构，首字母小写的驼峰命名法<br>规则5： 类和接口的命名，首字母大写的驼峰命名法<br>规则6：包的命名，由一个或若干个单词组成，所有的字母为小写</p>
+<p>建议1：int[] index,而不要使用 int index[]</p>
+<h2 id="第四章：-变量和类型"><a href="#第四章：-变量和类型" class="headerlink" title="第四章： 变量和类型"></a>第四章： 变量和类型</h2><p>原则:谨慎使用静态成员变量</p>
+<p>规则1：避免随意进行类型强制转换，应改善设计，或在转换前用instanceof进行判断</p>
+<p>规则2：需要精确计算时不要使用float和double<br>如System.out.println(1.03-0.42)<br>结果为0.610000000000001</p>
+<p>需要精确计算推荐使用int,long,BigDecimal等</p>
+<p>规则3：不能用浮点数作为循环变量<br>(float)2000000000==2000000050为true</p>
+<p>规则4：浮点类型数据判断相等不能直接使用==<br>math.abs(a-b)&lt;1E-6F</p>
+<p>规则5：避免同一个局部变量在前后表达不同的含义</p>
+<p>规则6:不要再单个的表达式中对相同的变量赋值超过一次</p>
+<h2 id="第5章-方法"><a href="#第5章-方法" class="headerlink" title="第5章 方法"></a>第5章 方法</h2><p>原则1：<br>原则2:方法设计应遵循单一职责原则(SRP)，一个方法仅完成一件事</p>
+<p>原则3:方法设计应遵循单一抽象层次原则(SLAP)</p>
+<p>原则4：方法设计应遵循命令与查询职责分离原则(CQRS)<br>Query 一般会有返回值<br>Command有比较多的输入，设置某些东西</p>
+<p>将Command和Query功能合并入一个方法，方便了客户的使用，却降低了清晰性</p>
+<p>规则1：不要把方法的入参当作工作变量/临时变量，除非特别重要</p>
+<p>规则2：使用类名调用静态方法，而不要使用实例或表达式来调用。<br>明确的使用类名调用静态方法不容易造成混淆，使用实例调用静态方法时，调用的静态方法是声明类型的静态方法，与实际的实际类型无关，可能会导致与预期的结果不一致，当父类与子类有同名静态方法时，声明父类变量引用子类实例，调用该静态方法时调用的是父类的静态方法，而非子类的静态方法。</p>
+<h2 id="第6章：包，类和接口"><a href="#第6章：包，类和接口" class="headerlink" title="第6章：包，类和接口"></a>第6章：包，类和接口</h2><p>原则1：类和接口的设计应遵循面向对象SOLID设计原则<br>1.单一职责原则<br>2.开放封闭原则：新增功能时可以不修改原有的代码，也就是对扩展开放，对修改封闭，比如，可以通过实现一个已有的接口，或者继承一个已有的类，或者替换组合中的一个实现，来扩展新功能，而不修改原有的代码。<br>3.里氏替换原则:子类的实例应该能够替换任何其超类的实例，违反此原则的经典例子是，从长方形派生一个正方形<br>4.接口分离原则：使用多个专门的接口比使用单一的总接口要好<br>5.依赖倒置原则<br>面向过程的开发中，高层直接调用底层，造成高层依赖于底层的具体实现，高层应该调用抽象的接口，底层则应该实现接口，两者都依赖于接口，这样解除了高层和底层的耦合。</p>
+<p>原则2：类的设计应遵循迪米特法则(最小知识原则）<br>一个类不应该包含太多其他类的方法</p>
+<p>原则3：类的设计应遵循tell，dont ask原则</p>
+<p>你应该尽量告诉对象你希望它们去做的事情，而不要询问它们的状态之后作出决定，最后才告诉它们做什么事情</p>
+<p>规则1：除提供给外部使用的全局常量外，应尽量避免类成员变量被外部直接访问</p>
+<p>说明：将变量设置为私有的理由是：我们不想其他人依赖这个变量，依赖类内部的实现细节，这样，当内部实现需要变更时，影响面就比较小，变更的成本就比较低</p>
+<p>我们应当尽量将类成员作用域设置为最小的</p>
+<p>规则2：避免在无关的变量或无关的概念之间重用名字，<br>避免隐藏，遮蔽，遮掩<br>隐藏：<br>遮蔽：类内部<br>比如同名变量取最近的<br>遮掩：类内部<br>编译失败等</p>
+<p>规则3：不要再父类的构造方法中调用可能被子类复写的方法</p>
+<p>规则4:覆写equals方法时，应同时覆写hashcode方法<br>说明：因为java对象在存放到基于Hash的集合(HashMap,HashTable等)时，会使用其Hash码进行索引，如果只覆写了equals方法，而没有正确覆写hashCode方法，则会导致效率低下甚至出错</p>
+<p>java对象的hashCode方法有如下约定：<br>1.同一次运行中 ，同一个对象如果equals方法中用的信息没有改变，多次调用hashCode的方法返回值必须相同<br>2.如果两个对象调用的equals方法时相等，则这两个对象的hashCode方法，也必须返回相同的值<br>3.如果两个对象调用的equals方法时不相等，则这两个对象的hashcode方法，不要求其返回值不同。</p>
+<p>规则5：子类覆写父类方法时应加上@Override注解<br>加上的好处是，如果覆写时因为疏忽，导致子类方法的参数同父类不一致编译时会报错，使问题在编译期就被发现，如果父类修改了方法定义造成子类不再覆写父类方法，也能使问题在编译期今早被发现</p>
+<h3 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h3><pre><code>原则1 只针对真正异常的情况才使用exception机制
+说明：不要用exception机制来做流程控制，exception机制只应该用于处理罕见的，意料之外的，导致正常流程无法继续执行的行为，而不是取代正常的业务逻辑判断。
+</code></pre><p>规则1：在抛出异常的时候，应该同时提供足够信息，以便对分析“异常是如何产生的”,比如“对该异常有贡献”的参数和变量的值，这样能方便程序员知道应该去查找哪些错误，可以极大地加速诊断过程。但是注意要符合公司安全红线和法律法规的要检查求，不要包含敏感信息或个人信息</p>
+<p>规则2：对可恢复的情况使用受检异常(checked exception),对编程错误使用运行时异常(runtime exception)<br>受检异常(checked exception),运行时异常(runtime exception)和错误(error)</p>
+<p>使用原则：</p>
+<p>1、如果期望调用者能够恢复，则应该使用受检异常，可以强迫调用者在一个catch字句中处理该异常或者继续向外传播<br>2.运行时异常是指难以恢复或者不可恢复的程序错误，大多数运行时异常都是表面前提违例<br>precondition violation是指API的调用方没有遵循调用约定</p>
+<p>3.错误被jvm保留用于指示资源不足，约束失败或其他程序无法继续执行的情况，最好不要实现新的ERROR子类，所有抛出的未受检异常都应该是RuntimeException的子类</p>
+<p>规则3：不要忽略异常</p>
+<p>规则4：方法注释和文档中要包含所抛出异常的说明</p>
+<p>规则5：方法抛出的异常，应该与本身的抽象层次相对应</p>
+<p>规则6：在finally块中不要使用return，break,或continue使finally块非正常结束</p>
+<p>规则7：不要直接捕获受检异常的基类Exception</p>
+<p>建议1：对第三方API抛出大量各类异常进行封装<br>为了避免与第三方API产生太过紧密的耦合，避免因第三方<br>修改了异常之后而导致自身代码的变更，需对第三方抛出的异常<br>进行封装</p>
+<p>建议2：一个方法不应抛出大多类型的异常<br>方法抛出过多的异常，会增加客户端异常处理的工作，同时也表明<br>看方法承担了过多的职责</p>
+<h2 id="第8章-语言特性"><a href="#第8章-语言特性" class="headerlink" title="第8章 语言特性"></a>第8章 语言特性</h2><p>规则1：不要写复杂的表达式<br>复杂的表达式难以理解，会增加软件维护的成本和出错机率，建议将难懂的语句封装到某个方法里</p>
+<p>规则2：运算时应避免产生溢出<br>long = int + int<br>BigInteger = long + long</p>
+<h3 id="运算和表达式"><a href="#运算和表达式" class="headerlink" title="运算和表达式"></a>运算和表达式</h3><p>建议： 运算采用括号明确运算的优先级</p>
+<h3 id="控制语句："><a href="#控制语句：" class="headerlink" title="控制语句："></a>控制语句：</h3><p>规则1：在switch语句的每一个case，和default都放置一条break语句</p>
+<p>规则2：采用for-each代替for循环</p>
+<p>for(string item:list)<br>{<br>    System.out.println(item);<br>}</p>
+<h3 id="泛型："><a href="#泛型：" class="headerlink" title="泛型："></a>泛型：</h3><p>规则：在集合中使用泛型（v1.5)<br>不好：<br>private final(Collection stamps = …<br>stamps.add(new Coin(…));<br>推荐：<br>private final(Collection<stamp> stamps = …<br>stamps.add(new Coin(…));</stamp></p>
+<p>在使用 for(Stamps s:stamps){}不需要手动类型转换</p>
+<h3 id="其他语言特性"><a href="#其他语言特性" class="headerlink" title="其他语言特性"></a>其他语言特性</h3><p>规则：新代码不要使用已标注为@deprecated的方法（jdk废弃的）</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/16/C语言编程规范/" rel="next" title="C语言编程规范以及常见问题">
+                <i class="fa fa-chevron-left"></i> C语言编程规范以及常见问题
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+  </div>
+  
+<div class="bdsharebuttonbox">
+<a href="#" class="bds_more" data-cmd="more"></a>
+<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+<a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+<a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+<script>
+window._bd_share_config=
+{"common":
+  {"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/19/java编程规范/"
+           data-title="JAVA语言编程规范以及常见问题" data-url="https://yoursite.com/2017/02/19/java编程规范/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/home.jpg"
+               alt="xiegonghai" />
+          <p class="site-author-name" itemprop="name">xiegonghai</p>
+          <p class="site-description motion-element" itemprop="description">while(question)just thinking;</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="https://xiegonghai.github.io/archives/">
+              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="https://xiegonghai.github.io/categories/">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/justdoithai" title="我的csdn博客" target="_blank">我的csdn博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cplusplus.com/reference/algorithm" title="C++标准库" target="_blank">C++标准库</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://github.com/xiegonghai" title="我的github" target="_blank">我的github</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://net.pku.edu.cn/~yhf/linux_c/" title="linux_C函数" target="_blank">linux_C函数</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://man.linuxde.net/" title="linux命令" target="_blank">linux命令</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://tool.oschina.net/" title="Tools" target="_blank">Tools</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一章-排版"><span class="nav-number">1.</span> <span class="nav-text">第一章 排版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二章-注释"><span class="nav-number">2.</span> <span class="nav-text">第二章 注释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三章：命名"><span class="nav-number">3.</span> <span class="nav-text">第三章：命名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第四章：-变量和类型"><span class="nav-number">4.</span> <span class="nav-text">第四章： 变量和类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第5章-方法"><span class="nav-number">5.</span> <span class="nav-text">第5章 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第6章：包，类和接口"><span class="nav-number">6.</span> <span class="nav-text">第6章：包，类和接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#异常"><span class="nav-number">6.1.</span> <span class="nav-text">异常</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第8章-语言特性"><span class="nav-number">7.</span> <span class="nav-text">第8章 语言特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运算和表达式"><span class="nav-number">7.1.</span> <span class="nav-text">运算和表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#控制语句："><span class="nav-number">7.2.</span> <span class="nav-text">控制语句：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#泛型："><span class="nav-number">7.3.</span> <span class="nav-text">泛型：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他语言特性"><span class="nav-number">7.4.</span> <span class="nav-text">其他语言特性</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xiegonghai</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"doit"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
